@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
@@ -8,19 +8,31 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: #3db98c;
+  --color-secondary: #2e9e78;
+  --color-surface: #e4f5ee; /* fondo suave para secciones / cards */
+
+  /* Texto */
+  --color-heading: #15231d; /* títulos, texto principal y precios */
+  --color-muted: #5c6b64; /* texto secundario / descripciones */
+
+  /* Acentos */
+  --color-accent: #1d9e75; /* etiquetas de categoría y enlaces de acento */
+  --color-display: #0e9e6e; /* títulos grandes (ej. "Entrega a domicilio") */
+  --color-total: #085041; /* total destacado */
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+@layer components{
+  .icon{
+    @apply w-6 h-6 text-white cursor-pointer;
+  }
 }
