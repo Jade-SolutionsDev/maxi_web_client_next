@@ -20,6 +20,8 @@ export const FormPassword = ({
   required,
   ...props
 }: FormPasswordProps) => {
+  'use no memo';
+
   const { register, formState, getFieldState } = useFormContext();
 
   const { error } = getFieldState(name, formState);
@@ -46,7 +48,7 @@ export const FormPassword = ({
           className='pr-11'
           {...register(name)}
           {...props}
-          placeholder='*******'
+          placeholder='••••••'
         />
         <button
           type='button'

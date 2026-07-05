@@ -19,6 +19,8 @@ export const FormInput = ({
   required,
   ...props
 }: FormInputProps) => {
+  'use no memo';
+
   const { register, formState, getFieldState } = useFormContext();
 
   const { error } = getFieldState(name, formState);
