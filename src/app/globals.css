@@ -10,7 +10,7 @@
   --color-foreground: var(--foreground);
   --color-primary: #3db98c;
   --color-secondary: #2e9e78;
-  --color-surface: #e4f5ee; /* fondo suave para secciones / cards */
+  --color-surface: #e4f5ee;
 
   /* Texto */
   --color-heading: #15231d; /* títulos, texto principal y precios */
@@ -30,9 +30,8 @@ body {
   color: var(--foreground);
 }
 
-
-@layer components{
-  .icon{
+@layer components {
+  .icon {
     @apply w-6 h-6 text-white cursor-pointer;
   }
 }
