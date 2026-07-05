@@ -13,6 +13,8 @@ import {
 } from '@/feature/auth/schemas/login.schema';
 
 export const LoginForm = () => {
+  'use no memo';
+
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
     defaultValues: { email: '', password: '' },
