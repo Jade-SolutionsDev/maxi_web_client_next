@@ -4,7 +4,24 @@
       "Bash(eza -la src/app/components/layout/)",
       "Bash(fd -uu -e json 'biome' /Users/andy/Documents/maxi_client)",
       "Bash(fd -uu 'biome.json|biome.jsonc' /Users/andy/Documents/maxi_client)",
-      "Bash(npx @biomejs/biome lint src/app/components/ui/label.tsx)"
+      "Bash(npx @biomejs/biome lint src/app/components/ui/label.tsx)",
+      "Bash(eza --tree src --level 3)",
+      "Bash(eza --tree 'src/app/\\(auth\\)' src/app/components/layout src/app/components/search)",
+      "Bash(eza --tree src/feature src/proxy.ts)",
+      "WebFetch(domain:clerk.com)",
+      "Bash(bunx tsc *)",
+      "Bash(bunx @biomejs/biome check src/app/components/ui/button.tsx src/feature/auth/components/BrandPanel.tsx src/app/login/page.tsx src/app/components/layout/UserMenu.tsx)",
+      "Bash(bunx @biomejs/biome check src/)",
+      "Bash(bunx @biomejs/biome check --write src/app/components/ui/button.tsx src/feature/auth/components/BrandPanel.tsx src/app/login/page.tsx src/app/components/layout/UserMenu.tsx)",
+      "Bash(rg -l 'CLERK' /Users/andy/Documents/maxi_client/.env*)",
+      "Bash(echo \"tsc exit: $?\")",
+      "Bash(break)",
+      "Bash(bunx @biomejs/biome check src/app/components/ui/input.tsx)",
+      "Bash(bunx @biomejs/biome check --write src/app/components/ui/input.tsx)",
+      "Bash(bunx @biomejs/biome check --write src/app/components/ui/button.tsx)",
+      "Bash(fd -d1 . /Users/andy/Documents/maxi_client/node_modules/lucide-react/dist/esm/icons)",
+      "Bash(rg -i '^.*\\(eye|eye-off\\)\\\\.js$')",
+      "Bash(bunx @biomejs/biome check --write src/app/components/form/FormPassword.tsx src/feature/auth/components/LoginForm.tsx src/app/login/page.tsx src/feature/auth/components/BrandPanel.tsx)"
     ]
   }
 }
