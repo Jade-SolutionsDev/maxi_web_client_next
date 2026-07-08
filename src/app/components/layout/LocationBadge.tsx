@@ -15,7 +15,7 @@ export const LocationBadge = ({
     <div
       className={cn(
         'inline-flex items-center gap-3 bg-primary rounded-2xl px-5 py-3',
-        className
+        className,
       )}
     >
       <svg

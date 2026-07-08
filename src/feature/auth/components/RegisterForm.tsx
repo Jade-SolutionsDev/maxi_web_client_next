@@ -25,8 +25,14 @@ export const RegisterForm = () => {
     },
   });
 
-  const { register, resendEmail, errors, isSubmitting, isResending, emailSent } =
-    useSignUp();
+  const {
+    register,
+    resendEmail,
+    errors,
+    isSubmitting,
+    isResending,
+    emailSent,
+  } = useSignUp();
 
   const onSubmit = async (data: RegisterSchemaType) => {
     const { error } = await register(data);

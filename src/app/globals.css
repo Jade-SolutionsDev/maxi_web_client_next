@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 :root {
   --background: #ffffff;
@@ -11,6 +11,8 @@
   --color-primary: #3db98c;
   --color-secondary: #2e9e78;
   --color-surface: #e4f5ee;
+  --color-footer: #1e3d30; /* fondo del footer */
+  --color-orange: #f2933f; /* acento naranja / títulos del footer */
 
   /* Texto */
   --color-heading: #15231d; /* títulos, texto principal y precios */
@@ -28,6 +30,10 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  /* Red de seguridad: mata cualquier overflow horizontal futuro (grillas de
+     productos, etc.) sin romper el `sticky` del Header. `clip` NO crea scroll
+     container; `hidden` sí y rompería el sticky. */
+  overflow-x: clip;
 }
 
 @layer components {

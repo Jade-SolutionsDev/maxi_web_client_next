@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="26" viewBox="0 0 40 26" role="img" aria-label="Mastercard">
+  <circle cx="15" cy="13" r="11" fill="#EB001B" />
+  <circle cx="25" cy="13" r="11" fill="#F79E1B" />
+  <clipPath id="mc-overlap">
+    <circle cx="15" cy="13" r="11" />
+  </clipPath>
+  <circle cx="25" cy="13" r="11" fill="#FF5F00" clip-path="url(#mc-overlap)" />
+</svg>
