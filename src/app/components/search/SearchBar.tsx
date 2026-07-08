@@ -18,7 +18,7 @@ export const SearchBar = ({
     <search
       className={cn(
         'relative flex items-center rounded-full bg-white shadow-sm ring-1 ring-black/5 transition focus-within:ring-2 focus-within:ring-primary/60',
-        className
+        className,
       )}
     >
       <Search
