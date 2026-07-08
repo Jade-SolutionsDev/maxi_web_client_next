@@ -1,7 +1,24 @@
+import type { StaticImageData } from 'next/image';
 import mastercard from '@/assets/mastercard.svg';
 import visa from '@/assets/visa.svg';
 
-export const columns = [
+export interface FooterLink {
+  label: string;
+  href: string;
+}
+
+export interface FooterColumn {
+  title: string;
+  label: string;
+  links: FooterLink[];
+}
+
+export interface PaymentMethod {
+  src: StaticImageData;
+  alt: string;
+}
+
+export const columns: FooterColumn[] = [
   {
     title: 'Producto',
     label: 'Producto',
@@ -28,7 +45,7 @@ export const columns = [
   },
 ];
 
-export const paymentMethods = [
+export const paymentMethods: PaymentMethod[] = [
   { src: visa, alt: 'Visa' },
   { src: mastercard, alt: 'Mastercard' },
 ];
