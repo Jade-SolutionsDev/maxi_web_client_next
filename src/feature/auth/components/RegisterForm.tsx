@@ -8,6 +8,10 @@ import { FormPassword } from '@/app/components/form/FormPassword';
 import { Button } from '@/app/components/ui/button';
 import { useSignUp } from '@/feature/auth/hook/useSignUp';
 import {
+  clerkErrorField,
+  translateClerkError,
+} from '@/feature/auth/lib/clerkErrors';
+import {
   RegisterSchema,
   type RegisterSchemaType,
 } from '@/feature/auth/schemas/register.schema';
@@ -25,27 +29,18 @@ export const RegisterForm = () => {
     },
   });
 
-  const {
-    register,
-    resendEmail,
-    errors,
-    isSubmitting,
-    isResending,
-    emailSent,
-  } = useSignUp();
+  const { register, resendEmail, isSubmitting, isResending, emailSent } =
+    useSignUp();
 
   const onSubmit = async (data: RegisterSchemaType) => {
-    const { error } = await register(data);
+    form.clearErrors();
 
-    if (errors.fields.emailAddress) {
-      form.setError('email', { message: errors.fields.emailAddress.message });
-    }
-    if (errors.fields.password) {
-      form.setError('password', { message: errors.fields.password.message });
-    }
-    if (error && !errors.fields.emailAddress && !errors.fields.password) {
-      form.setError('root', { message: error.message });
-    }
+    const { error } = await register(data);
+    if (!error) return;
+
+    form.setError(clerkErrorField(error) ?? 'root', {
+      message: translateClerkError(error),
+    });
   };
 
   if (emailSent) {
@@ -96,7 +91,7 @@ export const RegisterForm = () => {
         <FormPassword name='confirmPassword' label='Confirmar' required />
       </div>
 
-      <div id='clerk-captcha' />
+      <div id='clerk-captcha'></div>
 
       <Button
         type='submit'

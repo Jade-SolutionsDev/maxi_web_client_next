@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { LoginSchemaType } from '@/feature/auth/schemas/login.schema';
 
 export const useSignIn = () => {
-  const { signIn, errors, fetchStatus } = useClerkSignIn();
+  const { signIn, fetchStatus } = useClerkSignIn();
   const router = useRouter();
 
   const login = async ({ email, password }: LoginSchemaType) => {
@@ -40,7 +40,6 @@ export const useSignIn = () => {
 
   return {
     login,
-    errors,
     isSubmitting: fetchStatus === 'fetching',
   };
 };

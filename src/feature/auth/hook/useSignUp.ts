@@ -6,7 +6,7 @@ import { useState } from 'react';
 import type { RegisterSchemaType } from '@/feature/auth/schemas/register.schema';
 
 export const useSignUp = () => {
-  const { signUp, errors, fetchStatus } = useClerkSignUp();
+  const { signUp, fetchStatus } = useClerkSignUp();
   const router = useRouter();
   const [emailSent, setEmailSent] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -74,7 +74,6 @@ export const useSignUp = () => {
   return {
     register,
     resendEmail,
-    errors,
     isSubmitting: fetchStatus === 'fetching',
     isResending,
     emailSent,
