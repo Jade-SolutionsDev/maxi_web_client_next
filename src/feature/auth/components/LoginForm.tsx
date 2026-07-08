@@ -8,6 +8,10 @@ import { FormPassword } from '@/app/components/form/FormPassword';
 import { Button } from '@/app/components/ui/button';
 import { useSignIn } from '@/feature/auth/hook/useSignIn';
 import {
+  clerkErrorField,
+  translateClerkError,
+} from '@/feature/auth/lib/clerkErrors';
+import {
   LoginSchema,
   type LoginSchemaType,
 } from '@/feature/auth/schemas/login.schema';
@@ -20,20 +24,17 @@ export const LoginForm = () => {
     defaultValues: { email: '', password: '' },
   });
 
-  const { login, errors, isSubmitting } = useSignIn();
+  const { login, isSubmitting } = useSignIn();
 
   const onSubmit = async (data: LoginSchemaType) => {
-    const { error } = await login(data);
+    form.clearErrors();
 
-    if (errors.fields.identifier) {
-      form.setError('email', { message: errors.fields.identifier.message });
-    }
-    if (errors.fields.password) {
-      form.setError('password', { message: errors.fields.password.message });
-    }
-    if (error && !errors.fields.identifier && !errors.fields.password) {
-      form.setError('root', { message: error.message });
-    }
+    const { error } = await login(data);
+    if (!error) return;
+
+    form.setError(clerkErrorField(error) ?? 'root', {
+      message: translateClerkError(error),
+    });
   };
 
   return (
