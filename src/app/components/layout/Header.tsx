@@ -55,7 +55,6 @@ export const Header = () => {
 
             <a
               href={contactPhone.href}
-              
               className='flex shrink-0 items-center gap-2 rounded-sm text-sm font-bold text-white/90 whitespace-nowrap transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange underline'
             >
               <Phone className='h-4 w-4 shrink-0 ' aria-hidden='true' />

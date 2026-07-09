@@ -3,8 +3,7 @@
 import type { ComponentProps } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Input } from '@/app/components/ui/input';
-import { cn } from '@/lib/utils';
-import { Label } from '../ui/label';
+import { FormField } from './FormField';
 
 interface FormInputProps extends ComponentProps<'input'> {
   name: string;
@@ -21,25 +20,18 @@ export const FormInput = ({
 }: FormInputProps) => {
   'use no memo';
 
-  const { register, formState, getFieldState } = useFormContext();
-
-  const { error } = getFieldState(name, formState);
+  const { register } = useFormContext();
 
   return (
-    <div className={cn('flex flex-col gap-1.5', className)}>
-      {label && (
-        <Label
-          htmlFor={name}
-          className='text-sm flex gap-2 font-medium text-heading'
-        >
-          {label}
-          {required && <span className='text-red-500 mb-2'>*</span>}
-        </Label>
+    <FormField
+      name={name}
+      label={label}
+      required={required}
+      className={className}
+    >
+      {({ id, invalid }) => (
+        <Input id={id} aria-invalid={invalid} {...register(name)} {...props} />
       )}
-
-      <Input id={name} aria-invalid={!!error} {...register(name)} {...props} />
-
-      {error && <p className='text-sm text-red-500'>{error.message}</p>}
-    </div>
+    </FormField>
   );
 };
