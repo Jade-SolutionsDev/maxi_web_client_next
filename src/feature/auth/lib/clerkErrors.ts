@@ -34,7 +34,7 @@ const CLERK_ERROR_MESSAGES: Record<string, string> = {
 const FALLBACK_MESSAGE = 'Ocurrió un error. Intentá de nuevo.';
 
 const extractFirstError = (
-  error: TranslatableClerkError
+  error: TranslatableClerkError,
 ): SingleClerkError | null => {
   if (!error) return null;
 
@@ -67,7 +67,7 @@ const CODE_TO_FIELD: Record<string, ClerkErrorField> = {
 };
 
 export const clerkErrorField = (
-  error: TranslatableClerkError
+  error: TranslatableClerkError,
 ): ClerkErrorField => {
   const firstError = extractFirstError(error);
   if (!firstError) return null;
