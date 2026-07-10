@@ -8,10 +8,12 @@ const buttonVariants = cva(
       variant: {
         default: 'bg-accent text-white',
         secondary: 'bg-secondary text-white',
+        ghost: 'bg-transparent text-foreground hover:bg-foreground/5',
       },
       size: {
         default: 'px-4 py-3 text-lg font-medium',
         lg: 'p-4 text-base font-bold',
+        'icon-sm': 'size-8 [&_svg]:size-4',
       },
     },
     defaultVariants: { variant: 'default', size: 'default' },

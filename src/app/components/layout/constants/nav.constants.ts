@@ -1,14 +1,19 @@
+import type { LucideIcon } from 'lucide-react';
+import { House, Info, LayoutGrid, Mail, Tags } from 'lucide-react';
+
 export interface NavItem {
   label: string;
   href: string;
+  /** Only rendered by the mobile drawer; the desktop bar is text-only. */
+  icon?: LucideIcon;
 }
 
 export const navItems: NavItem[] = [
-  { label: 'Inicio', href: '/' },
-  { label: 'Catálogo', href: '/catalogo' },
-  { label: 'Categorías', href: '/categorias' },
-  { label: 'Sobre nosotros', href: '/sobre-nosotros' },
-  { label: 'Contacto', href: '/contacto' },
+  { label: 'Inicio', href: '/', icon: House },
+  { label: 'Catálogo', href: '/catalogo', icon: LayoutGrid },
+  { label: 'Categorías', href: '/categorias', icon: Tags },
+  { label: 'Sobre nosotros', href: '/sobre-nosotros', icon: Info },
+  { label: 'Contacto', href: '/contacto', icon: Mail },
 ];
 
 export const contactPhone: NavItem = {

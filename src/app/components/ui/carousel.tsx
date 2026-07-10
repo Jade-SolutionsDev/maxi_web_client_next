@@ -104,7 +104,6 @@ function Carousel({
       api.plugins().autoplay?.stop();
     }
   }, [api]);
-  2;
 
   const onKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLElement>) => {
