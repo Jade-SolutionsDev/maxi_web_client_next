@@ -10,9 +10,11 @@ import { formatPrice } from '@/lib/format';
 
 type ProductCardProps = {
   product: Product;
+  /** Responsive `sizes` hint for next/image, derived from the grid the card lives in. */
+  imageSizes?: string;
 };
 
-function ProductCard({ product }: ProductCardProps) {
+function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
   const { name, price, previousPrice, image } = product;
   const [quantity, setQuantity] = useState(1);
   const isOnOffer = previousPrice != null && previousPrice > price;
@@ -31,6 +33,7 @@ function ProductCard({ product }: ProductCardProps) {
         <Image
           src={image}
           alt={name}
+          sizes={imageSizes}
           className='h-full w-full object-contain'
         />
       </div>

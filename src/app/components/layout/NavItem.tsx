@@ -2,18 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { cn, isActiveHref } from '@/lib/utils';
 import type { NavItem as NavItemData } from './constants/nav.constants';
 
 export const NavItem = ({ label, href }: NavItemData) => {
   const pathname = usePathname();
-
-  // Inicio ('/') sólo activo en match exacto; el resto también en sus subrutas
-  // (ej. '/catalogo/arroz' marca 'Catálogo' como activo).
-  const isActive =
-    href === '/'
-      ? pathname === '/'
-      : pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = isActiveHref(href, pathname);
 
   return (
     <Link

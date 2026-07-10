@@ -11,7 +11,10 @@ function FeaturedProducts() {
       <ul className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5'>
         {featuredProducts.map((product) => (
           <li key={product.id}>
-            <ProductCard product={product} />
+            <ProductCard
+              product={product}
+              imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
+            />
           </li>
         ))}
       </ul>
