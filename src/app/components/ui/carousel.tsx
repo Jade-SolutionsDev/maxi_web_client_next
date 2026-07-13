@@ -190,7 +190,7 @@ function CarouselPrevious({
       onClick={scrollPrev}
       disabled={!canScrollPrev}
       className={cn(
-        'absolute top-1/2 left-4 -translate-y-1/2 grid size-10 place-items-center rounded-full text-white outline-none drop-shadow-md transition hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-40',
+        'absolute top-1/2 left-4 -translate-y-1/2 grid size-11 place-items-center rounded-full bg-white/90 text-primary shadow-md outline-none transition hover:bg-white/80 hover:brightness-90 focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-40',
         className,
       )}
       {...props}
@@ -210,7 +210,7 @@ function CarouselNext({ className, ...props }: React.ComponentProps<'button'>) {
       onClick={scrollNext}
       disabled={!canScrollNext}
       className={cn(
-        'absolute top-1/2 right-4 -translate-y-1/2 grid size-10 place-items-center rounded-full text-white outline-none drop-shadow-md transition hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-40',
+        'absolute top-1/2 right-4 -translate-y-1/2 grid size-11 place-items-center rounded-full bg-white/90 text-primary shadow-md outline-none transition hover:bg-white/80 hover:brightness-90 focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-40',
         className,
       )}
       {...props}

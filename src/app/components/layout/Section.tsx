@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { Container } from './Container';
 
@@ -17,6 +17,8 @@ interface SectionProps {
   label?: string;
   /** Optional trailing link in the header (e.g. "Ver todos →"). */
   action?: SectionAction;
+  /** Max-width variant forwarded to the inner Container. */
+  size?: ComponentProps<typeof Container>['size'];
   className?: string;
   children: ReactNode;
 }
@@ -33,6 +35,7 @@ export const Section = ({
   titleId,
   label,
   action,
+  size,
   className,
   children,
 }: SectionProps) => {
@@ -44,7 +47,7 @@ export const Section = ({
       aria-labelledby={headingId}
       className={cn('py-8', className)}
     >
-      <Container>
+      <Container size={size}>
         {title && (
           <header className='mb-6 flex items-center justify-between gap-4'>
             <h2 id={headingId} className='text-2xl font-bold text-heading'>

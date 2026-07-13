@@ -18,28 +18,33 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
   const { name, price, previousPrice, image } = product;
   const [quantity, setQuantity] = useState(1);
   const isOnOffer = previousPrice != null && previousPrice > price;
+  const discount = isOnOffer
+    ? Math.round(((previousPrice - price) / previousPrice) * 100)
+    : 0;
 
   const decrease = () => setQuantity((current) => Math.max(1, current - 1));
   const increase = () => setQuantity((current) => current + 1);
 
   return (
-    <article className='flex h-full flex-col overflow-hidden rounded-2xl border border-black/5 bg-white'>
-      <div className='relative flex aspect-square items-center justify-center bg-background p-3'>
+    <article className='@container group flex h-full flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg motion-reduce:transform-none motion-reduce:transition-none'>
+      <div className='relative flex aspect-square items-center justify-center overflow-hidden bg-background p-3'>
         {isOnOffer && (
           <span className='absolute top-3 left-3 z-10 rounded-full bg-orange px-3 py-1 text-xs font-semibold text-white'>
-            Oferta
+            -{discount}%
           </span>
         )}
         <Image
           src={image}
           alt={name}
           sizes={imageSizes}
-          className='h-full w-full object-contain'
+          className='h-full w-full object-contain transition-transform duration-300 group-hover:scale-105 motion-reduce:transform-none'
         />
       </div>
 
       <div className='flex flex-1 flex-col gap-3 p-4'>
-        <h3 className='font-semibold text-heading leading-snug'>{name}</h3>
+        <h3 className='line-clamp-2 min-h-[2.5rem] font-semibold text-heading leading-snug'>
+          {name}
+        </h3>
 
         <p className='mt-auto flex items-baseline gap-2'>
           <span className='text-2xl font-bold text-heading'>
@@ -52,19 +57,27 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
           )}
         </p>
 
-        <div className='flex items-center gap-2'>
+        {isOnOffer && (
+          <p className='-mt-1 text-sm font-medium text-primary'>
+            Ahorrás {formatPrice(previousPrice - price)}
+          </p>
+        )}
+
+        <div className='mt-1 flex items-stretch gap-2'>
           <QuantityStepper
             value={quantity}
             onDecrease={decrease}
             onIncrease={increase}
+            min={1}
+            variant='surface'
             itemLabel={name}
+            className='shrink-0'
           />
-
           <Button
-            className='flex-1 gap-2 py-2.5 text-base font-semibold'
-            aria-label={`Añadir ${quantity} de ${name} al carrito`}
+            className='min-w-0 flex-1 gap-1.5 truncate px-2.5 py-2 text-sm font-semibold'
+            aria-label={`Añadir ${quantity} ${name} al carrito`}
           >
-            <ShoppingCart className='size-4' aria-hidden='true' />
+            <ShoppingCart className='size-4 shrink-0' aria-hidden='true' />
             Añadir
           </Button>
         </div>
