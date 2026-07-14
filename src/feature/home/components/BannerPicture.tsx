@@ -28,7 +28,6 @@ function BannerPicture({ slide, eager }: BannerPictureProps) {
     props: { srcSet: tablet },
   } = getImageProps({ ...common, ...slide.tablet });
 
- 
   const { props: img } = getImageProps({ ...common, ...slide.mobile });
 
   return (

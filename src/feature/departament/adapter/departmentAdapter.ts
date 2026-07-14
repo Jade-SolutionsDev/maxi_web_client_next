@@ -8,7 +8,9 @@ export const hasArtwork = (
   department: DepartmentResponse,
 ): department is DepartmentWithArtwork => department.imageDesktopUrl !== null;
 
-export const toDepartment = (department: DepartmentWithArtwork): Department => ({
+export const toDepartment = (
+  department: DepartmentWithArtwork,
+): Department => ({
   id: department.id,
   name: department.name.trim(),
   slug: department.slug,

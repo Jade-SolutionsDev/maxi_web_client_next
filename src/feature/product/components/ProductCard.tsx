@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { QuantityStepper } from '@/app/components/ui/quantity-stepper';
-import type { Product } from '@/feature/product/mock/products';
+import type { Product } from '@/feature/product/type/product.interface';
 import { formatPrice } from '@/lib/format';
 
 type ProductCardProps = {
@@ -33,12 +33,15 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
             -{discount}%
           </span>
         )}
-        <Image
-          src={image}
-          alt={name}
-          sizes={imageSizes}
-          className='h-full w-full object-contain transition-transform duration-300 group-hover:scale-105 motion-reduce:transform-none'
-        />
+        <div className='relative h-full w-full'>
+          <Image
+            src={image}
+            alt={name}
+            fill
+            sizes={imageSizes}
+            className='object-contain transition-transform duration-300 group-hover:scale-105 motion-reduce:transform-none'
+          />
+        </div>
       </div>
 
       <div className='flex flex-1 flex-col gap-3 p-4'>

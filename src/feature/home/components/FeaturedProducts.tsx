@@ -1,15 +1,17 @@
 import { Section } from '@/app/components/layout/Section';
 import { ProductCard } from '@/feature/product/components/ProductCard';
-import { featuredProducts } from '@/feature/product/mock/products';
+import { getFeaturedProducts } from '@/feature/product/service/product.service';
 
-function FeaturedProducts() {
+async function FeaturedProducts() {
+  const products = await getFeaturedProducts();
+
   return (
     <Section
       title='Productos destacados'
       action={{ href: '/productos', label: 'Ver todos →' }}
     >
       <ul className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5'>
-        {featuredProducts.map((product) => (
+        {products.map((product) => (
           <li key={product.id}>
             <ProductCard
               product={product}
