@@ -1,7 +1,7 @@
 import 'server-only';
 import { cacheLife, cacheTag } from 'next/cache';
 import { api } from '@/api/http';
-import { toProduct } from '../adapter/productAdapter';
+import { toProduct } from '../adapter/product.adapter';
 import type { Product, ProductListResponse } from '../type/product.interface';
 
 const FEATURED_PAGE_SIZE = 15;

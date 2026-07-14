@@ -1,6 +1,6 @@
-import { api } from '@/api/http';
-import { Category, CategoryListResponse } from '../type/category.interface';
+import { type ApiResponse, api } from '@/api/http';
 import { toCategory } from '../adapter/category.adapter';
+import type { Category, CategoryResponse } from '../type/category.interface';
 import { cacheLife, cacheTag } from 'next/cache';
 
 export const getCategories = async (): Promise<Category[]> => {
@@ -8,9 +8,10 @@ export const getCategories = async (): Promise<Category[]> => {
   cacheLife('hours');
   cacheTag('categories');
 
-  const { data } = await api<CategoryListResponse>('category/with-products', {
-    base: 'old',
-  });
+  const { data } = await api<ApiResponse<CategoryResponse[]>>(
+    'category/with-products',
+    { base: 'old' },
+  );
 
   return data.map(toCategory);
 };

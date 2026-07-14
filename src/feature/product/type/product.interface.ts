@@ -1,3 +1,5 @@
+import type { ApiResponse } from '@/api/http';
+
 /** Localized text the API returns for user-facing fields. */
 export interface LocalizedText {
   en: string;
@@ -35,8 +37,7 @@ export interface ProductResponse {
   updatedat: string; // ISO date
 }
 
-export interface ProductListResponse {
-  data: ProductResponse[];
+export interface ProductListResponse extends ApiResponse<ProductResponse[]> {
   total: number;
 }
 

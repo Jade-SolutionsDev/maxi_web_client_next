@@ -10,10 +10,6 @@ export interface CategoryResponse {
   department_id: string;
 }
 
-export interface CategoryListResponse {
-  data: CategoryResponse[];
-}
-
 export interface Category {
   id: string;
   name: string;
