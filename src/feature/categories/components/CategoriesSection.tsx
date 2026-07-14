@@ -5,9 +5,12 @@ import {
   CarouselItem,
 } from '@/app/components/ui/carousel';
 import { CategoryCard } from '@/feature/product/components/CategoryCard';
-import { categories } from '@/feature/product/mock/categories';
 
-function CategoriesSection() {
+import { getCategories } from '../service/categories.service';
+
+async function CategoriesSection() {
+  const cetegories = await getCategories();
+
   return (
     <Section
       title='Categorías'
@@ -16,7 +19,7 @@ function CategoriesSection() {
     >
       <Carousel loop autoplayDelay={3000} aria-label='Categorías'>
         <CarouselContent className='-ml-4'>
-          {categories.map((category) => (
+          {cetegories.map((category) => (
             <CarouselItem
               key={category.id}
               className='basis-1/3 pl-4 sm:basis-1/4 lg:basis-1/5'

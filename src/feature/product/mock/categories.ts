@@ -2,8 +2,8 @@ import type { StaticImageData } from 'next/image';
 import bebidas from '@/assets/category/Bebidas.webp';
 import carnicos from '@/assets/category/carnicos.webp';
 import cervezas from '@/assets/category/cervezas.webp';
-import pastas from '@/assets/category/pastas.webp';
 import limpieza from '@/assets/category/Productos_limpieza.webp';
+import pastas from '@/assets/category/pastas.webp';
 import salsas from '@/assets/category/Salsas.webp';
 
 export type Category = {

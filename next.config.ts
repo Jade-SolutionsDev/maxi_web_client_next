@@ -21,6 +21,18 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/taxonomy/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'maxi-media-prod.s3.us-east-1.amazonaws.com',
+        port: '',
+        pathname: '/PRODUCT/**',
+      },
+       {
+        protocol: 'https',
+        hostname: 'maxi-media-prod.s3.us-east-1.amazonaws.com',
+        port: '',
+        pathname: '/CATEGORY/**',
+      },
       // Local object storage used by the API in development.
       {
         protocol: 'http',
