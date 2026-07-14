@@ -4,7 +4,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/app/components/ui/carousel';
-import { CategoryCard } from '@/feature/product/components/CategoryCard';
+import { CategoryCard } from '@/feature/categories/components/CategoryCard';
 
 import { getCategories } from '../service/categories.service';
 

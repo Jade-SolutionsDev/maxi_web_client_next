@@ -1,10 +1,10 @@
 import { cacheLife, cacheTag } from 'next/cache';
 import { type ApiResponse, api } from '@/api/http';
-import { hasArtwork, toDepartment } from '../adapter/departmentAdapter';
+import { hasArtwork, toDepartment } from '../adapter/department.adapter';
 import type {
   Department,
   DepartmentResponse,
-} from '../type/departament.interface';
+} from '../type/department.interface';
 
 export const getDepartments = async (): Promise<Department[]> => {
   'use cache';

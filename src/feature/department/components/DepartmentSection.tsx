@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Section } from '@/app/components/layout/Section';
-import { getDepartments } from '../service/departament.service';
+import { getDepartments } from '../service/department.service';
 
-async function DepartamentSection() {
+async function DepartmentSection() {
   const departments = await getDepartments();
 
   return (
@@ -32,4 +32,4 @@ async function DepartamentSection() {
   );
 }
 
-export { DepartamentSection };
+export { DepartmentSection };

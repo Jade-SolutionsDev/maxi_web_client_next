@@ -1,6 +1,7 @@
-import { Category } from '@/feature/categories/type/category.interface';
-import Image from 'next/image';
 import Link from 'next/link';
+
+import type { Category } from '@/feature/categories/type/category.interface';
+import Image from 'next/image';
 
 type CategoryCardProps = {
   category: Category;

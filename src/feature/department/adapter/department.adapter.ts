@@ -2,7 +2,7 @@ import type {
   Department,
   DepartmentResponse,
   DepartmentWithArtwork,
-} from '../type/departament.interface';
+} from '../type/department.interface';
 
 export const hasArtwork = (
   department: DepartmentResponse,
