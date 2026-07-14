@@ -9,7 +9,6 @@ const trimTrailingSlash = (url: string) => url.replace(/\/+$/, '');
 
 const API_BASE = trimTrailingSlash(BASE_URL);
 
-// Callers can opt into the legacy host ('old'); 'default' uses API_URL.
 type ApiBase = 'default' | 'old';
 
 const resolveBase = (base: ApiBase): string => {
@@ -27,7 +26,7 @@ export class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
-    public body?: unknown,
+    public body?: unknown
   ) {
     super(message);
     this.name = 'ApiError';
@@ -49,13 +48,13 @@ const isAbsolute = (path: string) => /^https?:\/\//.test(path);
 
 export async function api<T>(
   path: string,
-  options: ApiOptions = {},
+  options: ApiOptions = {}
 ): Promise<T> {
   const { params, body, headers, base = 'default', ...init } = options;
   const apiBase = resolveBase(base);
   // An absolute URL escapes apiBase: some resources live on a different host.
   const url = new URL(
-    isAbsolute(path) ? path : `${apiBase}/${path.replace(/^\/+/, '')}`,
+    isAbsolute(path) ? path : `${apiBase}/${path.replace(/^\/+/, '')}`
   );
   for (const [k, v] of Object.entries(params ?? {})) {
     if (v !== undefined) url.searchParams.set(k, String(v));
@@ -77,7 +76,7 @@ export async function api<T>(
     throw new ApiError(
       res.status,
       `${init.method ?? 'GET'} ${path} → ${res.status}`,
-      errorBody,
+      errorBody
     );
   }
 
