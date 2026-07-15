@@ -3,7 +3,11 @@ import { ProductCard } from '@/feature/product/components/ProductCard';
 import { getFeaturedProducts } from '@/feature/product/service/product.service';
 
 async function FeaturedProducts() {
-  const products = await getFeaturedProducts();
+  const products = await getFeaturedProducts({
+    page: 1,
+    size: 10,
+    featured: true,
+  });
 
   return (
     <Section

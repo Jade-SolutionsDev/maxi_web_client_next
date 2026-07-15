@@ -4,9 +4,10 @@ import { CategoriesSection } from '@/feature/categories/components/CategoriesSec
 import { CategoriesSectionSkeleton } from '@/feature/categories/components/CategoriesSectionSkeleton';
 import { DepartmentSection } from '@/feature/department/components/DepartmentSection';
 import { DepartmentSectionSkeleton } from '@/feature/department/components/DepartmentSectionSkeleton';
-import { FeaturedProducts } from '@/feature/home/components/FeaturedProducts';
-import { FeaturedProductsSkeleton } from '@/feature/home/components/FeaturedProductsSkeleton';
+import { FeaturedProducts } from '@/feature/product/components/FeaturedProducts';
+import { ProductsSkeleton } from '@/feature/product/components/ProductsSkeleton';
 import { HeroBanner } from '@/feature/home/components/HeroBanner';
+import RecientProductSection from '@/feature/product/components/RecientProduct';
 
 export default function Home() {
   return (
@@ -20,7 +21,7 @@ export default function Home() {
       </SectionBoundary>
 
       <SectionBoundary label='los productos destacados'>
-        <Suspense fallback={<FeaturedProductsSkeleton />}>
+        <Suspense fallback={<ProductsSkeleton />}>
           <FeaturedProducts />
         </Suspense>
       </SectionBoundary>
@@ -28,6 +29,12 @@ export default function Home() {
       <SectionBoundary label='las categorías'>
         <Suspense fallback={<CategoriesSectionSkeleton />}>
           <CategoriesSection />
+        </Suspense>
+      </SectionBoundary>
+
+      <SectionBoundary label='los productos recientes '>
+        <Suspense fallback={<ProductsSkeleton />}>
+          <RecientProductSection />
         </Suspense>
       </SectionBoundary>
 
