@@ -48,5 +48,6 @@ export interface Product {
   price: number;
   /** List price, only present when the product is on offer. */
   previousPrice?: number;
-  image: string;
+  /** Product image URL; absent when the API has no image for the product. */
+  image?: string;
 }

@@ -3,7 +3,7 @@ import { Skeleton } from '@/app/components/ui/skeleton';
 
 const PLACEHOLDERS = ['a', 'b', 'c', 'd', 'e'];
 
-function FeaturedProductsSkeleton() {
+function ProductsSkeleton() {
   return (
     <Section
       title='Productos destacados'
@@ -22,4 +22,4 @@ function FeaturedProductsSkeleton() {
   );
 }
 
-export { FeaturedProductsSkeleton };
+export { ProductsSkeleton };

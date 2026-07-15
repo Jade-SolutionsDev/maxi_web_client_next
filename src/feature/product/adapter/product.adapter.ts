@@ -12,6 +12,6 @@ export const toProduct = (product: ProductResponse): Product => {
     name: product.name.es.trim(),
     price,
     previousPrice: listPrice > price ? listPrice : undefined,
-    image: product.standard_image,
+    image: product.standard_image || undefined,
   };
 };

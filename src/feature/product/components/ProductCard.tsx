@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { QuantityStepper } from '@/app/components/ui/quantity-stepper';
+import fallbackImage from '@/assets/fallback.jpeg';
 import type { Product } from '@/feature/product/type/product.interface';
 import { formatPrice } from '@/lib/format';
 
@@ -35,7 +36,7 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
         )}
         <div className='relative h-full w-full'>
           <Image
-            src={image}
+            src={image ?? fallbackImage}
             alt={name}
             fill
             sizes={imageSizes}
