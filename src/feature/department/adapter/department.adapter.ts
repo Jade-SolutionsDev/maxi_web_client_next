@@ -1,19 +1,13 @@
 import type {
   Department,
   DepartmentResponse,
-  DepartmentWithArtwork,
 } from '../type/department.interface';
 
-export const hasArtwork = (
-  department: DepartmentResponse,
-): department is DepartmentWithArtwork => department.imageDesktopUrl !== null;
-
-export const toDepartment = (
-  department: DepartmentWithArtwork,
-): Department => ({
+export const toDepartment = (department: DepartmentResponse): Department => ({
   id: department.id,
   name: department.name.trim(),
   slug: department.slug,
-  imageDesktop: department.imageDesktopUrl,
-  imageMobile: department.imageMobileUrl ?? department.imageDesktopUrl,
+  imageDesktop: department.imageDesktopUrl ?? undefined,
+  imageMobile:
+    department.imageMobileUrl ?? department.imageDesktopUrl ?? undefined,
 });

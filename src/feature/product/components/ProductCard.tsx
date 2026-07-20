@@ -46,7 +46,7 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
       </div>
 
       <div className='flex flex-1 flex-col gap-3 p-4'>
-        <h3 className='line-clamp-2 min-h-[2.5rem] font-semibold text-heading leading-snug'>
+        <h3 className='line-clamp-2 min-h-10 font-semibold text-heading leading-snug'>
           {name}
         </h3>
 

@@ -11,17 +11,15 @@ export interface DepartmentResponse {
   isActive: boolean;
   createdAt: string; // ISO date
   updatedAt: string;
+  deletedAt: string | null;
 }
-
-/** A department the API returned with artwork — the only kind we render. */
-export type DepartmentWithArtwork = DepartmentResponse & {
-  imageDesktopUrl: string;
-};
 
 export interface Department {
   id: string;
   name: string;
   slug: string;
-  imageDesktop: string;
-  imageMobile: string;
+  /** Department image URL; absent when the API has no artwork for it. */
+  imageDesktop?: string;
+  /** Falls back to the desktop image; absent when neither exists. */
+  imageMobile?: string;
 }

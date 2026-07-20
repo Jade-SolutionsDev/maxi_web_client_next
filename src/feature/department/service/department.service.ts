@@ -1,6 +1,6 @@
 import { cacheLife, cacheTag } from 'next/cache';
 import { type ApiResponse, api } from '@/api/http';
-import { hasArtwork, toDepartment } from '../adapter/department.adapter';
+import {  toDepartment } from '../adapter/department.adapter';
 import type {
   Department,
   DepartmentResponse,
@@ -13,8 +13,8 @@ export const getDepartments = async (): Promise<Department[]> => {
   cacheTag('departments');
 
   const { data } = await api<ApiResponse<DepartmentResponse[]>>(
-    '/public/departments',
+    '/public/departments'
   );
 
-  return data.filter(hasArtwork).map(toDepartment);
+  return data.map(toDepartment);
 };

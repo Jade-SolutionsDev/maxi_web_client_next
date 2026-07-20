@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import fallbackImage from '@/assets/fallback.jpeg';
 import { Section } from '@/app/components/layout/Section';
 import { getDepartments } from '../service/department.service';
 
@@ -17,7 +18,7 @@ async function DepartmentSection() {
             >
               <div className='relative aspect-2184/1146 w-full overflow-hidden rounded-2xl bg-primary/5'>
                 <Image
-                  src={department.imageDesktop}
+                  src={department.imageDesktop ?? fallbackImage}
                   alt={department.name}
                   fill
                   sizes='(max-width: 768px) 100vw, 33vw'

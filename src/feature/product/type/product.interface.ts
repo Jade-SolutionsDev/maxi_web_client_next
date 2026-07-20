@@ -1,50 +1,70 @@
 import type { ApiResponse } from '@/api/http';
+import type { CategoryResponse } from '@/feature/categories/type/category.interface';
 
-/** Localized text the API returns for user-facing fields. */
-export interface LocalizedText {
-  en: string;
-  es: string;
-}
-
-/** Raw product as returned by the API (snake_case, prices as strings). */
+/** Raw product as returned by the API (camelCase, money as decimal strings). */
 export interface ProductResponse {
   id: string;
-  standard_image: string;
-  big_image: string;
-  name: LocalizedText;
-  order: number;
-  /** Decimal string, e.g. "1.13". */
-  price: string;
-  /** Decimal string, e.g. "1.13". */
-  sale_price: string;
-  stock: number;
-  featured: boolean;
-  format: string;
-  measure_unit: string;
-  measure_unit_amount: number;
-  category_id: string;
-  department_id: string;
-  category: string;
-  department: string;
-  rating_avg: string | null;
-  rating_unit: number | null;
-  /** Decimal string, e.g. "0.00". */
-  sale_percent: string;
-  expireat: string | null;
-  available: boolean;
-  createdat: string; // ISO date
-  acepttransfercup: boolean;
-  updatedat: string; // ISO date
+  categoryId: string;
+  /** Read-only relation used to derive the product's department (parent). */
+  category?: CategoryResponse;
+  sku: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  /** Nullable until the file server is configured. */
+  imageUrl: string | null;
+  /** e.g. "Bolsa 1 kg", "Botella 900 ml". */
+  format: string | null;
+  expiryDate: string | null;
+  /** 'unidad' | 'kg' | 'g' | 'L' | 'ml'... */
+  measureUnit: string;
+  /** Decimal string, e.g. "1.13" — net selling price. */
+  basePrice: string;
+  /** 0–100, decimal string. */
+  discount: string;
+  isFeatured: boolean;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string; // ISO date
+  updatedAt: string; // ISO date
+  deletedAt: string | null;
 }
 
 export interface ProductListResponse extends ApiResponse<ProductResponse[]> {
-  total: number;
+  total?: number;
+}
+
+/** Field the product list can be ordered by. */
+export type ProductSortBy = 'name' | 'price' | 'createdAt';
+
+/** Sort direction for `sortBy`. */
+export type ProductSortOrder = 'asc' | 'desc';
+
+/** Query params for `GET /products`. */
+export interface ProductFilters {
+  /** Name search (ILIKE %q%). */
+  q?: string;
+  /** Products whose category hangs off this department. */
+  departmentId?: string;
+  /** Exact category match. */
+  categoryId?: string;
+  /** Stock for this warehouse; when omitted, total stock is used. */
+  locationId?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  featured?: boolean;
+  /** Include products with no stock. Defaults to false on the API. */
+  includeOutOfStock?: boolean;
+  /** Max number of results to return. */
+  limit?: number;
+  sortBy?: ProductSortBy;
+  sortOrder?: ProductSortOrder;
 }
 
 export interface Product {
   id: string;
   name: string;
-  /** Current selling price in USD. */
+  /** Net selling price in USD. */
   price: number;
   /** List price, only present when the product is on offer. */
   previousPrice?: number;

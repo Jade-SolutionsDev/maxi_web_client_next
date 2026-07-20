@@ -4,9 +4,9 @@ import { CategoriesSection } from '@/feature/categories/components/CategoriesSec
 import { CategoriesSectionSkeleton } from '@/feature/categories/components/CategoriesSectionSkeleton';
 import { DepartmentSection } from '@/feature/department/components/DepartmentSection';
 import { DepartmentSectionSkeleton } from '@/feature/department/components/DepartmentSectionSkeleton';
+import { HeroBanner } from '@/feature/home/components/HeroBanner';
 import { FeaturedProducts } from '@/feature/product/components/FeaturedProducts';
 import { ProductsSkeleton } from '@/feature/product/components/ProductsSkeleton';
-import { HeroBanner } from '@/feature/home/components/HeroBanner';
 import RecientProductSection from '@/feature/product/components/RecientProduct';
 
 export default function Home() {
