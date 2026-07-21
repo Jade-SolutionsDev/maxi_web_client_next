@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
 
   allowedDevOrigins: ['192.168.10.190'],
+  logging: {
+    fetches: { fullUrl: true },
+  },
   images: {
     dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
     remotePatterns: [

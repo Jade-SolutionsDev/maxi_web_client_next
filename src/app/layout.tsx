@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Fredoka, Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Footer } from './components/layout/Footer';
 import { Header } from './components/layout/Header';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
@@ -54,6 +55,12 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const fredoka = Fredoka({
+  variable: '--font-fredoka',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -62,12 +69,14 @@ export default function RootLayout({
   return (
     <html
       lang='en'
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fredoka.variable} h-full antialiased`}
     >
       <body className='min-h-full flex flex-col'>
         <ClerkProvider>
           <Header />
-          <main className='grow'>{children}</main>
+          <main className='grow'>
+            <NuqsAdapter>{children}</NuqsAdapter>
+          </main>
           <Footer />
         </ClerkProvider>
       </body>

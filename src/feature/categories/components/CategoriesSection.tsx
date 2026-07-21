@@ -12,22 +12,20 @@ import { getCategories } from '../service/categories.service';
 async function CategoriesSection() {
   const categories = await getCategories();
 
-  console.log('categorias', categories);
-
   return (
     <Section
-      title='Categorías'
+      title='Categories'
       size='full'
-      action={{ href: '/categorias', label: 'Ver todas →' }}
+      action={{ href: '/categorias', label: 'View all →' }}
     >
       {categories.length === 0 ? (
         <EmptyState
-          title='Todavía no hay categorías'
-          description='Estamos organizando el catálogo por categorías para que encuentres todo más rápido.'
-          action={{ href: '/productos', label: 'Explorar productos' }}
+          title='No categories yet'
+          description='We are organizing the catalog into categories so you can find everything faster.'
+          action={{ href: '/productos', label: 'Explore products' }}
         />
       ) : (
-        <Carousel loop autoplayDelay={3000} aria-label='Categorías'>
+        <Carousel loop autoplayDelay={3000} aria-label='Categories'>
           <CarouselContent className='-ml-4'>
             {categories.map((category) => (
               <CarouselItem

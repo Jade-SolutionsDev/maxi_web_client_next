@@ -1,5 +1,5 @@
 import 'server-only';
-import { cacheLife, cacheTag } from 'next/cache';
+
 import { api } from '@/api/http';
 import { toProduct } from '../adapter/product.adapter';
 import type {
@@ -9,13 +9,8 @@ import type {
 } from '../type/product.interface';
 
 export const getProducts = async (
-  filters: ProductFilters = {},
+  filters: ProductFilters = {}
 ): Promise<Product[]> => {
-  'use cache';
-
-  cacheLife('hours');
-  cacheTag('products');
-
   const { data } = await api<ProductListResponse>('/public/products', {
     params: {
       q: filters.q,

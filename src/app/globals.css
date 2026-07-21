@@ -25,6 +25,7 @@
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-fredoka: var(--font-fredoka); /* títulos display (ej. hero del catálogo) */
 }
 
 body {

@@ -10,7 +10,7 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { label: 'Inicio', href: '/', icon: House },
-  { label: 'Catálogo', href: '/catalogo', icon: LayoutGrid },
+  { label: 'Catálogo', href: '/catalog', icon: LayoutGrid },
   { label: 'Categorías', href: '/categorias', icon: Tags },
   { label: 'Sobre nosotros', href: '/sobre-nosotros', icon: Info },
   { label: 'Contacto', href: '/contacto', icon: Mail },

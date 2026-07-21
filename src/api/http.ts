@@ -45,16 +45,36 @@ export async function api<T>(
     if (v !== undefined) url.searchParams.set(k, String(v));
   }
 
-  const res = await fetch(url, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.API_TOKEN}`,
-      ...headers,
-    },
-    body: body ? JSON.stringify(body) : undefined,
-    signal: AbortSignal.timeout(8000),
-  });
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.API_TOKEN}`,
+        ...headers,
+      },
+      body: body ? JSON.stringify(body) : undefined,
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch (err) {
+    // AbortSignal.timeout rejects with a native DOMException whose `message` is
+    // getter-only. Letting it escape crashes Next's server error normalization
+    // ("Cannot set property message of ... which has only a getter"). Re-wrap it
+    // in an ApiError with a writable message; re-throw anything else untouched.
+    if (
+      err instanceof DOMException &&
+      (err.name === 'TimeoutError' || err.name === 'AbortError')
+    ) {
+      const timeoutError = new ApiError(
+        408,
+        `${init.method ?? 'GET'} ${path} → request timed out`,
+      );
+      timeoutError.cause = err;
+      throw timeoutError;
+    }
+    throw err;
+  }
 
   if (!res.ok) {
     const errorBody = await res.json().catch(() => null);

@@ -19,9 +19,20 @@ interface SectionProps {
   action?: SectionAction;
   /** Max-width variant forwarded to the inner Container. */
   size?: ComponentProps<typeof Container>['size'];
+  /**
+   * Layout for the section body. `'row'` stacks on mobile and becomes a
+   * sidebar + content row from `md:` up; `'col'` keeps children stacked.
+   * Omit to render children without a flex wrapper.
+   */
+  direction?: 'row' | 'col';
   className?: string;
   children: ReactNode;
 }
+
+const bodyDirection = {
+  row: 'flex flex-col gap-6 md:flex-row',
+  col: 'flex flex-col gap-6',
+} as const;
 
 const toId = (text: string) =>
   text
@@ -36,6 +47,7 @@ export const Section = ({
   label,
   action,
   size,
+  direction,
   className,
   children,
 }: SectionProps) => {
@@ -64,7 +76,11 @@ export const Section = ({
           </header>
         )}
 
-        {children}
+        {direction ? (
+          <div className={bodyDirection[direction]}>{children}</div>
+        ) : (
+          children
+        )}
       </Container>
     </section>
   );
