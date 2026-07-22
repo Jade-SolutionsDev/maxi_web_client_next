@@ -18,20 +18,17 @@ export interface ProductResponse {
   expiryDate: string | null;
   /** 'unidad' | 'kg' | 'g' | 'L' | 'ml'... */
   measureUnit: string;
-  /** Decimal string, e.g. "1.13" — net selling price. */
-  basePrice: string;
+
+  basePrice: number;
   /** 0–100, decimal string. */
-  discount: string;
+  discount: number;
   isFeatured: boolean;
+  finalPrice: number;
   isActive: boolean;
   sortOrder: number;
   createdAt: string; // ISO date
   updatedAt: string; // ISO date
   deletedAt: string | null;
-}
-
-export interface ProductListResponse extends ApiResponse<ProductResponse[]> {
-  total?: number;
 }
 
 /** Field the product list can be ordered by. */
@@ -64,10 +61,10 @@ export interface ProductFilters {
 export interface Product {
   id: string;
   name: string;
-  /** Net selling price in USD. */
   price: number;
-  /** List price, only present when the product is on offer. */
-  previousPrice?: number;
-  /** Product image URL; absent when the API has no image for the product. */
+  measureUnit: string;
+  format?: string;
+  discount?: number;
   image?: string;
+  description?: string;
 }

@@ -9,7 +9,7 @@ export function ProductResultsSkeleton() {
         <Skeleton className='h-5 w-32' />
         <Skeleton className='h-9 w-40' />
       </header>
-      <ul className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+      <ul className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
         {SKELETON_PLACEHOLDERS.map((id) => (
           <li key={id} className='flex flex-col gap-3'>
             <Skeleton className='aspect-square w-full rounded-xl' />

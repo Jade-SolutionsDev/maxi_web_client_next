@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { EmptyState } from '@/app/components/feedback/EmptyState';
 import { Section } from '@/app/components/layout/Section';
 import {
@@ -18,13 +19,13 @@ async function RecientProductSection() {
     <Section
       title='Nuestros productos más recientes'
       size={'full'}
-      action={{ href: '/product', label: 'Ver todos →' }}
+      action={{ href: '/catalog', label: 'Ver todos →' }}
     >
       {recentProducts.length === 0 ? (
         <EmptyState
           title='Todavía no hay productos recientes'
           description='Estamos sumando productos nuevos al catálogo. Volvé pronto para ver las últimas novedades.'
-          action={{ href: '/product', label: 'Ver todos los productos' }}
+          action={{ href: '/catalog', label: 'Ver todos los productos' }}
         />
       ) : (
         <Carousel
@@ -38,10 +39,12 @@ async function RecientProductSection() {
                 key={product.id}
                 className='pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/5'
               >
-                <ProductCard
-                  product={product}
-                  imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
-                />
+                <Link href={`/catalog/${product.id}`}>
+                  <ProductCard
+                    product={product}
+                    imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
+                  />
+                </Link>
               </CarouselItem>
             ))}
           </CarouselContent>

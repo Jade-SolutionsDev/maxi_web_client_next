@@ -1,14 +1,16 @@
 import { Phone, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { Container } from '@/app/components/layout/Container';
 import { LocationBadge } from '@/app/components/layout/LocationBadge';
 import { MobileNav } from '@/app/components/layout/mobile-nav';
-import { NavItem } from '@/app/components/layout/NavItem';
+import { NavItemsFallback } from '@/app/components/layout/NavItemsFallback';
+import { PrimaryNav } from '@/app/components/layout/PrimaryNav';
 import { UserMenu } from '@/app/components/layout/UserMenu';
 import { SearchBar } from '@/app/components/search/SearchBar';
 import logo from '@/assets/logo.svg';
-import { contactPhone, navItems } from './constants/nav.constants';
+import { contactPhone } from './constants/nav.constants';
 
 export const Header = () => {
   return (
@@ -49,16 +51,12 @@ export const Header = () => {
       <div className='hidden bg-secondary md:block'>
         <Container>
           <div className='flex h-10 items-center justify-between gap-6'>
-            <nav
-              aria-label='Navegación principal'
-              className='flex items-center gap-6 overflow-x-auto'
-            >
-              {/* No hacer spread de `item`: `icon` es un componente y este
-                  Header es Server Component — no cruza la frontera RSC. */}
-              {navItems.map(({ href, label }) => (
-                <NavItem key={href} href={href} label={label} />
-              ))}
-            </nav>
+            {/* usePathname (dentro de PrimaryNav) es dinámico por navegación:
+                con cacheComponents va dentro de <Suspense>. El fallback pinta el
+                mismo <nav> estático en el shell, sin el indicador deslizante. */}
+            <Suspense fallback={<NavItemsFallback />}>
+              <PrimaryNav />
+            </Suspense>
 
             <a
               href={contactPhone.href}

@@ -16,12 +16,11 @@ type ProductCardProps = {
 };
 
 function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
-  const { name, price, previousPrice, image } = product;
+  const { name, price, image } = product;
   const [quantity, setQuantity] = useState(1);
-  const isOnOffer = previousPrice != null && previousPrice > price;
-  const discount = isOnOffer
-    ? Math.round(((previousPrice - price) / previousPrice) * 100)
-    : 0;
+  const discount = product.discount ?? 0;
+  const isOnOffer = discount > 0;
+  const previousPrice = isOnOffer ? price / (1 - discount / 100) : price;
 
   const decrease = () => setQuantity((current) => Math.max(1, current - 1));
   const increase = () => setQuantity((current) => current + 1);
@@ -31,7 +30,7 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
       <div className='relative flex aspect-square items-center justify-center overflow-hidden bg-background p-3'>
         {isOnOffer && (
           <span className='absolute top-3 left-3 z-10 rounded-full bg-orange px-3 py-1 text-xs font-semibold text-white'>
-            -{discount}%
+            -{Math.round(discount * 100) / 100}%
           </span>
         )}
         <div className='relative h-full w-full'>
@@ -46,7 +45,7 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
       </div>
 
       <div className='flex flex-1 flex-col gap-3 p-4'>
-        <h3 className='line-clamp-2 min-h-10 font-semibold text-heading leading-snug'>
+        <h3 className=' min-h-10 font-semibold text-heading leading-snug'>
           {name}
         </h3>
 
@@ -61,13 +60,7 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
           )}
         </p>
 
-        {isOnOffer && (
-          <p className='-mt-1 text-sm font-medium text-primary'>
-            Ahorrás {formatPrice(previousPrice - price)}
-          </p>
-        )}
-
-        <div className='mt-1 flex items-stretch gap-2'>
+        <div className='mt-1 flex flex-col gap-2 @[13rem]:flex-row @[13rem]:items-stretch'>
           <QuantityStepper
             value={quantity}
             onDecrease={decrease}
@@ -78,7 +71,7 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
             className='shrink-0'
           />
           <Button
-            className='min-w-0 flex-1 gap-1.5 truncate px-2.5 py-2 text-sm font-semibold'
+            className='min-w-0 gap-1.5 truncate px-2.5 py-2 text-sm font-semibold @[13rem]:flex-1'
             aria-label={`Añadir ${quantity} ${name} al carrito`}
           >
             <ShoppingCart className='size-4 shrink-0' aria-hidden='true' />

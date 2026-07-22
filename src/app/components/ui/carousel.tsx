@@ -231,11 +231,12 @@ function CarouselDots({ className, ...props }: React.ComponentProps<'div'>) {
       )}
       {...props}
     >
-      {scrollSnaps.map((snap, index) => {
+      {scrollSnaps.map((_, index) => {
         const isActive = index === selectedIndex;
         return (
           <button
-            key={snap}
+            // biome-ignore lint/suspicious/noArrayIndexKey: dots map 1:1 to a fixed slide count that never reorders; scroll-snap values can repeat transiently during Embla's loop re-init, so the index is the only stable key.
+            key={index}
             type='button'
             aria-label={`Ir al slide ${index + 1}`}
             aria-current={isActive}

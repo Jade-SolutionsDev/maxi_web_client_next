@@ -9,7 +9,7 @@ function ProductsSkeleton() {
       title='Productos destacados'
       action={{ href: '/productos', label: 'Ver todos →' }}
     >
-      <ul className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5'>
+      <ul className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5'>
         {PLACEHOLDERS.map((id) => (
           <li key={id} className='flex flex-col gap-3'>
             <Skeleton className='aspect-square w-full rounded-xl' />

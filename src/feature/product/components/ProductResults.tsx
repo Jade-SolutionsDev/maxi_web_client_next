@@ -2,15 +2,16 @@ import { EmptyState } from '@/app/components/feedback/EmptyState';
 import type { CatalogSearchParams } from '../constants/product-search-params';
 import { getProducts } from '../service/product.service';
 import { ProductCard } from './ProductCard';
+import Link from 'next/link';
 
 type ProductResultsProps = {
   searchParams: Promise<CatalogSearchParams>;
 };
 
 export async function ProductResults({ searchParams }: ProductResultsProps) {
-  const { departmentId, categoryId } = await searchParams;
+  const { departmentId, categoryId, featured } = await searchParams;
 
-  const products = await getProducts({ departmentId, categoryId });
+  const products = await getProducts({ departmentId, categoryId, featured });
 
   const count = products.length;
 
@@ -29,13 +30,18 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
           description='Todavía no hay productos para mostrar en el catálogo. Vuelve pronto.'
         />
       ) : (
-        <ul className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+        <ul className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
           {products.map((product) => (
-            <li key={product.id}>
-              <ProductCard
-                product={product}
-                imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
-              />
+            <li key={product.id} className='flex'>
+              <Link
+                href={`/catalog/${product.id}`}
+                className='block w-full min-w-0'
+              >
+                <ProductCard
+                  product={product}
+                  imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
+                />
+              </Link>
             </li>
           ))}
         </ul>

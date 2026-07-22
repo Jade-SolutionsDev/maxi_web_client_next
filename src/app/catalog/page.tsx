@@ -13,8 +13,14 @@ type CatalogPageProps = {
 
 function CatalogPage({ searchParams }: CatalogPageProps) {
   return (
-    <div>
-      <PageHero title='Descubre nuestros productos' />
+    <>
+      <PageHero
+        title='Descubre nuestros productos'
+        breadcrumbs={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Catálogo', href: '/catalog' },
+        ]}
+      />
       <Section direction='row'>
         <Suspense fallback={<CatalogSidebarSkeleton />}>
           <CatalogSidebar />
@@ -24,7 +30,7 @@ function CatalogPage({ searchParams }: CatalogPageProps) {
           <ProductResults searchParams={searchParams} />
         </Suspense>
       </Section>
-    </div>
+    </>
   );
 }
 

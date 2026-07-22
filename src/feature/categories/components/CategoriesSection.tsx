@@ -8,31 +8,34 @@ import {
 import { CategoryCard } from '@/feature/categories/components/CategoryCard';
 
 import { getCategories } from '../service/categories.service';
+import Link from 'next/link';
 
 async function CategoriesSection() {
   const categories = await getCategories();
 
   return (
     <Section
-      title='Categories'
+      title='Categorías'
       size='full'
-      action={{ href: '/categorias', label: 'View all →' }}
+      action={{ href: '/categorias', label: 'Ver todas →' }}
     >
       {categories.length === 0 ? (
         <EmptyState
-          title='No categories yet'
-          description='We are organizing the catalog into categories so you can find everything faster.'
-          action={{ href: '/productos', label: 'Explore products' }}
+          title='Todavía no hay categorías'
+          description='Estamos organizando el catálogo en categorías para que encuentres todo más rápido.'
+          action={{ href: '/catalog', label: 'Explorar productos' }}
         />
       ) : (
-        <Carousel loop autoplayDelay={3000} aria-label='Categories'>
+        <Carousel loop autoplayDelay={3000} aria-label='Categorías'>
           <CarouselContent className='-ml-4'>
             {categories.map((category) => (
               <CarouselItem
                 key={category.id}
-                className='basis-1/3 pl-4 sm:basis-1/4 lg:basis-1/5'
+                className='basis-1/2 pl-4 sm:basis-1/3 md:basis-1/4 lg:basis-1/5'
               >
+              <Link href={`/catalog?categoryId=${category.id}`} className='cursor-pointer'>
                 <CategoryCard category={category} />
+              </Link>
               </CarouselItem>
             ))}
           </CarouselContent>

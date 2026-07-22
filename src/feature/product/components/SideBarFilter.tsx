@@ -118,7 +118,7 @@ export const SideBarFilter = ({
               checked={filters.featured === true}
               onCheckedChange={() => handleFeaturedProduct(!filters.featured)}
             />
-            <Label htmlFor={`featured}`}>Productos destacados</Label>
+            <Label htmlFor={`featured`}>Productos destacados</Label>
           </div>
         </ul>
       </div>

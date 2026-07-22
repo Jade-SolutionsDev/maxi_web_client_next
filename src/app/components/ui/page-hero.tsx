@@ -1,13 +1,16 @@
 import { Container } from '@/app/components/layout/Container';
+import { Breadcrumbs, type Crumb } from './breadcrumbs';
 
 interface PageHeroProps {
   title: string;
-
+  /** Optional breadcrumb trail rendered above the title. */
+  breadcrumbs?: Crumb[];
   titleId?: string;
 }
 
 export const PageHero = ({
   title,
+  breadcrumbs,
   titleId = 'page-hero-title',
 }: PageHeroProps) => (
   <section
@@ -15,6 +18,9 @@ export const PageHero = ({
     className='relative isolate overflow-hidden bg-linear-to-br from-primary via-secondary to-total'
   >
     <Container className='pb-16 pt-8 sm:pb-20 sm:pt-10'>
+      {breadcrumbs && breadcrumbs.length > 0 && (
+        <Breadcrumbs items={breadcrumbs} tone='inverted' className='mb-4' />
+      )}
       <h1
         id={titleId}
         className='font-fredoka text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-[42px]'
