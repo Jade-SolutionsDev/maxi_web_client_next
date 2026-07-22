@@ -7,6 +7,7 @@ import type { Department } from '@/feature/department/type/department.interface'
 import { cn } from '@/lib/utils';
 import { useProductFilter } from '../filters/catalog.filter';
 import { ListFilter, X } from 'lucide-react';
+import { PriceFilter } from './filters/PriceFilter';
 
 interface SideBarFilterProps {
   departments: Department[];
@@ -50,6 +51,11 @@ export const SideBarFilter = ({
             Limpiar
           </button>
         )}
+      </div>
+
+      <div className='mb-6'>
+        <h2 className='text-heading text-[16px] font-bold uppercase'>Precio</h2>
+        <PriceFilter />
       </div>
 
       <div className='mb-6'>

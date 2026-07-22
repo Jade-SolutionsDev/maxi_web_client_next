@@ -7,6 +7,7 @@ export function CatalogSidebarSkeleton() {
     <aside className='max-w-70 w-full flex flex-col h-fit py-6 px-6.5 rounded-[18px] bg-white shadow-md'>
       <div className='mb-6'>
         <Skeleton className='h-5 w-32' />
+        <Skeleton className='mt-4 h-5 w-28' />
         <ul className='mt-4 flex flex-col gap-3'>
           {SKELETON_ROWS.map((id) => (
             <li key={id} className='flex items-center gap-2.5'>

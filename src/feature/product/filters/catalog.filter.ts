@@ -26,11 +26,18 @@ export const useProductFilter = () => {
       featured: prev.featured === isFeatured ? null : isFeatured,
     }));
   };
+
+  const handlePriceFilter = (minPrice: number, maxPrice: number) => {
+    setFilters({ minPrice, maxPrice });
+  };
+
   const clearAllFilter = () => {
     setFilters({
       categoryId: null,
       departmentId: null,
-      featured: false,
+      featured: null,
+      maxPrice: null,
+      minPrice: null,
     });
   };
 
@@ -48,6 +55,7 @@ export const useProductFilter = () => {
     activeFilterCount,
     handleCategoryFilter,
     handleFeaturedProduct,
+    handlePriceFilter,
     handleDepartmentFilter,
     filters,
     isPending,

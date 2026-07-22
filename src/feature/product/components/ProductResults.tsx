@@ -9,9 +9,16 @@ type ProductResultsProps = {
 };
 
 export async function ProductResults({ searchParams }: ProductResultsProps) {
-  const { departmentId, categoryId, featured } = await searchParams;
+  const { departmentId, categoryId, featured, maxPrice, minPrice } =
+    await searchParams;
 
-  const products = await getProducts({ departmentId, categoryId, featured });
+  const products = await getProducts({
+    departmentId,
+    categoryId,
+    featured,
+    maxPrice,
+    minPrice,
+  });
 
   const count = products.length;
 
