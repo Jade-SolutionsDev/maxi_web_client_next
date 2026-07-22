@@ -1,6 +1,6 @@
 import { getCategories } from '@/feature/categories/service/categories.service';
 import { getDepartments } from '@/feature/department/service/department.service';
-import { SideBarFilter } from './SideBarFilter';
+import { CatalogFilters } from './CatalogFilters';
 
 export async function CatalogSidebar() {
   const [categories, departments] = await Promise.all([
@@ -8,5 +8,5 @@ export async function CatalogSidebar() {
     getDepartments(),
   ]);
 
-  return <SideBarFilter departments={departments} categories={categories} />;
+  return <CatalogFilters departments={departments} categories={categories} />;
 }

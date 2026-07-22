@@ -46,7 +46,7 @@ export const SortControl = () => {
           <SelectItem
             key={option.value}
             value={option.value}
-            className='rounded-lg py-2.5 font-medium text-heading focus:bg-primary focus:text-white data-[selected]:font-semibold'
+            className='rounded-lg py-2.5 font-medium text-heading focus:bg-primary focus:text-white data-selected:font-semibold'
           >
             {option.label}
           </SelectItem>

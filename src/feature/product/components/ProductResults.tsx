@@ -36,7 +36,9 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
           Mostrando <span className='font-bold text-heading'>{count}</span>{' '}
           {count === 1 ? 'producto' : 'productos'}
         </p>
-        <SortControl />
+        <div className='hidden md:block'>
+          <SortControl />
+        </div>
       </header>
 
       {count === 0 ? (
