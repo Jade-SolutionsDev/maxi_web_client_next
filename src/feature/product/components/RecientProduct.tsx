@@ -37,12 +37,12 @@ async function RecientProductSection() {
             {recentProducts.map((product) => (
               <CarouselItem
                 key={product.id}
-                className='pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/5'
+                className='pl-4 basis-1/2 md:basis-1/3 lg:basis-1/5'
               >
                 <Link href={`/catalog/${product.id}`}>
                   <ProductCard
                     product={product}
-                    imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
+                    imageSizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
                   />
                 </Link>
               </CarouselItem>
