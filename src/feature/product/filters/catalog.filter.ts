@@ -1,6 +1,10 @@
 import { useQueryStates } from 'nuqs';
 import { useTransition } from 'react';
 import { productSearchParams } from '../constants/product-search-params';
+import type {
+  ProductSortBy,
+  ProductSortOrder,
+} from '../type/product.interface';
 
 export const useProductFilter = () => {
   const [isPending, startTransition] = useTransition();
@@ -31,6 +35,10 @@ export const useProductFilter = () => {
     setFilters({ minPrice, maxPrice });
   };
 
+  const handleSort = (sortBy: ProductSortBy, sortOrder: ProductSortOrder) => {
+    setFilters({ sortBy, sortOrder });
+  };
+
   const clearAllFilter = () => {
     setFilters({
       categoryId: null,
@@ -38,6 +46,8 @@ export const useProductFilter = () => {
       featured: null,
       maxPrice: null,
       minPrice: null,
+      sortBy: null,
+      sortOrder: null,
     });
   };
 
@@ -57,6 +67,7 @@ export const useProductFilter = () => {
     handleFeaturedProduct,
     handlePriceFilter,
     handleDepartmentFilter,
+    handleSort,
     filters,
     isPending,
   };

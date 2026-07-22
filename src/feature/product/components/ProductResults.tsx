@@ -1,7 +1,12 @@
 import Link from 'next/link';
 import { EmptyState } from '@/app/components/feedback/EmptyState';
-import type { CatalogSearchParams } from '../constants/product-search-params';
+import {
+  type CatalogSearchParams,
+  DEFAULT_SORT_BY,
+  DEFAULT_SORT_ORDER,
+} from '../constants/product-search-params';
 import { getProducts } from '../service/product.service';
+import { SortControl } from './filters/SortControl';
 import { ProductCard } from './ProductCard';
 
 type ProductResultsProps = {
@@ -9,7 +14,7 @@ type ProductResultsProps = {
 };
 
 export async function ProductResults({ searchParams }: ProductResultsProps) {
-  const { departmentId, categoryId, featured, maxPrice, minPrice } =
+  const { departmentId, categoryId, featured, maxPrice, minPrice, sortBy, sortOrder } =
     await searchParams;
 
   const products = await getProducts({
@@ -18,6 +23,8 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
     featured,
     maxPrice,
     minPrice,
+    sortBy: sortBy ?? DEFAULT_SORT_BY,
+    sortOrder: sortOrder ?? DEFAULT_SORT_ORDER,
   });
 
   const count = products.length;
@@ -29,6 +36,7 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
           Mostrando <span className='font-bold text-heading'>{count}</span>{' '}
           {count === 1 ? 'producto' : 'productos'}
         </p>
+        <SortControl />
       </header>
 
       {count === 0 ? (
