@@ -40,7 +40,9 @@ async function ProductDetails({ params }: ProductDetailsProps) {
             <h2 className='text-3xl font-bold text-heading mb-3 '>
               {product.name}
             </h2>
-            <p className='text-muted text-[14.5px] '>{product.description}</p>
+            <p className='text-muted text-[14.5px] whitespace-pre-line'>
+              {product.description}
+            </p>
           </div>
 
           <ProductPurchase product={product} />

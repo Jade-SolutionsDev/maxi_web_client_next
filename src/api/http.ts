@@ -24,6 +24,16 @@ export type ApiResponse<T> = {
   data: T;
 };
 
+// List endpoints wrap the collection in a pagination envelope instead of
+// returning the array directly: { data: { items, total, page, limit, totalPages } }.
+export type Paginated<T> = {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number | null;
+  totalPages: number;
+};
+
 type ApiOptions = Omit<RequestInit, 'body'> & {
   params?: Record<string, string | number | boolean | undefined>;
   body?: unknown;

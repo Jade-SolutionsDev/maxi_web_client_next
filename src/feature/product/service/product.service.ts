@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { type ApiResponse, api } from '@/api/http';
+import { type ApiResponse, type Paginated, api } from '@/api/http';
 import { toProduct } from '../adapter/product.adapter';
 import type {
   Product,
@@ -11,7 +11,7 @@ import type {
 export const getProducts = async (
   filters: ProductFilters = {},
 ): Promise<Product[]> => {
-  const { data } = await api<ApiResponse<ProductResponse[]>>(
+  const { data } = await api<ApiResponse<Paginated<ProductResponse>>>(
     '/public/products',
     {
       params: {
@@ -30,7 +30,7 @@ export const getProducts = async (
     },
   );
 
-  return data.map(toProduct);
+  return data.items.map(toProduct);
 };
 
 export const getProductById = async (uuid: string): Promise<Product> => {

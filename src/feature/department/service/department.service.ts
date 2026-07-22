@@ -1,4 +1,4 @@
-import { type ApiResponse, api } from '@/api/http';
+import { type ApiResponse, type Paginated, api } from '@/api/http';
 import { toDepartment } from '../adapter/department.adapter';
 import type {
   Department,
@@ -8,9 +8,9 @@ import type {
 export const getDepartments = async (): Promise<Department[]> => {
   'use cache';
 
-  const { data } = await api<ApiResponse<DepartmentResponse[]>>(
+  const { data } = await api<ApiResponse<Paginated<DepartmentResponse>>>(
     '/public/departments',
   );
 
-  return data.map(toDepartment);
+  return data.items.map(toDepartment);
 };

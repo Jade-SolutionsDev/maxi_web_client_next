@@ -9,4 +9,5 @@ export const toProduct = (product: ProductResponse): Product => ({
   format: product.format ?? undefined,
   image: product.imageUrl ?? undefined,
   description: product.description ?? undefined,
+  category: product.category?.name.trim(),
 });
