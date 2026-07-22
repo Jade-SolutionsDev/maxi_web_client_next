@@ -19,7 +19,7 @@ export interface ProductResponse {
   measureUnit: string;
 
   basePrice: number;
-  /** 0–100, decimal string. */
+  /** 0–100, numeric. */
   discount: number;
   isFeatured: boolean;
   finalPrice: number;

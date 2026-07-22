@@ -1,8 +1,10 @@
 import {
+  createSearchParamsCache,
   parseAsBoolean,
   parseAsInteger,
   parseAsString,
   parseAsStringLiteral,
+  type SearchParams,
 } from 'nuqs/server';
 import type {
   ProductSortBy,
@@ -77,4 +79,28 @@ export type CatalogSearchParams = {
   maxPrice?: number;
   sortBy?: ProductSortBy;
   sortOrder?: ProductSortOrder;
+};
+
+const searchParamsCache = createSearchParamsCache(productSearchParams);
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+export const parseCatalogSearchParams = (
+  raw: SearchParams,
+): CatalogSearchParams => {
+  const parsed = searchParamsCache.parse(raw);
+
+  const minPrice = clamp(parsed.minPrice, PRICE_MIN, PRICE_MAX);
+  const maxPrice = clamp(parsed.maxPrice, PRICE_MIN, PRICE_MAX);
+
+  return {
+    departmentId: parsed.departmentId ?? undefined,
+    categoryId: parsed.categoryId ?? undefined,
+    featured: parsed.featured ?? undefined,
+    minPrice: Math.min(minPrice, maxPrice),
+    maxPrice: Math.max(minPrice, maxPrice),
+    sortBy: parsed.sortBy,
+    sortOrder: parsed.sortOrder,
+  };
 };

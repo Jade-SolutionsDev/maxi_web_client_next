@@ -20,8 +20,17 @@
 
   /* Acentos */
   --color-accent: #1d9e75; /* etiquetas de categoría y enlaces de acento */
+  --color-accent-foreground: var(--color-heading); /* texto sobre --color-accent */
   --color-display: #0e9e6e; /* títulos grandes (ej. "Entrega a domicilio") */
   --color-total: #085041; /* total destacado */
+
+  /* Componentes shadcn (checkbox, select, dialog) */
+  --color-input: #d8e0dc; /* borde de inputs/controles */
+  --color-ring: var(--color-primary); /* anillo de foco */
+  --color-popover: var(--color-surface); /* fondo de popovers/menús */
+  --color-popover-foreground: var(--color-heading); /* texto sobre popovers */
+  --color-destructive: #e5484d; /* rojo de error/validación */
+  --color-muted-foreground: var(--color-muted); /* texto secundario */
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

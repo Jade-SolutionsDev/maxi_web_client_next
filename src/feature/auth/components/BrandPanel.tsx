@@ -27,7 +27,7 @@ export const BrandPanel = ({ variant = 'login' }: BrandPanelProps) => {
 
   return (
     <aside className='hidden flex-col justify-center gap-6 bg-surface p-12 lg:flex'>
-      <h1 className='text-4xl font-bold text-primary'>{title}</h1>
+      <p className='text-4xl font-bold text-primary'>{title}</p>
       <p className='max-w-md text-lg text-muted'>{description}</p>
       <Image
         src={sustento}

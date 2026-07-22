@@ -26,12 +26,20 @@ async function DepartmentSection() {
                 className='group block overflow-hidden rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
               >
                 <div className='relative aspect-2184/1146 w-full overflow-hidden rounded-2xl bg-primary/5'>
+                  {/* Mobile-first art direction: dedicated mobile crop below md, desktop crop from md up. */}
+                  <Image
+                    src={department.imageMobile ?? fallbackImage}
+                    alt={department.name}
+                    fill
+                    sizes='100vw'
+                    className='block object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none md:hidden'
+                  />
                   <Image
                     src={department.imageDesktop ?? fallbackImage}
                     alt={department.name}
                     fill
-                    sizes='(max-width: 768px) 100vw, 33vw'
-                    className='object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none'
+                    sizes='33vw'
+                    className='hidden object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none md:block'
                   />
                 </div>
               </Link>

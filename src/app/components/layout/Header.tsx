@@ -42,7 +42,14 @@ export const Header = () => {
             <div className='hidden md:block'>
               <UserMenu />
             </div>
-            <ShoppingCart className='icon' />
+            {/* TODO: enlazar al carrito cuando exista la ruta correspondiente. */}
+            <button
+              type='button'
+              aria-label='Carrito de compras'
+              className='rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange'
+            >
+              <ShoppingCart className='icon' />
+            </button>
           </div>
         </div>
       </Container>

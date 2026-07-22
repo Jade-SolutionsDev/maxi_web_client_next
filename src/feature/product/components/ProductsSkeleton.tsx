@@ -7,7 +7,7 @@ function ProductsSkeleton() {
   return (
     <Section
       title='Productos destacados'
-      action={{ href: '/productos', label: 'Ver todos →' }}
+      action={{ href: '/catalog', label: 'Ver todos →' }}
     >
       <ul className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5'>
         {PLACEHOLDERS.map((id) => (

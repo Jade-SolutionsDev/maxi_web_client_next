@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { EmptyState } from '@/app/components/feedback/EmptyState';
 import { Section } from '@/app/components/layout/Section';
 import {
@@ -39,12 +38,10 @@ async function RecientProductSection() {
                 key={product.id}
                 className='pl-4 basis-1/2 md:basis-1/3 lg:basis-1/5'
               >
-                <Link href={`/catalog/${product.id}`}>
-                  <ProductCard
-                    product={product}
-                    imageSizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
-                  />
-                </Link>
+                <ProductCard
+                  product={product}
+                  imageSizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
+                />
               </CarouselItem>
             ))}
           </CarouselContent>

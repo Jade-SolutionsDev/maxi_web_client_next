@@ -4,11 +4,11 @@ import { CatalogSidebar } from '@/feature/product/components/CatalogSidebar';
 import { CatalogSidebarSkeleton } from '@/feature/product/components/CatalogSidebarSkeleton';
 import { ProductResults } from '@/feature/product/components/ProductResults';
 import { ProductResultsSkeleton } from '@/feature/product/components/ProductResultsSkeleton';
-import type { CatalogSearchParams } from '@/feature/product/constants/product-search-params';
+import type { SearchParams } from 'nuqs/server';
 import { Section } from '../components/layout/Section';
 
 type CatalogPageProps = {
-  searchParams: Promise<CatalogSearchParams>;
+  searchParams: Promise<SearchParams>;
 };
 
 function CatalogPage({ searchParams }: CatalogPageProps) {

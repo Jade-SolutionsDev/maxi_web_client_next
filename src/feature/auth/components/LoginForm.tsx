@@ -63,11 +63,14 @@ export const LoginForm = () => {
         {isSubmitting ? 'Entrando...' : 'Iniciar sesión'}
       </Button>
 
+      {/* TODO: implementar el flujo de recuperación de contraseña y habilitar este botón. */}
       <button
         type='button'
-        className='text-center text-sm font-medium text-heading transition-colors hover:text-primary'
+        disabled
+        aria-disabled='true'
+        className='text-center text-sm font-medium text-heading/50 cursor-not-allowed transition-colors'
       >
-        ¿Olvidaste tu contraseña?
+        ¿Olvidaste tu contraseña? (próximamente)
       </button>
     </Form>
   );

@@ -4,12 +4,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { RegisterForm } from '@/feature/auth/components/RegisterForm';
 
 const register = vi.fn();
+const resendEmail = vi.fn();
 
 vi.mock('@/feature/auth/hook/useSignUp', () => ({
   useSignUp: () => ({
     register,
+    resendEmail,
     errors: { fields: {} },
     isSubmitting: false,
+    isResending: false,
+    resendError: null,
     emailSent: false,
   }),
 }));

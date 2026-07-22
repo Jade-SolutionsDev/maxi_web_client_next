@@ -41,7 +41,7 @@ export const CatalogFilters = ({
         <header className='mb-6 flex items-center justify-between gap-4'>
           <div className='flex items-center gap-2'>
             <ListFilter size={20} className='text-heading' />
-            <span className='text-xl font-bold text-heading'>Filtros</span>
+            <h2 className='text-xl font-bold text-heading'>Filtros</h2>
             {hasActiveFilter && <CountBadge count={activeFilterCount} />}
           </div>
           {hasActiveFilter && (

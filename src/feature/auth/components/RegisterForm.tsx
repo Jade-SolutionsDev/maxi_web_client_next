@@ -29,8 +29,14 @@ export const RegisterForm = () => {
     },
   });
 
-  const { register, resendEmail, isSubmitting, isResending, emailSent } =
-    useSignUp();
+  const {
+    register,
+    resendEmail,
+    isSubmitting,
+    isResending,
+    resendError,
+    emailSent,
+  } = useSignUp();
 
   const onSubmit = async (data: RegisterSchemaType) => {
     form.clearErrors();
@@ -65,6 +71,11 @@ export const RegisterForm = () => {
         >
           {isResending ? 'Reenviando...' : 'Reenviar correo'}
         </Button>
+        {resendError && (
+          <p className='mt-2 text-sm text-red-500'>
+            {translateClerkError(resendError)}
+          </p>
+        )}
       </div>
     );
   }

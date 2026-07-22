@@ -3,6 +3,7 @@
 import { useSignUp as useClerkSignUp } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import type { TranslatableClerkError } from '@/feature/auth/lib/clerkErrors';
 import type { RegisterSchemaType } from '@/feature/auth/schemas/register.schema';
 
 export const useSignUp = () => {
@@ -10,13 +11,18 @@ export const useSignUp = () => {
   const router = useRouter();
   const [emailSent, setEmailSent] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [resendError, setResendError] = useState<TranslatableClerkError>(null);
 
   const resendEmail = async () => {
     setIsResending(true);
+    setResendError(null);
     const sent = await signUp.verifications.sendEmailLink({
       verificationUrl: `${window.location.origin}/register/verify`,
     });
     setIsResending(false);
+    if (sent.error) {
+      setResendError(sent.error);
+    }
     return sent;
   };
 
@@ -76,6 +82,7 @@ export const useSignUp = () => {
     resendEmail,
     isSubmitting: fetchStatus === 'fetching',
     isResending,
+    resendError,
     emailSent,
   };
 };

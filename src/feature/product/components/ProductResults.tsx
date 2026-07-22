@@ -1,21 +1,28 @@
-import Link from 'next/link';
+import type { SearchParams } from 'nuqs/server';
 import { EmptyState } from '@/app/components/feedback/EmptyState';
 import {
-  type CatalogSearchParams,
   DEFAULT_SORT_BY,
   DEFAULT_SORT_ORDER,
+  parseCatalogSearchParams,
 } from '../constants/product-search-params';
 import { getProducts } from '../service/product.service';
 import { SortControl } from './filters/SortControl';
 import { ProductCard } from './ProductCard';
 
 type ProductResultsProps = {
-  searchParams: Promise<CatalogSearchParams>;
+  searchParams: Promise<SearchParams>;
 };
 
 export async function ProductResults({ searchParams }: ProductResultsProps) {
-  const { departmentId, categoryId, featured, maxPrice, minPrice, sortBy, sortOrder } =
-    await searchParams;
+  const {
+    departmentId,
+    categoryId,
+    featured,
+    maxPrice,
+    minPrice,
+    sortBy,
+    sortOrder,
+  } = parseCatalogSearchParams(await searchParams);
 
   const products = await getProducts({
     departmentId,
@@ -50,15 +57,10 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
         <ul className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
           {products.map((product) => (
             <li key={product.id} className='flex'>
-              <Link
-                href={`/catalog/${product.id}`}
-                className='block w-full min-w-0'
-              >
-                <ProductCard
-                  product={product}
-                  imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
-                />
-              </Link>
+              <ProductCard
+                product={product}
+                imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
+              />
             </li>
           ))}
         </ul>

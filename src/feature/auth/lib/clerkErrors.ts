@@ -10,7 +10,7 @@ type ClerkErrorResponse =
   | null
   | undefined;
 
-type TranslatableClerkError = ClerkErrorResponse;
+export type TranslatableClerkError = ClerkErrorResponse;
 
 const CLERK_ERROR_MESSAGES: Record<string, string> = {
   // Login

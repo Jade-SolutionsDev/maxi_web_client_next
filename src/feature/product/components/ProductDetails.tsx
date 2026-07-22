@@ -1,4 +1,6 @@
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import { ApiError } from '@/api/http';
 import { Section } from '@/app/components/layout/Section';
 import { PageHero } from '@/app/components/ui/page-hero';
 import fallbackImage from '@/assets/productos/arroz.webp';
@@ -11,7 +13,12 @@ type ProductDetailsProps = {
 
 async function ProductDetails({ params }: ProductDetailsProps) {
   const { id } = await params;
-  const product = await getProductById(id);
+  const product = await getProductById(id).catch((error) => {
+    if (error instanceof ApiError && error.status === 404) {
+      notFound();
+    }
+    throw error;
+  });
 
   return (
     <>

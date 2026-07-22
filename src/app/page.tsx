@@ -12,6 +12,8 @@ import RecientProductSection from '@/feature/product/components/RecientProduct';
 export default function Home() {
   return (
     <>
+      <h1 className='sr-only'>Maxi — Supermercado online</h1>
+
       <HeroBanner />
 
       <SectionBoundary label='los departamentos'>

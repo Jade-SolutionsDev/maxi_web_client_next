@@ -6,6 +6,7 @@ import { Button } from '@/app/components/ui/button';
 import { QuantityStepper } from '@/app/components/ui/quantity-stepper';
 import type { Product } from '@/feature/product/type/product.interface';
 import { formatPrice } from '@/lib/format';
+import { computePreviousPrice } from '@/lib/product-price';
 
 type ProductPurchaseProps = {
   product: Product;
@@ -15,8 +16,7 @@ function ProductPurchase({ product }: ProductPurchaseProps) {
   const { name, price } = product;
   const [quantity, setQuantity] = useState(1);
   const discount = product.discount ?? 0;
-  const isOnOffer = discount > 0;
-  const previousPrice = isOnOffer ? price / (1 - discount / 100) : price;
+  const previousPrice = computePreviousPrice(price, discount);
 
   const decrease = () => setQuantity((current) => Math.max(1, current - 1));
   const increase = () => setQuantity((current) => current + 1);
@@ -27,7 +27,7 @@ function ProductPurchase({ product }: ProductPurchaseProps) {
         <span className='text-3xl font-bold text-heading'>
           {formatPrice(price)}
         </span>
-        {isOnOffer && (
+        {previousPrice !== null && (
           <span className='text-base text-muted line-through'>
             {formatPrice(previousPrice)}
           </span>

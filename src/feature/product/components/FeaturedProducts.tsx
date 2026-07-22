@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { EmptyState } from '@/app/components/feedback/EmptyState';
 import { Section } from '@/app/components/layout/Section';
 import { ProductCard } from '@/feature/product/components/ProductCard';
@@ -23,14 +22,12 @@ async function FeaturedProducts() {
       ) : (
         <ul className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5'>
           {products.map((product) => (
-            <Link href={`/catalog/${product.id}`} key={product.id}>
-              <li>
-                <ProductCard
-                  product={product}
-                  imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
-                />
-              </li>
-            </Link>
+            <li key={product.id}>
+              <ProductCard
+                product={product}
+                imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
+              />
+            </li>
           ))}
         </ul>
       )}

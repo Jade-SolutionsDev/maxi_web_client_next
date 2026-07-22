@@ -35,7 +35,7 @@ export const getProducts = async (
 
 export const getProductById = async (uuid: string): Promise<Product> => {
   const { data } = await api<ApiResponse<ProductResponse>>(
-    `/public/products/${uuid}`,
+    `/public/products/${encodeURIComponent(uuid)}`,
   );
   return toProduct(data);
 };
