@@ -37,7 +37,6 @@ export const PrimaryNav = () => {
     moveTo(activeIndex);
   }, [activeIndex, moveTo]);
 
-
   useEffect(() => {
     settle();
     const raf = requestAnimationFrame(() => setAnimate(true));

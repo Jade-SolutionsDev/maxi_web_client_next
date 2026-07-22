@@ -9,7 +9,7 @@ export const getDepartments = async (): Promise<Department[]> => {
   'use cache';
 
   const { data } = await api<ApiResponse<DepartmentResponse[]>>(
-    '/public/departments'
+    '/public/departments',
   );
 
   return data.map(toDepartment);

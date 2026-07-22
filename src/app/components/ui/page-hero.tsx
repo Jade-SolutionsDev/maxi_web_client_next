@@ -23,7 +23,7 @@ export const PageHero = ({
       )}
       <h1
         id={titleId}
-        className='font-fredoka text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-[42px]'
+        className='font-fredoka text-2xl tracking-tight text-white sm:text-4xl md:text-[42px]'
       >
         {title}
       </h1>

@@ -1,12 +1,11 @@
 import { Slider } from '@/app/components/ui/slider';
+import { formatPrice } from '@/lib/format';
 import {
   PRICE_MAX,
   PRICE_MIN,
   PRICE_STEP,
 } from '../../constants/product-search-params';
 import { useProductFilter } from '../../filters/catalog.filter';
-import { formatPrice } from '@/lib/format';
-
 
 export const PriceFilter = () => {
   const { filters, handlePriceFilter } = useProductFilter();

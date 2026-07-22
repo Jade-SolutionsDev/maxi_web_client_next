@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { EmptyState } from '@/app/components/feedback/EmptyState';
 import { Section } from '@/app/components/layout/Section';
 import {
@@ -6,9 +7,7 @@ import {
   CarouselItem,
 } from '@/app/components/ui/carousel';
 import { CategoryCard } from '@/feature/categories/components/CategoryCard';
-
 import { getCategories } from '../service/categories.service';
-import Link from 'next/link';
 
 async function CategoriesSection() {
   const categories = await getCategories();
@@ -33,9 +32,12 @@ async function CategoriesSection() {
                 key={category.id}
                 className='basis-1/2 pl-4 sm:basis-1/3 md:basis-1/4 lg:basis-1/5'
               >
-              <Link href={`/catalog?categoryId=${category.id}`} className='cursor-pointer'>
-                <CategoryCard category={category} />
-              </Link>
+                <Link
+                  href={`/catalog?categoryId=${category.id}`}
+                  className='cursor-pointer'
+                >
+                  <CategoryCard category={category} />
+                </Link>
               </CarouselItem>
             ))}
           </CarouselContent>

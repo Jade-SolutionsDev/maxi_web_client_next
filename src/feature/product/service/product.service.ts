@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { api, type ApiResponse } from '@/api/http';
+import { type ApiResponse, api } from '@/api/http';
 import { toProduct } from '../adapter/product.adapter';
 import type {
   Product,
@@ -9,7 +9,7 @@ import type {
 } from '../type/product.interface';
 
 export const getProducts = async (
-  filters: ProductFilters = {}
+  filters: ProductFilters = {},
 ): Promise<Product[]> => {
   const { data } = await api<ApiResponse<ProductResponse[]>>(
     '/public/products',
@@ -27,7 +27,7 @@ export const getProducts = async (
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
       },
-    }
+    },
   );
 
   return data.map(toProduct);
@@ -35,7 +35,7 @@ export const getProducts = async (
 
 export const getProductById = async (uuid: string): Promise<Product> => {
   const { data } = await api<ApiResponse<ProductResponse>>(
-    `/public/products/${uuid}`
+    `/public/products/${uuid}`,
   );
   return toProduct(data);
 };

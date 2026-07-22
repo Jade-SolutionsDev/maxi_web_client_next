@@ -1,12 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import fallbackImage from '@/assets/fallback.jpeg';
 import { Section } from '@/app/components/layout/Section';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from '@/app/components/ui/carousel';
+import fallbackImage from '@/assets/fallback.jpeg';
 import { getDepartments } from '../service/department.service';
 
 async function DepartmentSection() {

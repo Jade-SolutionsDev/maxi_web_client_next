@@ -69,7 +69,7 @@ export const Breadcrumbs = ({
                     aria-current={isCurrent ? 'page' : undefined}
                     className={cn(
                       'max-w-[60vw]  font-medium sm:max-w-none',
-                      styles.current
+                      styles.current,
                     )}
                   >
                     {item.label}
@@ -80,7 +80,7 @@ export const Breadcrumbs = ({
                     itemProp='item'
                     className={cn(
                       'rounded-sm outline-none transition-colors focus-visible:ring-2',
-                      styles.link
+                      styles.link,
                     )}
                   >
                     <span itemProp='name'>{item.label}</span>

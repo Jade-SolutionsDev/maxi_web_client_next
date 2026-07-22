@@ -73,6 +73,9 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
           <Button
             className='min-w-0 gap-1.5 truncate px-2.5 py-2 text-sm font-semibold @[13rem]:flex-1'
             aria-label={`Añadir ${quantity} ${name} al carrito`}
+            onClick={(e) => {
+              e.preventDefault();
+            }}
           >
             <ShoppingCart className='size-4 shrink-0' aria-hidden='true' />
             Añadir

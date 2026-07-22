@@ -1,4 +1,3 @@
-import type { ApiResponse } from '@/api/http';
 import type { CategoryResponse } from '@/feature/categories/type/category.interface';
 
 /** Raw product as returned by the API (camelCase, money as decimal strings). */

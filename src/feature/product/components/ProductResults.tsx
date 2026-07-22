@@ -1,8 +1,8 @@
+import Link from 'next/link';
 import { EmptyState } from '@/app/components/feedback/EmptyState';
 import type { CatalogSearchParams } from '../constants/product-search-params';
 import { getProducts } from '../service/product.service';
 import { ProductCard } from './ProductCard';
-import Link from 'next/link';
 
 type ProductResultsProps = {
   searchParams: Promise<CatalogSearchParams>;

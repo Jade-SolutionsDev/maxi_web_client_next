@@ -1,12 +1,12 @@
 'use client';
 
+import { ListFilter, X } from 'lucide-react';
 import { Checkbox } from '@/app/components/ui/checkbox';
 import { Label } from '@/app/components/ui/label';
 import type { Category } from '@/feature/categories/type/category.interface';
 import type { Department } from '@/feature/department/type/department.interface';
 import { cn } from '@/lib/utils';
 import { useProductFilter } from '../filters/catalog.filter';
-import { ListFilter, X } from 'lucide-react';
 import { PriceFilter } from './filters/PriceFilter';
 
 interface SideBarFilterProps {
@@ -89,7 +89,7 @@ export const SideBarFilter = ({
         <ul
           className={cn(
             'mt-4 flex flex-col gap-2 transition-opacity',
-            isPending && 'opacity-60'
+            isPending && 'opacity-60',
           )}
         >
           {categories.map((category) => (
@@ -115,7 +115,7 @@ export const SideBarFilter = ({
         <ul
           className={cn(
             'mt-4 flex flex-col gap-2 transition-opacity',
-            isPending && 'opacity-60'
+            isPending && 'opacity-60',
           )}
         >
           <div className='flex gap-3 items-center'>

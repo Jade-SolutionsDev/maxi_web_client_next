@@ -53,7 +53,7 @@ export const QuantityStepper = ({
         aria-label={`Quitar una unidad${forItem}`}
         className={cn(
           'flex size-8 shrink-0 items-center justify-center outline-none transition focus-visible:ring-2 disabled:opacity-40',
-          theme.button
+          theme.button,
         )}
       >
         <Minus className='size-4' aria-hidden='true' />
@@ -63,7 +63,7 @@ export const QuantityStepper = ({
         aria-label={`Cantidad${forItem}`}
         className={cn(
           'flex h-8 min-w-8 flex-1 items-center justify-center font-semibold tabular-nums',
-          theme.value
+          theme.value,
         )}
       >
         {value}
@@ -78,7 +78,7 @@ export const QuantityStepper = ({
         aria-label={`Agregar una unidad${forItem}`}
         className={cn(
           'flex size-8 shrink-0 items-center justify-center outline-none transition focus-visible:ring-2',
-          theme.button
+          theme.button,
         )}
       >
         <Plus className='size-4' aria-hidden='true' />
