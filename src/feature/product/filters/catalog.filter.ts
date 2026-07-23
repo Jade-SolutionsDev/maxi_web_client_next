@@ -54,7 +54,7 @@ export const useProductFilter = () => {
   const activeFilterCount = [
     filters.categoryId,
     filters.departmentId,
-    filters.featured
+    filters.featured,
   ].filter(Boolean).length;
 
   const hasActiveFilter = activeFilterCount > 0;

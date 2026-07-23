@@ -1,4 +1,4 @@
-import { type ApiResponse, type Paginated, api } from '@/api/http';
+import { type ApiResponse, api, type Paginated } from '@/api/http';
 import { toDepartment } from '../adapter/department.adapter';
 import type {
   Department,

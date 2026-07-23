@@ -1,4 +1,4 @@
-import { Phone, ShoppingCart } from 'lucide-react';
+import { Phone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
@@ -10,6 +10,7 @@ import { PrimaryNav } from '@/app/components/layout/PrimaryNav';
 import { UserMenu } from '@/app/components/layout/UserMenu';
 import { SearchBar } from '@/app/components/search/SearchBar';
 import logo from '@/assets/logo.svg';
+import { Cart } from '@/feature/cart/components/Cart';
 import { contactPhone } from './constants/nav.constants';
 
 export const Header = () => {
@@ -42,14 +43,8 @@ export const Header = () => {
             <div className='hidden md:block'>
               <UserMenu />
             </div>
-            {/* TODO: enlazar al carrito cuando exista la ruta correspondiente. */}
-            <button
-              type='button'
-              aria-label='Carrito de compras'
-              className='rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange'
-            >
-              <ShoppingCart className='icon' />
-            </button>
+
+            <Cart />
           </div>
         </div>
       </Container>
