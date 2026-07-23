@@ -3,7 +3,11 @@ import { notFound } from 'next/navigation';
 import { ApiError } from '@/api/http';
 import { Section } from '@/app/components/layout/Section';
 import { PageHero } from '@/app/components/ui/page-hero';
-import fallbackImage from '@/assets/productos/arroz.webp';
+import fallbackImage from '@/assets/fallback.jpeg';
+import {
+  FLIGHT_SOURCE_ATTR,
+  PRODUCT_DETAIL_SOURCE,
+} from '@/feature/cart/flight/flight-source';
 import { getProductById } from '../service/product.service';
 import { ProductPurchase } from './ProductPurchase';
 
@@ -39,6 +43,9 @@ async function ProductDetails({ params }: ProductDetailsProps) {
             width={400}
             height={400}
             className='object-contain'
+            // Lets the client-side purchase button launch its flight from this
+            // photo — a ref cannot cross the server/client boundary.
+            {...{ [FLIGHT_SOURCE_ATTR]: PRODUCT_DETAIL_SOURCE }}
           />
         </div>
 

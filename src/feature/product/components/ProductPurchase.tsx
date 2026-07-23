@@ -1,11 +1,17 @@
 'use client';
 
 import { ShoppingCart } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { QuantityStepper } from '@/app/components/ui/quantity-stepper';
+import {
+  findFlightSource,
+  PRODUCT_DETAIL_SOURCE,
+} from '@/feature/cart/flight/flight-source';
+import { useFlyToCart } from '@/feature/cart/flight/useFlyToCart';
+import { useCartActions } from '@/feature/cart/hook/useCart';
 import type { Product } from '@/feature/product/type/product.interface';
-import { formatPrice } from '@/lib/format';
+import { formatPrice } from '@/helpers';
 import { computePreviousPrice } from '@/lib/product-price';
 
 type ProductPurchaseProps = {
@@ -14,12 +20,23 @@ type ProductPurchaseProps = {
 
 function ProductPurchase({ product }: ProductPurchaseProps) {
   const { name, price } = product;
+  const { addToCart } = useCartActions();
+  const flyToCart = useFlyToCart();
   const [quantity, setQuantity] = useState(1);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const discount = product.discount ?? 0;
   const previousPrice = computePreviousPrice(price, discount);
 
-  const decrease = () => setQuantity((current) => Math.max(1, current - 1));
-  const increase = () => setQuantity((current) => current + 1);
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+    setQuantity(1);
+
+    // The product photo lives in a server component alongside this one, so it
+    // is found by attribute. The CTA is the fallback origin if it is missing.
+    flyToCart({
+      sourceEl: findFlightSource(PRODUCT_DETAIL_SOURCE) ?? buttonRef.current,
+    });
+  };
 
   return (
     <div className='space-y-4'>
@@ -37,14 +54,16 @@ function ProductPurchase({ product }: ProductPurchaseProps) {
       <div className='flex flex-col items-stretch gap-3 sm:flex-row'>
         <QuantityStepper
           value={quantity}
-          onDecrease={decrease}
-          onIncrease={increase}
+          onChange={setQuantity}
           min={1}
           variant='surface'
           itemLabel={name}
           className='shrink-0'
         />
         <Button
+          ref={buttonRef}
+          type='button'
+          onClick={handleAddToCart}
           className='flex-1 gap-2'
           aria-label={`Añadir ${quantity} ${name} al carrito`}
         >

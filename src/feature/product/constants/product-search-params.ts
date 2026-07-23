@@ -6,6 +6,7 @@ import {
   parseAsStringLiteral,
   type SearchParams,
 } from 'nuqs/server';
+import { clamp } from '@/helpers';
 import type {
   ProductSortBy,
   ProductSortOrder,
@@ -82,9 +83,6 @@ export type CatalogSearchParams = {
 };
 
 const searchParamsCache = createSearchParamsCache(productSearchParams);
-
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(Math.max(value, min), max);
 
 export const parseCatalogSearchParams = (
   raw: SearchParams,

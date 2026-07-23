@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { type ApiResponse, type Paginated, api } from '@/api/http';
+import { type ApiResponse, api, type Paginated } from '@/api/http';
 import { toProduct } from '../adapter/product.adapter';
 import type {
   Product,

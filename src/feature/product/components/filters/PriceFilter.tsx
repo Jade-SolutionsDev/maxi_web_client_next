@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Slider } from '@/app/components/ui/slider';
-import { formatPrice } from '@/lib/format';
+import { formatPrice } from '@/helpers';
 import {
   PRICE_MAX,
   PRICE_MIN,

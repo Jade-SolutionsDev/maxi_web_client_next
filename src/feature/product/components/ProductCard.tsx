@@ -3,12 +3,14 @@
 import { ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { QuantityStepper } from '@/app/components/ui/quantity-stepper';
 import fallbackImage from '@/assets/fallback.jpeg';
+import { useFlyToCart } from '@/feature/cart/flight/useFlyToCart';
+import { useCartActions } from '@/feature/cart/hook/useCart';
 import type { Product } from '@/feature/product/type/product.interface';
-import { formatPrice } from '@/lib/format';
+import { formatPrice } from '@/helpers';
 import { computePreviousPrice } from '@/lib/product-price';
 
 type ProductCardProps = {
@@ -19,12 +21,23 @@ type ProductCardProps = {
 
 function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
   const { name, price, image } = product;
+
+  const { addToCart } = useCartActions();
+  const flyToCart = useFlyToCart();
+  /** Quantity picked before adding; the cart owns the quantity once added. */
   const [quantity, setQuantity] = useState(1);
+  const imageRef = useRef<HTMLImageElement>(null);
+
   const discount = product.discount ?? 0;
   const previousPrice = computePreviousPrice(price, discount);
 
-  const decrease = () => setQuantity((current) => Math.max(1, current - 1));
-  const increase = () => setQuantity((current) => current + 1);
+  const handleAddToCart = () => {
+    // State first: the cart must be right even if the animation cannot run.
+    addToCart(product, quantity);
+    setQuantity(1);
+
+    flyToCart({ sourceEl: imageRef.current });
+  };
 
   return (
     <article className='@container group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg motion-reduce:transform-none motion-reduce:transition-none'>
@@ -40,6 +53,7 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
           )}
           <div className='relative h-full w-full'>
             <Image
+              ref={imageRef}
               src={image ?? fallbackImage}
               alt={name}
               fill
@@ -71,14 +85,15 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
         <div className='mt-1 flex flex-col gap-2 @[13rem]:flex-row @[13rem]:items-stretch'>
           <QuantityStepper
             value={quantity}
-            onDecrease={decrease}
-            onIncrease={increase}
+            onChange={setQuantity}
             min={1}
             variant='surface'
             itemLabel={name}
             className='shrink-0'
           />
           <Button
+            type='button'
+            onClick={handleAddToCart}
             className='min-w-0 gap-1.5 truncate px-2.5 py-2 text-sm font-semibold @[13rem]:flex-1'
             aria-label={`Añadir ${quantity} ${name} al carrito`}
           >

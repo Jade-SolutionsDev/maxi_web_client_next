@@ -17,7 +17,10 @@ interface FilterGroupsProps {
  * Pure filter controls (price, departments, categories, featured). Owns no
  * chrome — the surrounding card (desktop) or sheet (mobile) provides layout.
  */
-export const FilterGroups = ({ departments, categories }: FilterGroupsProps) => {
+export const FilterGroups = ({
+  departments,
+  categories,
+}: FilterGroupsProps) => {
   const {
     filters,
     handleCategoryFilter,
