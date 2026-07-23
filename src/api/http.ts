@@ -1,4 +1,7 @@
 import 'server-only';
+
+import { getSessionToken, SessionRequiredError } from './session';
+
 const BASE_URL = process.env.API_URL;
 
 if (!BASE_URL) {
@@ -61,7 +64,6 @@ export async function api<T>(
       ...init,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.API_TOKEN}`,
         ...headers,
       },
       body: body ? JSON.stringify(body) : undefined,
@@ -97,4 +99,35 @@ export async function api<T>(
 
   if (res.status === 204) return null as T;
   return res.json() as Promise<T>;
+}
+
+/**
+ * `api()` para endpoints atados a la cuenta (carrito, órdenes, direcciones…):
+ * envía el token de Clerk del cliente autenticado.
+ *
+ * Separado de `api()` a propósito. Resolver el token lee headers del request, y
+ * eso es ilegal dentro de un scope `'use cache'`: mantenerlo fuera de `api()` es
+ * lo que permite que servicios públicos cacheados como `getCategories()` sigan
+ * funcionando.
+ *
+ * Lanza `SessionRequiredError` antes de cualquier fetch si no hay sesión, y
+ * fuerza `no-store`: la respuesta es de un cliente puntual y cachearla se la
+ * entregaría al siguiente.
+ */
+export async function apiAuth<T>(
+  path: string,
+  options: ApiOptions = {},
+): Promise<T> {
+  const token = await getSessionToken();
+
+  if (!token) throw new SessionRequiredError();
+
+  return api<T>(path, {
+    ...options,
+    cache: 'no-store',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...options.headers,
+    },
+  });
 }
