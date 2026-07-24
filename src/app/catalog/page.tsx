@@ -1,10 +1,10 @@
+import type { SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 import { PageHero } from '@/app/components/ui/page-hero';
 import { CatalogSidebar } from '@/feature/product/components/CatalogSidebar';
 import { CatalogSidebarSkeleton } from '@/feature/product/components/CatalogSidebarSkeleton';
 import { ProductResults } from '@/feature/product/components/ProductResults';
 import { ProductResultsSkeleton } from '@/feature/product/components/ProductResultsSkeleton';
-import type { SearchParams } from 'nuqs/server';
 import { Section } from '../components/layout/Section';
 
 type CatalogPageProps = {

@@ -16,6 +16,9 @@ export const PRICE_MIN = 0;
 export const PRICE_MAX = 1000;
 export const PRICE_STEP = 10;
 
+/** URL key for the free-text product search. Single source for client and server. */
+export const SEARCH_QUERY_KEY = 'q';
+
 export const SORT_BY_VALUES = ['name', 'price', 'createdAt'] as const;
 export const SORT_ORDER_VALUES = ['asc', 'desc'] as const;
 
@@ -62,6 +65,7 @@ export const SORT_OPTIONS = [
 }>;
 
 export const productSearchParams = {
+  [SEARCH_QUERY_KEY]: parseAsString,
   departmentId: parseAsString,
   categoryId: parseAsString,
   featured: parseAsBoolean,
@@ -73,6 +77,8 @@ export const productSearchParams = {
 };
 
 export type CatalogSearchParams = {
+  /** Free-text search over the product name. */
+  q?: string;
   departmentId?: string;
   categoryId?: string;
   featured?: boolean;
@@ -93,6 +99,9 @@ export const parseCatalogSearchParams = (
   const maxPrice = clamp(parsed.maxPrice, PRICE_MIN, PRICE_MAX);
 
   return {
+    // A blank or whitespace-only `?q=` is not a filter: normalize it away so it
+    // never reaches the API as an empty ILIKE.
+    q: parsed.q?.trim() || undefined,
     departmentId: parsed.departmentId ?? undefined,
     categoryId: parsed.categoryId ?? undefined,
     featured: parsed.featured ?? undefined,

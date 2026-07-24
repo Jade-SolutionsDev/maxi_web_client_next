@@ -1,5 +1,6 @@
 import type { SearchParams } from 'nuqs/server';
 import { EmptyState } from '@/app/components/feedback/EmptyState';
+import { CATALOG_PATH } from '../constants/catalog-search-href';
 import {
   DEFAULT_SORT_BY,
   DEFAULT_SORT_ORDER,
@@ -15,6 +16,7 @@ type ProductResultsProps = {
 
 export async function ProductResults({ searchParams }: ProductResultsProps) {
   const {
+    q,
     departmentId,
     categoryId,
     featured,
@@ -25,6 +27,7 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
   } = parseCatalogSearchParams(await searchParams);
 
   const products = await getProducts({
+    q,
     departmentId,
     categoryId,
     featured,
@@ -42,6 +45,12 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
         <p className='text-sm text-muted'>
           Mostrando <span className='font-bold text-heading'>{count}</span>{' '}
           {count === 1 ? 'producto' : 'productos'}
+          {q && (
+            <>
+              {' '}
+              para <span className='font-bold text-heading'>«{q}»</span>
+            </>
+          )}
         </p>
         <div className='hidden md:block'>
           <SortControl />
@@ -49,10 +58,18 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
       </header>
 
       {count === 0 ? (
-        <EmptyState
-          title='No se encontraron productos'
-          description='Todavía no hay productos para mostrar en el catálogo. Vuelve pronto.'
-        />
+        q ? (
+          <EmptyState
+            title={`No encontramos productos para «${q}»`}
+            description='Revisa la escritura o prueba con un término más corto.'
+            action={{ href: CATALOG_PATH, label: 'Ver todo el catálogo' }}
+          />
+        ) : (
+          <EmptyState
+            title='No se encontraron productos'
+            description='Todavía no hay productos para mostrar en el catálogo. Vuelve pronto.'
+          />
+        )
       ) : (
         <ul className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
           {products.map((product) => (

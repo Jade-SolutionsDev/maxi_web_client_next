@@ -8,10 +8,15 @@ import { MobileNav } from '@/app/components/layout/mobile-nav';
 import { NavItemsFallback } from '@/app/components/layout/NavItemsFallback';
 import { PrimaryNav } from '@/app/components/layout/PrimaryNav';
 import { UserMenu } from '@/app/components/layout/UserMenu';
-import { SearchBar } from '@/app/components/search/SearchBar';
+import { HeaderSearch } from '@/app/components/search/HeaderSearch';
+import { SearchBarFallback } from '@/app/components/search/SearchBarFallback';
 import logo from '@/assets/logo.svg';
 import { Cart } from '@/feature/cart/components/Cart';
 import { contactPhone } from './constants/nav.constants';
+
+/** Own row at full width on mobile, centered from md up. */
+const searchBarClass =
+  'order-last w-full min-w-0 md:order-0 md:mx-auto md:max-w-2xl md:flex-1';
 
 export const Header = () => {
   return (
@@ -35,8 +40,12 @@ export const Header = () => {
             />
           </div>
 
-          {/* Buscador: fila propia a todo el ancho en mobile, centrado en md+ */}
-          <SearchBar className='order-last w-full min-w-0 md:order-0 md:mx-auto md:max-w-2xl md:flex-1' />
+          {/* Buscador: lee useSearchParams para reflejar el término activo, así
+              que con cacheComponents va dentro de <Suspense>. El fallback pinta
+              el mismo campo en el shell estático, sin interactividad. */}
+          <Suspense fallback={<SearchBarFallback className={searchBarClass} />}>
+            <HeaderSearch className={searchBarClass} />
+          </Suspense>
 
           {/* Derecha: usuario + carrito */}
           <div className='ml-auto flex shrink-0 items-center gap-4 md:ml-0'>
