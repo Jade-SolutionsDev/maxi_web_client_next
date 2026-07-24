@@ -1,12 +1,11 @@
 'use client';
 
 import { ShoppingCart } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { QuantityStepper } from '@/app/components/ui/quantity-stepper';
-import fallbackImage from '@/assets/fallback.jpeg';
+import { SafeImage } from '@/app/components/ui/safe-image';
 import { useFlyToCart } from '@/feature/cart/flight/useFlyToCart';
 import { useCartActions } from '@/feature/cart/hook/useCart';
 import type { Product } from '@/feature/product/type/product.interface';
@@ -52,9 +51,9 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
             </span>
           )}
           <div className='relative h-full w-full'>
-            <Image
+            <SafeImage
               ref={imageRef}
-              src={image ?? fallbackImage}
+              src={image}
               alt={name}
               fill
               sizes={imageSizes}

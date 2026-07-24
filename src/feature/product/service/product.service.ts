@@ -26,6 +26,7 @@ export const getProducts = async (
         limit: filters.limit,
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
+        
       },
     },
   );

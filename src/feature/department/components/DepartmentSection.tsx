@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { Section } from '@/app/components/layout/Section';
 import {
@@ -6,7 +5,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/app/components/ui/carousel';
-import fallbackImage from '@/assets/fallback.jpeg';
+import { SafeImage } from '@/app/components/ui/safe-image';
 import { getDepartments } from '../service/department.service';
 
 async function DepartmentSection() {
@@ -27,15 +26,15 @@ async function DepartmentSection() {
               >
                 <div className='relative aspect-2184/1146 w-full overflow-hidden rounded-2xl bg-primary/5'>
                   {/* Mobile-first art direction: dedicated mobile crop below md, desktop crop from md up. */}
-                  <Image
-                    src={department.imageMobile ?? fallbackImage}
+                  <SafeImage
+                    src={department.imageMobile}
                     alt={department.name}
                     fill
                     sizes='100vw'
                     className='block object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none md:hidden'
                   />
-                  <Image
-                    src={department.imageDesktop ?? fallbackImage}
+                  <SafeImage
+                    src={department.imageDesktop}
                     alt={department.name}
                     fill
                     sizes='33vw'

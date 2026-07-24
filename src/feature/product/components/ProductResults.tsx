@@ -14,6 +14,8 @@ type ProductResultsProps = {
   searchParams: Promise<SearchParams>;
 };
 
+const LIMIT_PRODUCT = 9;
+
 export async function ProductResults({ searchParams }: ProductResultsProps) {
   const {
     q,
@@ -35,6 +37,7 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
     minPrice,
     sortBy: sortBy ?? DEFAULT_SORT_BY,
     sortOrder: sortOrder ?? DEFAULT_SORT_ORDER,
+    limit: LIMIT_PRODUCT,
   });
 
   const count = products.length;

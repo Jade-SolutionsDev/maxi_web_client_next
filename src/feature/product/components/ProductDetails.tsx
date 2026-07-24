@@ -1,9 +1,8 @@
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ApiError } from '@/api/http';
 import { Section } from '@/app/components/layout/Section';
 import { PageHero } from '@/app/components/ui/page-hero';
-import fallbackImage from '@/assets/fallback.jpeg';
+import { SafeImage } from '@/app/components/ui/safe-image';
 import {
   FLIGHT_SOURCE_ATTR,
   PRODUCT_DETAIL_SOURCE,
@@ -36,17 +35,17 @@ async function ProductDetails({ params }: ProductDetailsProps) {
       />
 
       <Section direction='row'>
-        <div className='flex items-center justify-center rounded-2xl shadow-sm border border-black/5 bg-white p-4'>
-          <Image
-            src={product.image ?? fallbackImage}
-            alt={product.name}
-            width={400}
-            height={400}
-            className='object-contain'
-            // Lets the client-side purchase button launch its flight from this
-            // photo — a ref cannot cross the server/client boundary.
-            {...{ [FLIGHT_SOURCE_ATTR]: PRODUCT_DETAIL_SOURCE }}
-          />
+        <div className='relative aspect-square w-full max-w-100 self-start overflow-hidden rounded-2xl border border-black/5 bg-white p-4 shadow-sm'>
+          <div className='relative h-full w-full'>
+            <SafeImage
+              src={product.image}
+              alt={product.name}
+              fill
+              sizes='(max-width: 768px) 100vw, 400px'
+              className='object-contain'
+              {...{ [FLIGHT_SOURCE_ATTR]: PRODUCT_DETAIL_SOURCE }}
+            />
+          </div>
         </div>
 
         <div className='space-y-4 max-w-145'>

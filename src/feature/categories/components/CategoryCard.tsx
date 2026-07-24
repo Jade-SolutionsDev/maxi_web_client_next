@@ -1,5 +1,4 @@
-import Image from 'next/image';
-import fallbackImage from '@/assets/fallback.jpeg';
+import { SafeImage } from '@/app/components/ui/safe-image';
 import type { Category } from '@/feature/categories/type/category.interface';
 
 type CategoryCardProps = {
@@ -17,8 +16,8 @@ function CategoryCard({
   return (
     <div className='group flex w-full min-w-0 flex-col items-center gap-3 text-center outline-none'>
       <div className='relative aspect-square w-full max-w-24 overflow-hidden rounded-full bg-accent transition-transform duration-300 group-focus-visible:ring-2 group-focus-visible:ring-primary/50 motion-reduce:transform-none sm:max-w-32 md:max-w-40 lg:max-w-50'>
-        <Image
-          src={image ?? fallbackImage}
+        <SafeImage
+          src={image}
           alt={name}
           fill
           sizes={imageSizes}

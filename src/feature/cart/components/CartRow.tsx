@@ -1,9 +1,8 @@
 'use client';
 
 import { Trash2 } from 'lucide-react';
-import Image from 'next/image';
 import { QuantityStepper } from '@/app/components/ui/quantity-stepper';
-import fallbackImage from '@/assets/fallback.jpeg';
+import { SafeImage } from '@/app/components/ui/safe-image';
 import { formatPrice } from '@/helpers';
 import type { CartItem } from '@/store/cart.store';
 import { useCartActions } from '../hook/useCart';
@@ -20,8 +19,8 @@ export const CartItemRow = ({ item }: CartItemRowProps) => {
   return (
     <li className='flex items-center gap-3 py-4 first:pt-0'>
       <div className='relative size-14 shrink-0 overflow-hidden rounded-2xl border border-dashed border-primary/40 bg-background sm:size-16'>
-        <Image
-          src={item.image ?? fallbackImage}
+        <SafeImage
+          src={item.image}
           alt={item.name}
           fill
           sizes='64px'
