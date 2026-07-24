@@ -29,7 +29,7 @@ export const SearchBar = ({
   placeholder = SEARCH_PLACEHOLDER,
   className,
 }: SearchBarProps) => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const value = new FormData(event.currentTarget).get(SEARCH_QUERY_KEY);
     onSubmit(typeof value === 'string' ? value : '');
@@ -54,8 +54,6 @@ export const SearchBar = ({
           {placeholder}
         </label>
         <input
-          // Remounting on a new term lets an uncontrolled input pick up the
-          // value coming back from the URL (back/forward, reload, shared link).
           key={defaultValue}
           id='product-search'
           name={SEARCH_QUERY_KEY}
