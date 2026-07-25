@@ -51,3 +51,69 @@ body {
     @apply w-6 h-6 text-white cursor-pointer;
   }
 }
+
+/* Verification status feedback: one entrance for the resolved state, a halo and
+   a spinner while it is still pending. Motion here conveys state, nothing else. */
+@keyframes status-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes status-halo {
+  from {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+@keyframes status-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes status-breathe {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@layer components {
+  .status-medallion {
+    animation: status-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .status-halo {
+    animation: status-halo 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .status-spinner {
+    animation: status-spin 850ms linear infinite;
+  }
+}
+
+/* Unlayered, so it wins over the component layer above. */
+@media (prefers-reduced-motion: reduce) {
+  .status-medallion {
+    animation: none;
+  }
+
+  .status-halo {
+    animation: none;
+    opacity: 0.16;
+  }
+
+  .status-spinner {
+    animation: status-breathe 1.6s ease-in-out infinite;
+  }
+}

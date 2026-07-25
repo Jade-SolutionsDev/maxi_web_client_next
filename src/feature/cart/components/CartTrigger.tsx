@@ -2,8 +2,10 @@
 
 import { ShoppingCart } from 'lucide-react';
 import { useEffect, useRef } from 'react';
+import { headerActionClass } from '@/app/components/layout/header-action.styles';
 import { SheetTrigger } from '@/app/components/ui/sheet';
 import { EASE_OUT, prefersReducedMotion } from '@/lib/motion';
+import { cn } from '@/lib/utils';
 import { onCartLanding } from '../flight/cart-landing';
 import { registerFlightTarget } from '../flight/flight-target';
 import { useCartData } from '../hook/useCart';
@@ -86,12 +88,15 @@ export const CartTrigger = () => {
           ref={buttonRef}
           type='button'
           aria-label={label}
-          className='relative flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white text-accent shadow-sm outline-none transition duration-150 hover:bg-surface focus-visible:ring-2 focus-visible:ring-white/80 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100 md:size-11'
+          className={cn(
+            headerActionClass,
+            'relative active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100',
+          )}
         >
           <span
             ref={ringRef}
             aria-hidden='true'
-            className='pointer-events-none absolute inset-0 rounded-full border-2 border-primary opacity-0'
+            className='pointer-events-none absolute inset-0 rounded-full border-2 border-white opacity-0'
           />
 
           <ShoppingCart className='size-5 md:size-5.5' aria-hidden='true' />

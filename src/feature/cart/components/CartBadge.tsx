@@ -56,7 +56,7 @@ export const CartBadge = ({ count }: CartBadgeProps) => {
   return (
     <span
       aria-hidden='true'
-      className='absolute -top-0.5 -right-1 flex h-4 min-w-4 items-start justify-center overflow-hidden rounded-full bg-total px-1 text-[0.625rem] font-bold text-white leading-none tabular-nums'
+      className='absolute -top-0.5 -right-1 flex h-4 min-w-4 items-start justify-center overflow-hidden rounded-full bg-orange px-1 text-[0.625rem] font-bold text-heading leading-none tabular-nums ring-2 ring-primary'
     >
       <span ref={columnRef} className='flex flex-col'>
         <span className='flex h-4 items-center justify-center'>
