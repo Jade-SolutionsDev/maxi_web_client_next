@@ -1,6 +1,10 @@
 import { EmptyState } from '@/app/components/feedback/EmptyState';
 import { Section } from '@/app/components/layout/Section';
 import { ProductCard } from '@/feature/product/components/ProductCard';
+import {
+  productCardSizes,
+  productGridClass,
+} from '@/feature/product/components/product-grid.styles';
 import { getProducts } from '@/feature/product/service/product.service';
 
 async function FeaturedProducts() {
@@ -20,13 +24,10 @@ async function FeaturedProducts() {
           action={{ href: '/catalog', label: 'Ver todos los productos' }}
         />
       ) : (
-        <ul className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5'>
+        <ul className={productGridClass}>
           {products.map((product) => (
-            <li key={product.id}>
-              <ProductCard
-                product={product}
-                imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
-              />
+            <li key={product.id} className='flex'>
+              <ProductCard product={product} imageSizes={productCardSizes} />
             </li>
           ))}
         </ul>

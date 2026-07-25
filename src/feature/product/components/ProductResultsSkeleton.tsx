@@ -1,4 +1,5 @@
 import { Skeleton } from '@/app/components/ui/skeleton';
+import { catalogGridClass } from './product-grid.styles';
 
 const SKELETON_PLACEHOLDERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
@@ -9,10 +10,10 @@ export function ProductResultsSkeleton() {
         <Skeleton className='h-5 w-32' />
         <Skeleton className='h-9 w-40' />
       </header>
-      <ul className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
+      <ul className={catalogGridClass}>
         {SKELETON_PLACEHOLDERS.map((id) => (
-          <li key={id} className='flex flex-col gap-3'>
-            <Skeleton className='aspect-square w-full rounded-xl' />
+          <li key={id} className='flex flex-col gap-2'>
+            <Skeleton className='aspect-[4/3] w-full rounded-xl' />
             <Skeleton className='h-4 w-3/4' />
             <Skeleton className='h-5 w-1/2' />
           </li>

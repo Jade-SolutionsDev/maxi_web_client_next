@@ -44,9 +44,9 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
         href={`/catalog/${product.id}`}
         className='flex flex-1 flex-col rounded-t-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40'
       >
-        <div className='relative flex aspect-square items-center justify-center overflow-hidden bg-background p-3'>
+        <div className='relative flex aspect-4/3 items-center justify-center overflow-hidden bg-background p-2'>
           {previousPrice !== null && (
-            <span className='absolute top-3 left-3 z-10 rounded-full bg-orange px-3 py-1 text-xs font-semibold text-white'>
+            <span className='absolute top-2 left-2 z-10 rounded-full bg-orange px-2 py-0.5 text-[11px] font-semibold text-white'>
               -{Math.round(discount * 100) / 100}%
             </span>
           )}
@@ -62,17 +62,17 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
           </div>
         </div>
 
-        <div className='flex flex-1 flex-col gap-3 p-4 pb-0'>
-          <h3 className=' min-h-10 font-semibold text-heading leading-snug'>
+        <div className='flex flex-1 flex-col gap-1 p-3 pb-0'>
+          <h3 className='  line-clamp-3 text-sm font-semibold text-heading leading-snug'>
             {name}
           </h3>
 
-          <p className='mt-auto flex items-baseline gap-2'>
-            <span className='text-2xl font-bold text-heading'>
+          <p className='mt-auto flex items-baseline gap-1.5'>
+            <span className='text-lg font-bold text-heading'>
               {formatPrice(price)}
             </span>
             {previousPrice !== null && (
-              <span className='text-sm text-muted line-through'>
+              <span className='text-xs text-muted line-through'>
                 {formatPrice(previousPrice)}
               </span>
             )}
@@ -80,8 +80,8 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
         </div>
       </Link>
 
-      <div className='flex flex-col gap-3 p-4 pt-3'>
-        <div className='mt-1 flex flex-col gap-2 @[13rem]:flex-row @[13rem]:items-stretch'>
+      <div className='p-3 pt-2'>
+        <div className='flex flex-col gap-1.5 @[13rem]:flex-row @[13rem]:items-stretch'>
           <QuantityStepper
             value={quantity}
             onChange={setQuantity}

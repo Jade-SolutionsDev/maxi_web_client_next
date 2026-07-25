@@ -1,5 +1,6 @@
 import { Section } from '@/app/components/layout/Section';
 import { Skeleton } from '@/app/components/ui/skeleton';
+import { productGridClass } from './product-grid.styles';
 
 const PLACEHOLDERS = ['a', 'b', 'c', 'd', 'e'];
 
@@ -9,10 +10,10 @@ function ProductsSkeleton() {
       title='Productos destacados'
       action={{ href: '/catalog', label: 'Ver todos →' }}
     >
-      <ul className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5'>
+      <ul className={productGridClass}>
         {PLACEHOLDERS.map((id) => (
-          <li key={id} className='flex flex-col gap-3'>
-            <Skeleton className='aspect-square w-full rounded-xl' />
+          <li key={id} className='flex flex-col gap-2'>
+            <Skeleton className='aspect-[4/3] w-full rounded-xl' />
             <Skeleton className='h-4 w-3/4' />
             <Skeleton className='h-5 w-1/2' />
           </li>

@@ -27,7 +27,7 @@ export default function LoginPage() {
       <div className='flex items-center justify-center p-8'>
         <div className='w-full max-w-md'>
           <div className='mb-8 flex flex-col items-center gap-3 text-center'>
-            <Image src={logo} alt='Maxi Habana' height={50} priority />
+            <Image src={logo} alt='Maxi Habana' height={50} loading='eager' />
 
             <div>
               <h1 className='text-3xl font-bold text-heading'>

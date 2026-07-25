@@ -8,6 +8,7 @@ import {
 } from '../constants/product-search-params';
 import { getProducts } from '../service/product.service';
 import { SortControl } from './filters/SortControl';
+import { catalogCardSizes, catalogGridClass } from './product-grid.styles';
 import { ProductCard } from './ProductCard';
 
 type ProductResultsProps = {
@@ -74,13 +75,10 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
           />
         )
       ) : (
-        <ul className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
+        <ul className={catalogGridClass}>
           {products.map((product) => (
             <li key={product.id} className='flex'>
-              <ProductCard
-                product={product}
-                imageSizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
-              />
+              <ProductCard product={product} imageSizes={catalogCardSizes} />
             </li>
           ))}
         </ul>

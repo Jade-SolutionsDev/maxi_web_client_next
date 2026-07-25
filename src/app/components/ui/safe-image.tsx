@@ -13,20 +13,14 @@ import fallbackImage from '@/assets/fallback.jpeg';
 import { cn } from '@/lib/utils';
 
 type SafeImageProps = Omit<ImageProps, 'src'> & {
-  /** Source URL; a missing (`null`/`undefined`/empty) value uses `fallbackSrc`. */
   src: ImageProps['src'] | null | undefined;
-  /** Shown when `src` is missing or fails to load. Defaults to the shared asset. */
+
   fallbackSrc?: StaticImageData | string;
   ref?: Ref<HTMLImageElement>;
 };
 
-/**
- * next/image wrapper that never leaves a blank hole. It resolves a missing
- * `src` to the fallback, swaps to the fallback if the image fails to load, and
- * fades the image in once ready — so a slow optimizer shows the neutral
- * container background instead of an empty gap. Centralizes the resilience that
- * `src={image ?? fallback}` alone could not provide.
- */
+const PREVIEW_SIZES = '16px';
+
 export function SafeImage({
   src,
   alt,
@@ -35,6 +29,9 @@ export function SafeImage({
   onError,
   onLoad,
   ref,
+  fill,
+  loading,
+  unoptimized,
   ...rest
 }: SafeImageProps) {
   const [didError, setDidError] = useState(false);
@@ -63,25 +60,50 @@ export function SafeImage({
 
   const resolvedSrc = didError || !src ? fallbackSrc : src;
 
+  const showPreview = Boolean(fill) && !unoptimized;
+
   return (
-    <Image
-      {...rest}
-      ref={setRefs}
-      src={resolvedSrc}
-      alt={alt}
-      className={cn(
-        'transition-opacity duration-300 motion-reduce:transition-none',
-        loaded ? 'opacity-100' : 'opacity-0',
-        className,
+    <>
+      {showPreview && (
+        <Image
+          src={resolvedSrc}
+          alt=''
+          aria-hidden
+          fill
+          sizes={PREVIEW_SIZES}
+          loading={loading}
+          className={cn(
+            className,
+            'pointer-events-none scale-105 blur-lg transition-opacity duration-500 motion-reduce:transition-none',
+            loaded && 'opacity-0',
+          )}
+        />
       )}
-      onLoad={(event) => {
-        setLoaded(true);
-        onLoad?.(event);
-      }}
-      onError={(event) => {
-        if (!didError) setDidError(true);
-        onError?.(event);
-      }}
-    />
+      <Image
+        {...rest}
+        ref={setRefs}
+        src={resolvedSrc}
+        alt={alt}
+        fill={fill}
+        loading={loading}
+        unoptimized={unoptimized}
+        className={cn(
+         
+          !showPreview && [
+            'transition-opacity duration-300 motion-reduce:transition-none',
+            loaded ? 'opacity-100' : 'opacity-0',
+          ],
+          className,
+        )}
+        onLoad={(event) => {
+          setLoaded(true);
+          onLoad?.(event);
+        }}
+        onError={(event) => {
+          if (!didError) setDidError(true);
+          onError?.(event);
+        }}
+      />
+    </>
   );
 }

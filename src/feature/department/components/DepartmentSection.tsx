@@ -1,51 +1,22 @@
-import Link from 'next/link';
 import { Section } from '@/app/components/layout/Section';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from '@/app/components/ui/carousel';
-import { SafeImage } from '@/app/components/ui/safe-image';
 import { getDepartments } from '../service/department.service';
+import { DepartmentCard } from './DepartmentCard';
+import { departmentGridClass } from './department-grid.styles';
 
 async function DepartmentSection() {
   const departments = await getDepartments();
 
+  if (departments.length === 0) return null;
+
   return (
     <Section label='Departamentos'>
-      <Carousel loop autoplayDelay={3000} aria-label='Departamentos'>
-        <CarouselContent className='-ml-4'>
-          {departments.map((department) => (
-            <CarouselItem
-              key={department.id}
-              className='basis-full pl-4 md:basis-1/3'
-            >
-              <Link
-                href={`/catalog?departmentId=${department.id}`}
-                className='group block overflow-hidden rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
-              >
-                <div className='relative aspect-2184/1146 w-full overflow-hidden rounded-2xl bg-primary/5'>
-                  {/* Mobile-first art direction: dedicated mobile crop below md, desktop crop from md up. */}
-                  <SafeImage
-                    src={department.imageMobile}
-                    alt={department.name}
-                    fill
-                    sizes='100vw'
-                    className='block object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none md:hidden'
-                  />
-                  <SafeImage
-                    src={department.imageDesktop}
-                    alt={department.name}
-                    fill
-                    sizes='33vw'
-                    className='hidden object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none md:block'
-                  />
-                </div>
-              </Link>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+      <ul className={departmentGridClass}>
+        {departments.map((department) => (
+          <li key={department.id}>
+            <DepartmentCard department={department} />
+          </li>
+        ))}
+      </ul>
     </Section>
   );
 }

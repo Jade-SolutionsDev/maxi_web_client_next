@@ -32,6 +32,11 @@
   --color-destructive: #e5484d; /* rojo de error/validación */
   --color-muted-foreground: var(--color-muted); /* texto secundario */
 
+  /* Sombra de popovers/menús: tintada con el verde de marca en vez de negro,
+     así el panel se apoya sobre la superficie sin ensuciarla de gris. */
+  --shadow-popover:
+    0 16px 40px -12px rgb(8 80 65 / 0.28), 0 4px 12px -6px rgb(8 80 65 / 0.16);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-fredoka: var(--font-fredoka); /* títulos display (ej. hero del catálogo) */
@@ -116,4 +121,9 @@ body {
   .status-spinner {
     animation: status-breathe 1.6s ease-in-out infinite;
   }
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
 }
