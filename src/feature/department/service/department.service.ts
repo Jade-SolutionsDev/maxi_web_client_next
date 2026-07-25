@@ -6,10 +6,8 @@ import type {
 } from '../type/department.interface';
 
 export const getDepartments = async (): Promise<Department[]> => {
-  'use cache';
-
   const { data } = await api<ApiResponse<Paginated<DepartmentResponse>>>(
-    '/public/departments',
+    '/public/departments?featured=true',
   );
 
   return data.items.map(toDepartment);
