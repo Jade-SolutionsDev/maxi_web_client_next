@@ -72,7 +72,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${fredoka.variable} h-full antialiased`}
     >
       <body className='min-h-full flex flex-col'>
-        <ClerkProvider>
+        <ClerkProvider
+          allowedRedirectOrigins={[
+            'http://localhost:3000',
+            siteUrl,
+          ]}
+        >
           <Header />
           <main className='grow'>
             <NuqsAdapter>{children}</NuqsAdapter>
