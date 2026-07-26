@@ -3,6 +3,13 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Altura del Header sticky: 72px de la fila principal (logo + buscador +
+     carrito) más 40px de la barra de navegación, visible desde `md`. Lo que se
+     pegue por debajo del header — como el sidebar de filtros del catálogo —
+     usa esta variable como offset. Si cambia la altura del Header, actualizá
+     este valor: es la única fuente de verdad. */
+  --header-height: 7rem;
 }
 
 @theme inline {
@@ -45,20 +52,28 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  /* Red de seguridad: mata cualquier overflow horizontal futuro (grillas de
-     productos, etc.) sin romper el `sticky` del Header. `clip` NO crea scroll
-     container; `hidden` sí y rompería el sticky. */
+ 
   overflow-x: clip;
 }
 
-@layer components {
+@layer utilities {
   .icon {
     @apply w-6 h-6 text-white cursor-pointer;
   }
 }
 
-/* Verification status feedback: one entrance for the resolved state, a halo and
-   a spinner while it is still pending. Motion here conveys state, nothing else. */
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Edge legacy */
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+}
+
+
 @keyframes status-in {
   from {
     opacity: 0;

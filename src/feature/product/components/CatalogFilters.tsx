@@ -13,6 +13,7 @@ import {
 import type { Category } from '@/feature/categories/type/category.interface';
 import type { Department } from '@/feature/department/type/department.interface';
 import { useProductFilter } from '../filters/catalog.filter';
+import { catalogSidebarClass } from './catalog-sidebar.styles';
 import { FilterGroups } from './filters/FilterGroups';
 import { SortControl } from './filters/SortControl';
 
@@ -36,8 +37,8 @@ export const CatalogFilters = ({
 
   return (
     <>
-      {/* Desktop: persistent sidebar */}
-      <aside className='hidden h-fit w-full max-w-70 flex-col rounded-[18px] bg-white px-6.5 py-6 shadow-md md:flex'>
+      {/* Desktop: persistent sidebar, sticky under the header while the grid scrolls */}
+      <aside className={catalogSidebarClass}>
         <header className='mb-6 flex items-center justify-between gap-4'>
           <div className='flex items-center gap-2'>
             <ListFilter size={20} className='text-heading' />

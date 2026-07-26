@@ -1,4 +1,5 @@
 import { Skeleton } from '@/app/components/ui/skeleton';
+import { catalogSidebarClass } from './catalog-sidebar.styles';
 
 const SKELETON_ROWS = ['a', 'b', 'c', 'd'];
 
@@ -8,7 +9,7 @@ export function CatalogSidebarSkeleton() {
       {/* Mobile: matches the collapsed "Filtros" trigger button */}
       <Skeleton className='h-12 w-full rounded-xl md:hidden' />
 
-      <aside className='hidden h-fit w-full max-w-70 flex-col rounded-[18px] bg-white px-6.5 py-6 shadow-md md:flex'>
+      <aside className={catalogSidebarClass}>
         <div className='mb-6'>
           <Skeleton className='h-5 w-32' />
           <Skeleton className='mt-4 h-5 w-28' />
