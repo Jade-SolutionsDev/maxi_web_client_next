@@ -16,8 +16,8 @@ function CategoriesSectionSkeleton() {
             key={id}
             className='flex shrink-0 basis-1/2 flex-col items-center gap-2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5'
           >
-            <Skeleton className='aspect-square w-full rounded-full' />
-            <Skeleton className='h-3 w-2/3' />
+            <Skeleton className='aspect-square w-full max-w-24 rounded-full sm:max-w-32 md:max-w-40 lg:max-w-50' />
+            <Skeleton className='h-4 w-2/3 sm:h-5' />
           </li>
         ))}
       </ul>

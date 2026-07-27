@@ -2,32 +2,26 @@
 
 import { Checkbox } from '@/app/components/ui/checkbox';
 import { Label } from '@/app/components/ui/label';
-import type { Category } from '@/feature/categories/type/category.interface';
-import type { Department } from '@/feature/department/type/department.interface';
 import { cn } from '@/lib/utils';
-import { useProductFilter } from '../../filters/catalog.filter';
+import {
+  useCatalogFilterOptions,
+  useCatalogFilterState,
+} from './catalog-filters.context';
 import { PriceFilter } from './PriceFilter';
-
-interface FilterGroupsProps {
-  departments: Department[];
-  categories: Category[];
-}
 
 /**
  * Pure filter controls (price, departments, categories, featured). Owns no
  * chrome — the surrounding card (desktop) or sheet (mobile) provides layout.
  */
-export const FilterGroups = ({
-  departments,
-  categories,
-}: FilterGroupsProps) => {
+export const FilterGroups = () => {
+  const { departments, categories } = useCatalogFilterOptions();
   const {
     filters,
     handleCategoryFilter,
     handleDepartmentFilter,
     handleFeaturedProduct,
     isPending,
-  } = useProductFilter();
+  } = useCatalogFilterState();
 
   return (
     <div className='flex flex-col gap-6'>

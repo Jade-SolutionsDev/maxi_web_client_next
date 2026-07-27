@@ -6,10 +6,10 @@ import {
   PRICE_MIN,
   PRICE_STEP,
 } from '../../constants/product-search-params';
-import { useProductFilter } from '../../filters/catalog.filter';
+import { useCatalogFilterState } from './catalog-filters.context';
 
 export const PriceFilter = () => {
-  const { filters, handlePriceFilter } = useProductFilter();
+  const { filters, handlePriceFilter } = useCatalogFilterState();
   // Local state drives the visual thumbs on every drag tick; the filter
   // store (and the URL) is only updated on release via `onValueCommitted`,
   // otherwise every tick would trigger a navigation.

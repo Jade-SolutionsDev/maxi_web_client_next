@@ -8,12 +8,15 @@ const buttonVariants = cva(
       variant: {
         default: 'bg-accent text-white',
         secondary: 'bg-secondary text-white',
+        destructive:
+          'bg-destructive text-white focus-visible:ring-destructive/40',
         outline:
           'border border-foreground/15 bg-transparent text-foreground hover:bg-foreground/5',
         ghost: 'bg-transparent text-foreground hover:bg-foreground/5',
       },
       size: {
         default: 'px-4 py-3 text-lg font-medium',
+        sm: 'px-4 py-2.5 text-sm font-semibold',
         lg: 'p-4 text-base font-bold',
         'icon-sm': 'size-8 [&_svg]:size-4',
       },

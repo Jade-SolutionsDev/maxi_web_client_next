@@ -62,6 +62,7 @@ export const useProductFilter = () => {
   return {
     clearAllFilter,
     hasActiveFilter,
+    
     activeFilterCount,
     handleCategoryFilter,
     handleFeaturedProduct,

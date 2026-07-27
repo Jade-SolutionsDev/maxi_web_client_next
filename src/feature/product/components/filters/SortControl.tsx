@@ -10,10 +10,10 @@ import {
 } from '@/app/components/ui/select';
 import { cn } from '@/lib/utils';
 import { SORT_OPTIONS } from '../../constants/product-search-params';
-import { useProductFilter } from '../../filters/catalog.filter';
+import { useCatalogFilterState } from './catalog-filters.context';
 
 export const SortControl = () => {
-  const { filters, handleSort, isPending } = useProductFilter();
+  const { filters, handleSort, isPending } = useCatalogFilterState();
 
   const currentValue = `${filters.sortBy}:${filters.sortOrder}`;
 
