@@ -3,7 +3,8 @@
 import { Trash2 } from 'lucide-react';
 import { QuantityStepper } from '@/app/components/ui/quantity-stepper';
 import { SafeImage } from '@/app/components/ui/safe-image';
-import { formatPrice } from '@/helpers';
+import { formatDiscount, formatPrice } from '@/helpers';
+import { computePreviousPrice } from '@/lib/product-price';
 import type { CartItem } from '@/store/cart.store';
 import { useCartActions } from '../hook/useCart';
 
@@ -14,7 +15,13 @@ interface CartItemRowProps {
 export const CartItemRow = ({ item }: CartItemRowProps) => {
   const { updateQuantity, removeFromCart } = useCartActions();
 
+  const discount = item.discount ?? 0;
+  const previousPrice = computePreviousPrice(item.price, discount);
+
   const lineTotal = item.price * item.quantity;
+  const previousLineTotal =
+    previousPrice === null ? null : previousPrice * item.quantity;
+  const { available } = item;
 
   return (
     <li className='flex items-center gap-3 py-4 first:pt-0'>
@@ -29,19 +36,35 @@ export const CartItemRow = ({ item }: CartItemRowProps) => {
       </div>
 
       <div className='flex min-w-0 max-w-65 w-full flex-1 flex-col gap-2'>
-        <p className=' text-sm font-bold text-heading'>{item.name}</p>
+        <div className='flex items-start justify-between gap-2'>
+          <p className='text-sm font-bold text-heading'>{item.name}</p>
+
+          {previousLineTotal !== null && (
+            <span className='shrink-0 rounded-full bg-orange px-2 py-0.5 text-[11px] font-semibold text-white'>
+              {formatDiscount(discount)}
+            </span>
+          )}
+        </div>
 
         <div className='flex items-center justify-between gap-2'>
           <QuantityStepper
             value={item.quantity}
             onChange={(quantity) => updateQuantity(item.id, quantity)}
             min={1}
+            max={available}
             itemLabel={item.name}
             variant='surface'
           />
 
-          <span className='shrink-0 text-base font-bold text-heading tabular-nums'>
-            {formatPrice(lineTotal)}
+          <span className='flex shrink-0 flex-col items-end leading-tight'>
+            {previousLineTotal !== null && (
+              <span className='text-xs text-muted line-through tabular-nums'>
+                {formatPrice(previousLineTotal)}
+              </span>
+            )}
+            <span className='text-base font-bold text-heading tabular-nums'>
+              {formatPrice(lineTotal)}
+            </span>
           </span>
         </div>
       </div>

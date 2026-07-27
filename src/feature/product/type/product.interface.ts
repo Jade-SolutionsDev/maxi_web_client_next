@@ -65,6 +65,7 @@ export interface Product {
   format?: string;
   discount?: number;
   image?: string;
+  available: number;
   description?: string;
   /** Category name only; absent when the API omits the relation (e.g. lists). */
   category?: string;

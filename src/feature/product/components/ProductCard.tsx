@@ -9,6 +9,7 @@ import { SafeImage } from '@/app/components/ui/safe-image';
 import { useFlyToCart } from '@/feature/cart/flight/useFlyToCart';
 import { useCartActions } from '@/feature/cart/hook/useCart';
 import type { Product } from '@/feature/product/type/product.interface';
+import { formatDiscount } from '@/helpers';
 import { computePreviousPrice } from '@/lib/product-price';
 import { ProductPrice } from './ProductPrice';
 
@@ -47,7 +48,7 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
         <div className='relative flex aspect-4/3 items-center justify-center overflow-hidden bg-background p-2'>
           {previousPrice !== null && (
             <span className='absolute top-2 left-2 z-10 rounded-full bg-orange px-2 py-0.5 text-[11px] font-semibold text-white'>
-              -{Math.round(discount * 100) / 100}%
+              {formatDiscount(discount)}
             </span>
           )}
           <div className='relative h-full w-full'>

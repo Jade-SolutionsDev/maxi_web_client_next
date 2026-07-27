@@ -11,6 +11,13 @@ const priceFormatter = new Intl.NumberFormat('en-US', {
 /** Format a numeric price as USD currency (e.g. 1.13 → "$1.13"). */
 export const formatPrice = (value: number) => priceFormatter.format(value);
 
+/**
+ * Format a discount percentage as a badge label (e.g. 20 → "-20%").
+ * Trims float noise to two decimals so "-19.999999%" never reaches the UI.
+ */
+export const formatDiscount = (discount: number) =>
+  `-${Math.round(discount * 100) / 100}%`;
+
 /** Constrain `value` to the inclusive `[min, max]` range. */
 export const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
