@@ -8,6 +8,7 @@ import {
   PRODUCT_DETAIL_SOURCE,
 } from '@/feature/cart/flight/flight-source';
 import { getProductById } from '../service/product.service';
+import { ProductPrice } from './ProductPrice';
 import { ProductPurchase } from './ProductPurchase';
 
 type ProductDetailsProps = {
@@ -35,28 +36,41 @@ async function ProductDetails({ params }: ProductDetailsProps) {
       />
 
       <Section direction='row'>
-        <div className='relative aspect-square w-full max-w-100 self-start overflow-hidden rounded-2xl border border-black/5 bg-white p-4 shadow-sm'>
+        <div className='relative aspect-square w-full max-w-125 self-start overflow-hidden rounded-2xl border border-black/5 bg-white p-6 shadow-sm sm:p-8'>
           <div className='relative h-full w-full'>
             <SafeImage
               src={product.image}
               alt={product.name}
               fill
-              sizes='(max-width: 768px) 100vw, 400px'
+              sizes='(max-width: 768px) 100vw, 500px'
               className='object-contain'
               {...{ [FLIGHT_SOURCE_ATTR]: PRODUCT_DETAIL_SOURCE }}
             />
           </div>
         </div>
 
-        <div className='space-y-4 max-w-145'>
-          <div className='space-y-10'>
-            <h2 className='text-3xl font-bold text-heading mb-3 '>
-              {product.name}
-            </h2>
-            <p className='text-muted text-[14.5px] whitespace-pre-line'>
-              {product.description}
+        <div className='flex-1 space-y-5 max-w-145'>
+          {product.category && (
+            <p className='inline-flex rounded-full bg-surface px-3 py-1 text-xs font-bold uppercase tracking-wide text-accent'>
+              {product.category}
             </p>
-          </div>
+          )}
+
+          <h2 className='text-3xl font-bold text-heading sm:text-4xl'>
+            {product.name}
+          </h2>
+
+          <ProductPrice
+            price={product.price}
+            discount={product.discount}
+            size='lg'
+          />
+
+          <p className='text-muted whitespace-pre-line leading-relaxed'>
+            {product.description}
+          </p>
+
+          <hr className='border-black/10' />
 
           <ProductPurchase product={product} />
         </div>

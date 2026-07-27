@@ -14,6 +14,8 @@ interface QuantityStepperProps {
   itemLabel?: string;
   /** `surface` = light chip (default). `primary` = filled accent, used when it replaces a CTA. */
   variant?: 'surface' | 'primary';
+  /** `sm` = compact chip (default). `lg` = matches a full-size CTA next to it. */
+  size?: 'sm' | 'lg';
   className?: string;
 }
 
@@ -33,6 +35,11 @@ const variantStyles = {
   },
 } as const;
 
+const sizeStyles = {
+  sm: { button: 'size-8', value: 'h-8 w-8 min-w-8' },
+  lg: { button: 'size-10', value: 'h-10 w-10 min-w-10 text-lg' },
+} as const;
+
 export const QuantityStepper = ({
   value,
   onChange,
@@ -40,10 +47,12 @@ export const QuantityStepper = ({
   max = Number.POSITIVE_INFINITY,
   itemLabel,
   variant = 'surface',
+  size = 'sm',
   className,
 }: QuantityStepperProps) => {
   const forItem = itemLabel ? ` de ${itemLabel}` : '';
   const theme = variantStyles[variant];
+  const scale = sizeStyles[size];
 
   const [draft, setDraft] = useState(String(value));
 
@@ -75,7 +84,8 @@ export const QuantityStepper = ({
         disabled={value <= min}
         aria-label={`Quitar una unidad${forItem}`}
         className={cn(
-          'flex size-8 shrink-0 items-center justify-center outline-none transition focus-visible:ring-2 disabled:opacity-40',
+          'flex shrink-0 items-center justify-center outline-none transition focus-visible:ring-2 disabled:opacity-40',
+          scale.button,
           theme.button,
         )}
       >
@@ -98,7 +108,8 @@ export const QuantityStepper = ({
         }}
         aria-label={`Cantidad${forItem}`}
         className={cn(
-          'h-8 w-8 min-w-8 flex-1 text-center font-semibold tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-inset',
+          'flex-1 text-center font-semibold tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-inset',
+          scale.value,
           theme.value,
         )}
       />
@@ -112,7 +123,8 @@ export const QuantityStepper = ({
         disabled={value >= max}
         aria-label={`Agregar una unidad${forItem}`}
         className={cn(
-          'flex size-8 shrink-0 items-center justify-center outline-none transition focus-visible:ring-2 disabled:opacity-40',
+          'flex shrink-0 items-center justify-center outline-none transition focus-visible:ring-2 disabled:opacity-40',
+          scale.button,
           theme.button,
         )}
       >

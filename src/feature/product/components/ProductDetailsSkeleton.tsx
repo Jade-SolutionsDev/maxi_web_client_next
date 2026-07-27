@@ -25,21 +25,26 @@ function ProductDetailsSkeleton() {
       </section>
 
       <Section direction='row'>
-        <Skeleton className='aspect-square w-full max-w-100 rounded-2xl' />
+        <Skeleton className='aspect-square w-full max-w-125 rounded-2xl' />
 
-        <div className='flex-1 space-y-4 max-w-145'>
+        <div className='flex-1 space-y-5 max-w-145'>
+          <Skeleton className='h-6 w-32 rounded-full' />
+
+          <Skeleton className='h-9 w-3/4' />
+
+          <Skeleton className='h-10 w-28' />
+
           <div className='space-y-3'>
-            <Skeleton className='h-8 w-3/4' />
             <Skeleton className='h-4 w-full' />
             <Skeleton className='h-4 w-5/6' />
             <Skeleton className='h-4 w-2/3' />
           </div>
 
-          <Skeleton className='h-8 w-32' />
+          <hr className='border-black/10' />
 
           <div className='flex flex-col items-stretch gap-3 sm:flex-row'>
-            <Skeleton className='h-10 w-32 rounded-xl' />
-            <Skeleton className='h-10 flex-1 rounded-xl' />
+            <Skeleton className='h-12 w-36 rounded-xl' />
+            <Skeleton className='h-12 flex-1 rounded-xl' />
           </div>
         </div>
       </Section>

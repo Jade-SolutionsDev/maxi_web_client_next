@@ -9,8 +9,8 @@ import { SafeImage } from '@/app/components/ui/safe-image';
 import { useFlyToCart } from '@/feature/cart/flight/useFlyToCart';
 import { useCartActions } from '@/feature/cart/hook/useCart';
 import type { Product } from '@/feature/product/type/product.interface';
-import { formatPrice } from '@/helpers';
 import { computePreviousPrice } from '@/lib/product-price';
+import { ProductPrice } from './ProductPrice';
 
 type ProductCardProps = {
   product: Product;
@@ -67,16 +67,12 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
             {name}
           </h3>
 
-          <p className='mt-auto flex items-baseline gap-1.5'>
-            <span className='text-lg font-bold text-heading'>
-              {formatPrice(price)}
-            </span>
-            {previousPrice !== null && (
-              <span className='text-xs text-muted line-through'>
-                {formatPrice(previousPrice)}
-              </span>
-            )}
-          </p>
+          <ProductPrice
+            price={price}
+            discount={product.discount}
+            size='sm'
+            className='mt-auto'
+          />
         </div>
       </Link>
 
