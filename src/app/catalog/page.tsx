@@ -24,18 +24,33 @@ function CatalogPage({ searchParams }: CatalogPageProps) {
       />
       <Section direction='row'>
         {/*
-          Wraps both boundaries: the sidebar filters and the results sort control
-          sit on opposite sides of the grid but must share one filter state.
+          `Root` reads the search params through nuqs, so with `cacheComponents`
+          it cannot render in the static shell: it needs its own boundary above
+          the inner ones. The fallback mirrors the full row so the shell keeps
+          the sidebar + results layout instead of collapsing to nothing.
         */}
-        <CatalogFilters.Root>
-          <Suspense fallback={<CatalogSidebarSkeleton />}>
-            <CatalogSidebar />
-          </Suspense>
+        <Suspense
+          fallback={
+            <>
+              <CatalogSidebarSkeleton />
+              <ProductResultsSkeleton />
+            </>
+          }
+        >
+          {/*
+            Wraps both boundaries: the sidebar filters and the results sort control
+            sit on opposite sides of the grid but must share one filter state.
+          */}
+          <CatalogFilters.Root>
+            <Suspense fallback={<CatalogSidebarSkeleton />}>
+              <CatalogSidebar />
+            </Suspense>
 
-          <Suspense fallback={<ProductResultsSkeleton />}>
-            <ProductResults searchParams={searchParams} />
-          </Suspense>
-        </CatalogFilters.Root>
+            <Suspense fallback={<ProductResultsSkeleton />}>
+              <ProductResults searchParams={searchParams} />
+            </Suspense>
+          </CatalogFilters.Root>
+        </Suspense>
       </Section>
     </>
   );

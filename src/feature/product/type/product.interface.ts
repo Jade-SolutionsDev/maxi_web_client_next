@@ -17,7 +17,7 @@ export interface ProductResponse {
   expiryDate: string | null;
   /** 'unidad' | 'kg' | 'g' | 'L' | 'ml'... */
   measureUnit: string;
-
+  available: number;
   basePrice: number;
   /** 0–100, numeric. */
   discount: number;
