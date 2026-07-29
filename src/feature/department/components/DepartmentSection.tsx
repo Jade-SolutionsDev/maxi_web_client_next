@@ -12,7 +12,7 @@ import {
 } from './department-carousel.styles';
 
 async function DepartmentSection() {
-  const departments = await getDepartments();
+  const departments = await getDepartments({ featured: true });
 
   if (departments.length === 0) return null;
 

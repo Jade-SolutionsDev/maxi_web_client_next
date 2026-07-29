@@ -14,6 +14,10 @@ export interface DepartmentResponse {
   deletedAt: string | null;
 }
 
+export interface DepartmentFilters {
+  featured?: boolean;
+}
+
 export interface Department {
   id: string;
   name: string;
