@@ -4,11 +4,6 @@
   --background: #ffffff;
   --foreground: #171717;
 
-  /* Altura del Header sticky: 72px de la fila principal (logo + buscador +
-     carrito) más 40px de la barra de navegación, visible desde `md`. Lo que se
-     pegue por debajo del header — como el sidebar de filtros del catálogo —
-     usa esta variable como offset. Si cambia la altura del Header, actualizá
-     este valor: es la única fuente de verdad. */
   --header-height: 7rem;
 }
 
@@ -45,8 +40,10 @@
     0 16px 40px -12px rgb(8 80 65 / 0.28), 0 4px 12px -6px rgb(8 80 65 / 0.16);
 
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
   --font-fredoka: var(--font-fredoka); /* títulos display (ej. hero del catálogo) */
+
+
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 body {
@@ -122,7 +119,7 @@ body {
   }
 }
 
-/* Unlayered, so it wins over the component layer above. */
+
 @media (prefers-reduced-motion: reduce) {
   .status-medallion {
     animation: none;

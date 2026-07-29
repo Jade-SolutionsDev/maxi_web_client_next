@@ -1,7 +1,15 @@
 import { Section } from '@/app/components/layout/Section';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from '@/app/components/ui/carousel';
 import { getDepartments } from '../service/department.service';
 import { DepartmentCard } from './DepartmentCard';
-import { departmentGridClass } from './department-grid.styles';
+import {
+  departmentSlideClass,
+  departmentTrackClass,
+} from './department-carousel.styles';
 
 async function DepartmentSection() {
   const departments = await getDepartments();
@@ -10,13 +18,15 @@ async function DepartmentSection() {
 
   return (
     <Section label='Departamentos'>
-      <ul className={departmentGridClass}>
-        {departments.map((department) => (
-          <li key={department.id}>
-            <DepartmentCard department={department} />
-          </li>
-        ))}
-      </ul>
+      <Carousel loop autoplayDelay={3000} aria-label='Departamentos'>
+        <CarouselContent className={departmentTrackClass}>
+          {departments.map((department) => (
+            <CarouselItem key={department.id} className={departmentSlideClass}>
+              <DepartmentCard department={department} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
     </Section>
   );
 }

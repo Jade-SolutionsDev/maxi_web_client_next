@@ -8,6 +8,7 @@ import { QuantityStepper } from '@/app/components/ui/quantity-stepper';
 import { SafeImage } from '@/app/components/ui/safe-image';
 import { useFlyToCart } from '@/feature/cart/flight/useFlyToCart';
 import { useCartActions } from '@/feature/cart/hook/useCart';
+import { buildProductDetailHref } from '@/feature/product/constants/product-detail-href';
 import type { Product } from '@/feature/product/type/product.interface';
 import { formatDiscount } from '@/helpers';
 import { computePreviousPrice } from '@/lib/product-price';
@@ -42,7 +43,7 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
   return (
     <article className='@container group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg motion-reduce:transform-none motion-reduce:transition-none'>
       <Link
-        href={`/catalog/${product.id}`}
+        href={buildProductDetailHref(product)}
         className='flex flex-1 flex-col rounded-t-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40'
       >
         <div className='relative flex aspect-4/3 items-center justify-center overflow-hidden bg-background p-2'>

@@ -10,9 +10,9 @@ type HeaderSearchProps = {
 };
 
 /**
- * Wires the header search field to the catalog. Reads `useSearchParams` — it
- * must be rendered inside a <Suspense> boundary (see {@link SearchBarFallback}),
- * otherwise it would drag the whole prerendered header shell into a dynamic hole.
+ * Wires the header search field to the catalog. Reads `useSearchParams`, so it
+ * must be rendered inside a <Suspense> boundary — render it through
+ * {@link SearchBoundary}, which owns that boundary and its fallback.
  */
 export const HeaderSearch = ({ className }: HeaderSearchProps) => {
   const router = useRouter();

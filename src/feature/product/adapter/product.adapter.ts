@@ -2,6 +2,7 @@ import type { Product, ProductResponse } from '../type/product.interface';
 
 export const toProduct = (product: ProductResponse): Product => ({
   id: product.id,
+  slug: product.slug,
   name: product.name.trim(),
   price: product.finalPrice,
   discount: product.discount,

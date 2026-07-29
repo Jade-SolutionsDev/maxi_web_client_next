@@ -11,6 +11,7 @@ type Indicator = { x: number; width: number; visible: boolean };
 
 export const PrimaryNav = () => {
   const pathname = usePathname();
+  const navRef = useRef<HTMLElement>(null);
   const linkRefs = useRef<Array<HTMLAnchorElement | null>>([]);
   const [indicator, setIndicator] = useState<Indicator>({
     x: 0,
@@ -25,8 +26,17 @@ export const PrimaryNav = () => {
 
   const moveTo = useCallback((index: number) => {
     const el = linkRefs.current[index];
-    if (!el) return;
-    setIndicator({ x: el.offsetLeft, width: el.offsetWidth, visible: true });
+    const nav = navRef.current;
+    if (!el || !nav) return;
+
+    const link = el.getBoundingClientRect();
+    const bar = nav.getBoundingClientRect();
+
+    setIndicator({
+      x: link.left - bar.left + nav.scrollLeft,
+      width: link.width,
+      visible: true,
+    });
   }, []);
 
   const settle = useCallback(() => {
@@ -49,6 +59,7 @@ export const PrimaryNav = () => {
 
   return (
     <nav
+      ref={navRef}
       aria-label='Navegación principal'
       onPointerLeave={settle}
       className={primaryNavClass}

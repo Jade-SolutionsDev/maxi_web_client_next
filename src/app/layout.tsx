@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Fredoka, Geist, Geist_Mono } from 'next/font/google';
+import { Fredoka, Geist } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     'Comprá online en MaxiHabana: departamentos, productos destacados y las mejores ofertas del día con entrega a domicilio.',
   applicationName: 'MaxiHabana',
   keywords: [
-    'supermercado online',
+    'tienda online',
     'ofertas',
     'productos',
     'compras',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Maxi — Tu supermercado online',
+    title: 'Maxi — Tu tienda online',
     description:
       'Comprá online en Maxi: departamentos, productos destacados y las mejores ofertas del día.',
   },
@@ -47,11 +47,6 @@ export const metadata: Metadata = {
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
   subsets: ['latin'],
 });
 
@@ -69,7 +64,7 @@ export default function RootLayout({
   return (
     <html
       lang='es'
-      className={`${geistSans.variable} ${geistMono.variable} ${fredoka.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${fredoka.variable} h-full antialiased`}
     >
       <body className='min-h-full flex flex-col'>
         <ClerkProvider

@@ -1,0 +1,1 @@
+export { LocationBoundary } from './LocationBoundary';

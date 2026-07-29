@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { SafeImage } from '@/app/components/ui/safe-image';
+import { cn } from '@/lib/utils';
 import type { Department } from '../type/department.interface';
+import { departmentSlideMediaClass } from './department-carousel.styles';
 
 type DepartmentCardProps = {
   department: Department;
@@ -9,8 +11,8 @@ type DepartmentCardProps = {
 const imageClass =
   'object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none';
 
-/** Matches the grid tracks: full width on phones, capped at the 26rem track. */
-const IMAGE_SIZES = '(min-width: 768px) 26rem, 100vw';
+/** Matches the carousel slides: one per view on phones, two from md, three from lg. */
+const IMAGE_SIZES = '(min-width: 1024px) 27rem, (min-width: 768px) 50vw, 100vw';
 
 function DepartmentCard({ department }: DepartmentCardProps) {
   const { imageMobile, imageDesktop } = department;
@@ -27,7 +29,12 @@ function DepartmentCard({ department }: DepartmentCardProps) {
       href={`/catalog?departmentId=${department.id}`}
       className='group block overflow-hidden rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
     >
-      <div className='relative aspect-2184/1146 w-full overflow-hidden rounded-2xl bg-primary/5'>
+      <div
+        className={cn(
+          'relative overflow-hidden bg-primary/5',
+          departmentSlideMediaClass,
+        )}
+      >
         {hasArtDirection ? (
           <>
             <SafeImage

@@ -1,15 +1,12 @@
 import { Phone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Suspense } from 'react';
 import { Container } from '@/app/components/layout/Container';
-import { LocationBadge } from '@/app/components/layout/LocationBadge';
+import { LocationBoundary } from '@/app/components/layout/location';
 import { MobileNav } from '@/app/components/layout/mobile-nav';
-import { NavItemsFallback } from '@/app/components/layout/NavItemsFallback';
-import { PrimaryNav } from '@/app/components/layout/PrimaryNav';
+import { PrimaryNavBoundary } from '@/app/components/layout/PrimaryNavBoundary';
 import { UserMenu } from '@/app/components/layout/UserMenu';
-import { HeaderSearch } from '@/app/components/search/HeaderSearch';
-import { SearchBarFallback } from '@/app/components/search/SearchBarFallback';
+import { SearchBoundary } from '@/app/components/search/SearchBoundary';
 import logo from '@/assets/logo.svg';
 import { Cart } from '@/feature/cart/components/Cart';
 import { contactPhone } from './constants/nav.constants';
@@ -17,6 +14,10 @@ import { contactPhone } from './constants/nav.constants';
 /** Own row at full width on mobile, centered from md up. */
 const searchBarClass =
   'order-last w-full min-w-0 md:order-0 md:mx-auto md:max-w-2xl md:flex-1';
+
+/** El badge se integra al header: sin fondo ni padding propios. */
+const locationBadgeHeaderClass =
+  'shrink-0 rounded-none bg-transparent px-0 py-0';
 
 export const Header = () => {
   return (
@@ -34,18 +35,10 @@ export const Header = () => {
                 className='h-8 w-auto md:h-10'
               />
             </Link>
-            <LocationBadge
-              location='Plaza'
-              className='shrink-0 rounded-none bg-transparent px-0 py-0'
-            />
+            <LocationBoundary className={locationBadgeHeaderClass} />
           </div>
 
-          {/* Buscador: lee useSearchParams para reflejar el término activo, así
-              que con cacheComponents va dentro de <Suspense>. El fallback pinta
-              el mismo campo en el shell estático, sin interactividad. */}
-          <Suspense fallback={<SearchBarFallback className={searchBarClass} />}>
-            <HeaderSearch className={searchBarClass} />
-          </Suspense>
+          <SearchBoundary className={searchBarClass} />
 
           {/* Derecha: usuario + carrito */}
           <div className='ml-auto flex shrink-0 items-center gap-4 md:ml-0'>
@@ -62,12 +55,7 @@ export const Header = () => {
       <div className='hidden bg-secondary md:block'>
         <Container>
           <div className='flex h-10 items-center justify-between gap-6'>
-            {/* usePathname (dentro de PrimaryNav) es dinámico por navegación:
-                con cacheComponents va dentro de <Suspense>. El fallback pinta el
-                mismo <nav> estático en el shell, sin el indicador deslizante. */}
-            <Suspense fallback={<NavItemsFallback />}>
-              <PrimaryNav />
-            </Suspense>
+            <PrimaryNavBoundary />
 
             <a
               href={contactPhone.href}

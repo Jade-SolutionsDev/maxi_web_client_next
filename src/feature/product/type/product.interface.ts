@@ -59,6 +59,8 @@ export interface ProductFilters {
 
 export interface Product {
   id: string;
+  /** URL-safe name owned by the API; used to build the detail page path. */
+  slug: string;
   name: string;
   price: number;
   measureUnit: string;

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import type { SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 import { PageHero } from '@/app/components/ui/page-hero';
@@ -6,7 +7,34 @@ import { CatalogSidebarSkeleton } from '@/feature/product/components/CatalogSide
 import { CatalogFilters } from '@/feature/product/components/filters';
 import { ProductResults } from '@/feature/product/components/ProductResults';
 import { ProductResultsSkeleton } from '@/feature/product/components/ProductResultsSkeleton';
+import { CATALOG_PATH } from '@/feature/product/constants/catalog-search-href';
 import { Section } from '../components/layout/Section';
+
+const title = 'Catálogo de productos';
+const description =
+  'Explorá el catálogo de MaxiHabana: filtrá por departamento, categoría y precio, y encontrá las mejores ofertas con entrega a domicilio.';
+
+/**
+ * Static on purpose. The filters live in search params, so every combination
+ * (`?q=arroz&sortBy=price&…`) is a distinct crawlable url over the same
+ * products — an unbounded crawl space that splits the page's authority.
+ * The bare `/catalog` canonical folds all of them back into one indexed url.
+ *
+ * Deriving this from `searchParams` would also force the route out of the
+ * static shell, which is the opposite of what the nested Suspense setup below
+ * is built for.
+ */
+export const metadata: Metadata = {
+  title,
+  description,
+  alternates: { canonical: CATALOG_PATH },
+  openGraph: {
+    type: 'website',
+    title,
+    description,
+    url: CATALOG_PATH,
+  },
+};
 
 type CatalogPageProps = {
   searchParams: Promise<SearchParams>;

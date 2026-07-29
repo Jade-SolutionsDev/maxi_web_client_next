@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { cache } from 'react';
 import { type ApiResponse, api, type Paginated } from '@/api/http';
 import { toProduct } from '../adapter/product.adapter';
 import type {
@@ -34,9 +35,13 @@ export const getProducts = async (
   return data.items.map(toProduct);
 };
 
-export const getProductById = async (uuid: string): Promise<Product> => {
+/**
+ * Memoized per request: the detail route needs the product twice, once in
+ * `generateMetadata` and once to render. `cache` keeps that at one HTTP call.
+ */
+export const getProductById = cache(async (uuid: string): Promise<Product> => {
   const { data } = await api<ApiResponse<ProductResponse>>(
     `/public/products/${encodeURIComponent(uuid)}`,
   );
   return toProduct(data);
-};
+});

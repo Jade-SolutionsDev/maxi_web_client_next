@@ -18,6 +18,23 @@ export const formatPrice = (value: number) => priceFormatter.format(value);
 export const formatDiscount = (discount: number) =>
   `-${Math.round(discount * 100) / 100}%`;
 
+/**
+ * Shorten `text` to at most `max` characters, breaking on a word boundary and
+ * marking the cut with an ellipsis. Used for meta descriptions, where search
+ * engines clip anything past ~155 characters anyway.
+ */
+export const truncate = (text: string, max: number): string => {
+  const trimmed = text.trim();
+  if (trimmed.length <= max) return trimmed;
+
+  // Reserve one character for the ellipsis so the result respects `max`.
+  const clipped = trimmed.slice(0, max - 1);
+  const lastSpace = clipped.lastIndexOf(' ');
+  const cut = lastSpace > 0 ? clipped.slice(0, lastSpace) : clipped;
+
+  return `${cut.trimEnd()}…`;
+};
+
 /** Constrain `value` to the inclusive `[min, max]` range. */
 export const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));

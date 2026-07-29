@@ -1,8 +1,14 @@
 import { cn } from '@/lib/utils';
 
-/** Shared classes for the desktop primary-nav container (relative for the indicator). */
+/**
+ * Shared classes for the desktop primary-nav container (relative for the
+ * indicator). The sliding indicator is a transformed element, so it counts
+ * towards the scrollable area — `no-scrollbar` keeps `overflow-x-auto` from
+ * painting a bar under the links if it ever reaches the right edge, without
+ * taking the scrolling itself away.
+ */
 export const primaryNavClass =
-  'relative flex h-full items-center gap-6 overflow-x-auto';
+  'relative flex h-full items-center gap-6 overflow-x-auto no-scrollbar';
 
 /**
  * Class list for a desktop primary-nav link. Shared by the interactive nav

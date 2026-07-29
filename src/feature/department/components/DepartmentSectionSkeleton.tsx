@@ -1,19 +1,27 @@
 import { Section } from '@/app/components/layout/Section';
 import { Skeleton } from '@/app/components/ui/skeleton';
-import { departmentGridClass } from './department-grid.styles';
+import { cn } from '@/lib/utils';
+import {
+  departmentSlideClass,
+  departmentSlideMediaClass,
+  departmentTrackClass,
+} from './department-carousel.styles';
 
 const PLACEHOLDERS = ['a', 'b', 'c'];
 
+/** Mirrors the Embla viewport/track markup so the layout does not shift. */
 function DepartmentSectionSkeleton() {
   return (
     <Section label='Departamentos'>
-      <ul className={departmentGridClass}>
-        {PLACEHOLDERS.map((id) => (
-          <li key={id}>
-            <Skeleton className='aspect-2184/1146 w-full rounded-2xl' />
-          </li>
-        ))}
-      </ul>
+      <div className='overflow-hidden'>
+        <div className={cn('flex', departmentTrackClass)}>
+          {PLACEHOLDERS.map((id) => (
+            <div key={id} className={departmentSlideClass}>
+              <Skeleton className={departmentSlideMediaClass} />
+            </div>
+          ))}
+        </div>
+      </div>
     </Section>
   );
 }

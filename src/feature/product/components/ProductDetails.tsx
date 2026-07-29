@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { ApiError } from '@/api/http';
 import { Section } from '@/app/components/layout/Section';
 import { PageHero } from '@/app/components/ui/page-hero';
@@ -7,22 +7,41 @@ import {
   FLIGHT_SOURCE_ATTR,
   PRODUCT_DETAIL_SOURCE,
 } from '@/feature/cart/flight/flight-source';
+import { CATALOG_PATH } from '../constants/catalog-search-href';
+import {
+  buildProductDetailHref,
+  extractProductId,
+} from '../constants/product-detail-href';
 import { getProductById } from '../service/product.service';
 import { ProductPrice } from './ProductPrice';
 import { ProductPurchase } from './ProductPurchase';
 
 type ProductDetailsProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 };
 
 async function ProductDetails({ params }: ProductDetailsProps) {
-  const { id } = await params;
+  const { slug } = await params;
+
+  const id = extractProductId(slug);
+  // No uuid in the segment means the url was never one of ours.
+  if (!id) notFound();
+
   const product = await getProductById(id).catch((error) => {
     if (error instanceof ApiError && error.status === 404) {
       notFound();
     }
     throw error;
   });
+
+  // Legacy `/catalog/<uuid>` links and stale slugs (renamed product) land on
+  // the canonical path. This component streams inside a Suspense boundary, so
+  // Next emits a client-side redirect here rather than a 308 — the
+  // `rel="canonical"` from `generateMetadata` is what consolidates the url for
+  // search engines. Moving this above the boundary would buy a real 308 at the
+  // cost of the loading skeleton on every product view.
+  const canonical = buildProductDetailHref(product);
+  if (canonical !== `${CATALOG_PATH}/${slug}`) permanentRedirect(canonical);
 
   return (
     <>
