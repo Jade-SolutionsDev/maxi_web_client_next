@@ -19,9 +19,14 @@ export const useProductFilter = ({
     startTransition,
   });
 
+  /**
+   * Every filter change resets `page`. Page 4 of an unfiltered catalog is not
+   * page 4 of the filtered one — keeping it lands the user on an empty grid.
+   */
   const handleCategoryFilter = (categoryId: string) => {
     setFilters((prev) => ({
       categoryId: prev.categoryId === categoryId ? null : categoryId,
+      page: null,
     }));
     onFilterApplied?.();
   };
@@ -29,6 +34,7 @@ export const useProductFilter = ({
   const handleDepartmentFilter = (departmentId: string) => {
     setFilters((prev) => ({
       departmentId: prev.departmentId === departmentId ? null : departmentId,
+      page: null,
     }));
     onFilterApplied?.();
   };
@@ -36,17 +42,23 @@ export const useProductFilter = ({
   const handleFeaturedProduct = (isFeatured: boolean) => {
     setFilters((prev) => ({
       featured: prev.featured === isFeatured ? null : isFeatured,
+      page: null,
     }));
     onFilterApplied?.();
   };
 
   const handlePriceFilter = (minPrice: number, maxPrice: number) => {
-    setFilters({ minPrice, maxPrice });
+    setFilters({ minPrice, maxPrice, page: null });
     onFilterApplied?.();
   };
 
   const handleSort = (sortBy: ProductSortBy, sortOrder: ProductSortOrder) => {
-    setFilters({ sortBy, sortOrder });
+    setFilters({ sortBy, sortOrder, page: null });
+    onFilterApplied?.();
+  };
+
+  const handlePageSize = (limit: number) => {
+    setFilters({ limit, page: null });
     onFilterApplied?.();
   };
 
@@ -59,6 +71,7 @@ export const useProductFilter = ({
       minPrice: null,
       sortBy: null,
       sortOrder: null,
+      page: null,
     });
     onFilterApplied?.();
   };
@@ -80,6 +93,7 @@ export const useProductFilter = ({
     handleFeaturedProduct,
     handlePriceFilter,
     handleDepartmentFilter,
+    handlePageSize,
     handleSort,
     filters,
     isPending,

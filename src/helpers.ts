@@ -39,6 +39,62 @@ export const truncate = (text: string, max: number): string => {
 export const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 
+/** Ascending list of the integers in the inclusive `[from, to]` range. */
+export const range = (from: number, to: number): number[] =>
+  Array.from({ length: Math.max(to - from + 1, 0) }, (_, i) => from + i);
+
+export const PAGINATION_ELLIPSIS = 'ellipsis';
+
+export type PaginationSlot = number | typeof PAGINATION_ELLIPSIS;
+
+/**
+ * Page slots to render for a paginated list: the first page, the last page, a
+ * window of `siblings` around the current one, and `ellipsis` markers wherever
+ * the sequence jumps. Keeps the control at a fixed width no matter how many
+ * pages exist.
+ */
+export const buildPaginationRange = (
+  page: number,
+  totalPages: number,
+  siblings = 1,
+): PaginationSlot[] => {
+  if (totalPages <= 0) return [];
+
+  const current = clamp(page, 1, totalPages);
+  // First, last, current, both sibling windows and the two ellipsis markers.
+  // Below that width every page fits, so an ellipsis would replace nothing.
+  const slotCount = siblings * 2 + 5;
+  if (totalPages <= slotCount) return range(1, totalPages);
+
+  const firstSibling = Math.max(current - siblings, 1);
+  const lastSibling = Math.min(current + siblings, totalPages);
+  // Page 2 next to page 1 is not a jump: an ellipsis there would hide nothing
+  // while costing the same width as the page it replaces.
+  const hasLeftGap = firstSibling > 2;
+  const hasRightGap = lastSibling < totalPages - 1;
+  // Every branch below emits `slotCount` slots so the control keeps one width
+  // across pages instead of resizing under the cursor between clicks.
+  const blockSize = siblings * 2 + 3;
+
+  if (!hasLeftGap)
+    return [...range(1, blockSize), PAGINATION_ELLIPSIS, totalPages];
+
+  if (!hasRightGap)
+    return [
+      1,
+      PAGINATION_ELLIPSIS,
+      ...range(totalPages - blockSize + 1, totalPages),
+    ];
+
+  return [
+    1,
+    PAGINATION_ELLIPSIS,
+    ...range(firstSibling, lastSibling),
+    PAGINATION_ELLIPSIS,
+    totalPages,
+  ];
+};
+
 /**
  * Derive up to two uppercase initials from a name.
  * "Ada Lovelace" → "AL", "Ada" → "A", "" → "".

@@ -11,6 +11,7 @@ import {
   parseCatalogSearchParams,
 } from '../constants/product-search-params';
 import { getProducts } from '../service/product.service';
+import { CatalogResultsBar } from './CatalogResultsBar';
 import { SortControl } from './filters/SortControl';
 import { ProductCard } from './ProductCard';
 import { catalogCardSizes, catalogGridClass } from './product-grid.styles';
@@ -18,8 +19,6 @@ import { catalogCardSizes, catalogGridClass } from './product-grid.styles';
 type ProductResultsProps = {
   searchParams: Promise<SearchParams>;
 };
-
-const LIMIT_PRODUCT = 9;
 
 export async function ProductResults({ searchParams }: ProductResultsProps) {
   const {
@@ -31,9 +30,15 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
     minPrice,
     sortBy,
     sortOrder,
+    page,
+    limit,
   } = parseCatalogSearchParams(await searchParams);
 
-  const products = await getProducts({
+  const {
+    items: products,
+    total,
+    totalPages,
+  } = await getProducts({
     q,
     departmentId,
     categoryId,
@@ -42,10 +47,16 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
     minPrice,
     sortBy: sortBy ?? DEFAULT_SORT_BY,
     sortOrder: sortOrder ?? DEFAULT_SORT_ORDER,
-    limit: LIMIT_PRODUCT,
+    page,
+    limit,
   });
 
-  const count = products.length;
+  // A page past the end is reachable by hand-editing the url. Without this it
+  // renders as a silent empty grid that looks like "no products exist".
+  const isPageOutOfRange = total > 0 && products.length === 0;
+
+  const from = (page - 1) * limit + 1;
+  const to = Math.min(page * limit, total);
 
   return (
     <div
@@ -54,8 +65,17 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
     >
       <header className='mb-6 flex flex-wrap items-center justify-between gap-4'>
         <p className='text-sm text-muted'>
-          Mostrando <span className='font-bold text-heading'>{count}</span>{' '}
-          {count === 1 ? 'producto' : 'productos'}
+          Mostrando{' '}
+          {products.length > 0 && (
+            <>
+              <span className='font-bold text-heading'>
+                {from}–{to}
+              </span>{' '}
+              de{' '}
+            </>
+          )}
+          <span className='font-bold text-heading'>{total}</span>{' '}
+          {total === 1 ? 'producto' : 'productos'}
           {q && (
             <>
               {' '}
@@ -68,7 +88,13 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
         </div>
       </header>
 
-      {count === 0 ? (
+      {isPageOutOfRange ? (
+        <EmptyState
+          title='Esta página ya no tiene productos'
+          description='El catálogo cambió desde que llegaste acá. Volvé al principio para verlo completo.'
+          action={{ href: CATALOG_PATH, label: 'Ir a la primera página' }}
+        />
+      ) : total === 0 ? (
         q ? (
           <EmptyState
             title={`No encontramos productos para «${q}»`}
@@ -82,13 +108,17 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
           />
         )
       ) : (
-        <ul className={catalogGridClass}>
-          {products.map((product) => (
-            <li key={product.id} className='flex'>
-              <ProductCard product={product} imageSizes={catalogCardSizes} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className={catalogGridClass}>
+            {products.map((product) => (
+              <li key={product.id} className='flex'>
+                <ProductCard product={product} imageSizes={catalogCardSizes} />
+              </li>
+            ))}
+          </ul>
+
+          <CatalogResultsBar page={page} totalPages={totalPages} />
+        </>
       )}
     </div>
   );

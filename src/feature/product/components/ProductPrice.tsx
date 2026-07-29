@@ -1,6 +1,6 @@
 import { formatPrice } from '@/helpers';
-import { cn } from '@/lib/utils';
 import { computePreviousPrice } from '@/lib/product-price';
+import { cn } from '@/lib/utils';
 
 interface ProductPriceProps {
   price: number;

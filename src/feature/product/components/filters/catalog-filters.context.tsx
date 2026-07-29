@@ -7,7 +7,10 @@ import { useProductFilter } from '../../filters/catalog.filter';
 import { useCatalogResultsScroll } from '../../hook/useCatalogResultsScroll';
 
 type CatalogFilterState = ReturnType<typeof useProductFilter> &
-  Pick<ReturnType<typeof useCatalogResultsScroll>, 'setScrollSuspended'>;
+  Pick<
+    ReturnType<typeof useCatalogResultsScroll>,
+    'requestScroll' | 'setScrollSuspended'
+  >;
 
 type CatalogFilterOptions = {
   departments: Department[];
@@ -48,7 +51,7 @@ export const CatalogFiltersRoot = ({ children }: { children: ReactNode }) => {
 
   return (
     <CatalogFilterStateContext.Provider
-      value={{ ...filter, setScrollSuspended }}
+      value={{ ...filter, requestScroll, setScrollSuspended }}
     >
       {children}
     </CatalogFilterStateContext.Provider>

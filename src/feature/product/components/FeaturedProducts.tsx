@@ -8,7 +8,7 @@ import {
 import { getProducts } from '@/feature/product/service/product.service';
 
 async function FeaturedProducts() {
-  const products = await getProducts({
+  const { items: products } = await getProducts({
     featured: true,
   });
 

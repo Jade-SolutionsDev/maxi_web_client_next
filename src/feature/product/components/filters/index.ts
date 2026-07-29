@@ -7,6 +7,7 @@ import {
   CatalogFiltersRoot,
 } from './catalog-filters.context';
 import { FilterGroups } from './FilterGroups';
+import { PageSizeControl } from './PageSizeControl';
 import { SortControl } from './SortControl';
 
 export const CatalogFilters = {
@@ -16,6 +17,7 @@ export const CatalogFilters = {
   Toolbar: CatalogFiltersToolbar,
   Groups: FilterGroups,
   Sort: SortControl,
+  PageSize: PageSizeControl,
   Badge: CatalogFiltersBadge,
   Clear: CatalogFiltersClear,
 };

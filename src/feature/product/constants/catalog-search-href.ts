@@ -26,5 +26,15 @@ export const buildCatalogSearchHref = (
 
   // `null` deletes the key, `undefined` leaves it untouched: an empty submit
   // clears the search term without disturbing the other filters.
-  return serialize(base, { [SEARCH_QUERY_KEY]: query.trim() || null });
+  return serialize(base, {
+    [SEARCH_QUERY_KEY]: query.trim() || null,
+    page: null,
+  });
 };
+
+/**
+ * Catalog URL for `page`, keeping every active filter. Real hrefs are what make
+ * the paginated catalog crawlable and let it work before hydration.
+ */
+export const buildCatalogPageHref = (page: number, current: URLSearchParams) =>
+  serialize(`${CATALOG_PATH}?${current}`, { page });

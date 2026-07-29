@@ -5,7 +5,22 @@ import {
 } from '../constants/catalog-anchor';
 import { catalogGridClass } from './product-grid.styles';
 
-const SKELETON_PLACEHOLDERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+const SKELETON_PLACEHOLDERS = [
+  'a',
+  'b',
+  'c',
+  'd',
+  'e',
+  'f',
+  'g',
+  'h',
+  'i',
+  'j',
+  'k',
+  'l',
+];
+
+const PAGE_PLACEHOLDERS = ['prev', '1', '2', '3', 'next'];
 
 export function ProductResultsSkeleton() {
   return (
@@ -26,6 +41,15 @@ export function ProductResultsSkeleton() {
           </li>
         ))}
       </ul>
+
+      <div className='mt-8 flex flex-wrap items-center justify-center gap-3 border-t border-input/60 pt-6 sm:gap-4'>
+        <Skeleton className='h-11 w-36 rounded-xl' />
+        <div className='flex items-center gap-2'>
+          {PAGE_PLACEHOLDERS.map((id) => (
+            <Skeleton key={id} className='size-11 rounded-xl' />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

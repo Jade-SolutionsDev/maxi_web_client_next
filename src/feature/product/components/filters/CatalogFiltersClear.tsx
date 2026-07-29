@@ -9,7 +9,6 @@ type CatalogFiltersClearProps = {
   children?: ReactNode;
 };
 
-
 export const CatalogFiltersClear = ({
   className,
   children,

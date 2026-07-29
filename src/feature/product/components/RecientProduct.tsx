@@ -9,7 +9,7 @@ import { getProducts } from '../service/product.service';
 import { ProductCard } from './ProductCard';
 
 async function RecientProductSection() {
-  const recentProducts = await getProducts({
+  const { items: recentProducts } = await getProducts({
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });

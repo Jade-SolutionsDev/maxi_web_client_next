@@ -9,9 +9,14 @@ import type {
   ProductResponse,
 } from '../type/product.interface';
 
+/**
+ * Returns the whole pagination envelope, not just the page: `total` and
+ * `totalPages` are what the catalog needs to render its result count and its
+ * pager. Callers that only want the products read `.items`.
+ */
 export const getProducts = async (
   filters: ProductFilters = {},
-): Promise<Product[]> => {
+): Promise<Paginated<Product>> => {
   const { data } = await api<ApiResponse<Paginated<ProductResponse>>>(
     '/public/products',
     {
@@ -24,15 +29,15 @@ export const getProducts = async (
         maxPrice: filters.maxPrice,
         featured: filters.featured,
         includeOutOfStock: filters.includeOutOfStock,
+        page: filters.page,
         limit: filters.limit,
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
-        
       },
     },
   );
 
-  return data.items.map(toProduct);
+  return { ...data, items: data.items.map(toProduct) };
 };
 
 /**

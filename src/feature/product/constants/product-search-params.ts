@@ -16,6 +16,16 @@ export const PRICE_MIN = 0;
 export const PRICE_MAX = 1000;
 export const PRICE_STEP = 10;
 
+/**
+ * Page sizes offered by the catalog. Multiples of 12 fill whole rows on the
+ * 2/3/4-column grid, so the last row never renders half empty.
+ */
+export const PAGE_SIZE_OPTIONS = [12, 24, 48] as const;
+
+export const DEFAULT_PAGE_SIZE = PAGE_SIZE_OPTIONS[0];
+
+export const FIRST_PAGE = 1;
+
 /** URL key for the free-text product search. Single source for client and server. */
 export const SEARCH_QUERY_KEY = 'q';
 
@@ -74,6 +84,8 @@ export const productSearchParams = {
   sortBy: parseAsStringLiteral(SORT_BY_VALUES).withDefault(DEFAULT_SORT_BY),
   sortOrder:
     parseAsStringLiteral(SORT_ORDER_VALUES).withDefault(DEFAULT_SORT_ORDER),
+  page: parseAsInteger.withDefault(FIRST_PAGE),
+  limit: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
 };
 
 export type CatalogSearchParams = {
@@ -86,9 +98,16 @@ export type CatalogSearchParams = {
   maxPrice?: number;
   sortBy?: ProductSortBy;
   sortOrder?: ProductSortOrder;
+  page: number;
+  limit: number;
 };
 
 const searchParamsCache = createSearchParamsCache(productSearchParams);
+
+const isPageSize = (
+  value: number,
+): value is (typeof PAGE_SIZE_OPTIONS)[number] =>
+  PAGE_SIZE_OPTIONS.some((option) => option === value);
 
 export const parseCatalogSearchParams = (
   raw: SearchParams,
@@ -109,5 +128,9 @@ export const parseCatalogSearchParams = (
     maxPrice: Math.max(minPrice, maxPrice),
     sortBy: parsed.sortBy,
     sortOrder: parsed.sortOrder,
+    page: Math.max(parsed.page, FIRST_PAGE),
+    // A hand-written `?limit=99999` is a request to dump the whole catalog in
+    // one round trip: only the sizes the UI offers reach the API.
+    limit: isPageSize(parsed.limit) ? parsed.limit : DEFAULT_PAGE_SIZE,
   };
 };
