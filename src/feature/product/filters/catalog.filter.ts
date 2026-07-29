@@ -6,7 +6,13 @@ import type {
   ProductSortOrder,
 } from '../type/product.interface';
 
-export const useProductFilter = () => {
+type UseProductFilterOptions = {
+  onFilterApplied?: () => void;
+};
+
+export const useProductFilter = ({
+  onFilterApplied,
+}: UseProductFilterOptions = {}) => {
   const [isPending, startTransition] = useTransition();
   const [filters, setFilters] = useQueryStates(productSearchParams, {
     shallow: false,
@@ -17,26 +23,31 @@ export const useProductFilter = () => {
     setFilters((prev) => ({
       categoryId: prev.categoryId === categoryId ? null : categoryId,
     }));
+    onFilterApplied?.();
   };
 
   const handleDepartmentFilter = (departmentId: string) => {
     setFilters((prev) => ({
       departmentId: prev.departmentId === departmentId ? null : departmentId,
     }));
+    onFilterApplied?.();
   };
 
   const handleFeaturedProduct = (isFeatured: boolean) => {
     setFilters((prev) => ({
       featured: prev.featured === isFeatured ? null : isFeatured,
     }));
+    onFilterApplied?.();
   };
 
   const handlePriceFilter = (minPrice: number, maxPrice: number) => {
     setFilters({ minPrice, maxPrice });
+    onFilterApplied?.();
   };
 
   const handleSort = (sortBy: ProductSortBy, sortOrder: ProductSortOrder) => {
     setFilters({ sortBy, sortOrder });
+    onFilterApplied?.();
   };
 
   const clearAllFilter = () => {
@@ -49,6 +60,7 @@ export const useProductFilter = () => {
       sortBy: null,
       sortOrder: null,
     });
+    onFilterApplied?.();
   };
 
   const activeFilterCount = [
@@ -62,7 +74,7 @@ export const useProductFilter = () => {
   return {
     clearAllFilter,
     hasActiveFilter,
-    
+
     activeFilterCount,
     handleCategoryFilter,
     handleFeaturedProduct,

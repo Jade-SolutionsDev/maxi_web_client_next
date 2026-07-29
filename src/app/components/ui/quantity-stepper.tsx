@@ -9,6 +9,7 @@ interface QuantityStepperProps {
   value: number;
   /** Reports the quantity the user asked for, already clamped to `min`/`max`. */
   onChange: (value: number) => void;
+  onLimitReached?: (max: number) => void;
   min?: number;
   max?: number;
   itemLabel?: string;
@@ -43,6 +44,7 @@ const sizeStyles = {
 export const QuantityStepper = ({
   value,
   onChange,
+  onLimitReached,
   min = 1,
   max = Number.POSITIVE_INFINITY,
   itemLabel,
@@ -55,14 +57,27 @@ export const QuantityStepper = ({
   const scale = sizeStyles[size];
 
   const [draft, setDraft] = useState(String(value));
+  const isAtMax = value >= max;
 
   useEffect(() => setDraft(String(value)), [value]);
 
+  const commit = (requested: number) => {
+    if (requested > max) onLimitReached?.(max);
+    onChange(clamp(requested, min, max));
+  };
+
   const handleInput = (raw: string) => {
     const digits = raw.replace(/\D/g, '');
-    setDraft(digits);
     const parsed = Number(digits);
-    if (digits !== '' && parsed >= min) onChange(clamp(parsed, min, max));
+
+    if (digits !== '' && parsed > max) {
+      setDraft(String(max));
+      commit(parsed);
+      return;
+    }
+
+    setDraft(digits);
+    if (digits !== '' && parsed >= min) commit(parsed);
   };
 
   const handleBlur = () => {
@@ -118,12 +133,12 @@ export const QuantityStepper = ({
         type='button'
         onClick={(e) => {
           e.preventDefault();
-          onChange(clamp(value + 1, min, max));
+          commit(value + 1);
         }}
-        disabled={value >= max}
+        aria-disabled={isAtMax}
         aria-label={`Agregar una unidad${forItem}`}
         className={cn(
-          'flex shrink-0 items-center justify-center outline-none transition focus-visible:ring-2 disabled:opacity-40',
+          'flex shrink-0 items-center justify-center outline-none transition focus-visible:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-40',
           scale.button,
           theme.button,
         )}

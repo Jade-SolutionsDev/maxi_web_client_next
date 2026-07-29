@@ -3,6 +3,7 @@
 import { Trash2 } from 'lucide-react';
 import { QuantityStepper } from '@/app/components/ui/quantity-stepper';
 import { SafeImage } from '@/app/components/ui/safe-image';
+import { notifyStockLimit } from '@/feature/product/feedback/stock-limit.notify';
 import { formatDiscount, formatPrice } from '@/helpers';
 import { computePreviousPrice } from '@/lib/product-price';
 import type { CartItem } from '@/store/cart.store';
@@ -50,6 +51,7 @@ export const CartItemRow = ({ item }: CartItemRowProps) => {
           <QuantityStepper
             value={item.quantity}
             onChange={(quantity) => updateQuantity(item.id, quantity)}
+            onLimitReached={() => notifyStockLimit(item)}
             min={1}
             max={available}
             itemLabel={item.name}

@@ -9,6 +9,7 @@ import { SafeImage } from '@/app/components/ui/safe-image';
 import { useFlyToCart } from '@/feature/cart/flight/useFlyToCart';
 import { useCartActions } from '@/feature/cart/hook/useCart';
 import { buildProductDetailHref } from '@/feature/product/constants/product-detail-href';
+import { notifyStockLimit } from '@/feature/product/feedback/stock-limit.notify';
 import type { Product } from '@/feature/product/type/product.interface';
 import { formatDiscount } from '@/helpers';
 import { computePreviousPrice } from '@/lib/product-price';
@@ -21,7 +22,7 @@ type ProductCardProps = {
 };
 
 function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
-  const { name, price, image } = product;
+  const { name, price, image, available } = product;
 
   const { addToCart } = useCartActions();
   const flyToCart = useFlyToCart();
@@ -34,9 +35,12 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
 
   const handleAddToCart = () => {
     // State first: the cart must be right even if the animation cannot run.
-    addToCart(product, quantity);
-    setQuantity(1);
+    const added = addToCart(product, quantity);
 
+    if (added < quantity) notifyStockLimit(product);
+    if (added === 0) return;
+
+    setQuantity(1);
     flyToCart({ sourceEl: imageRef.current });
   };
 
@@ -83,8 +87,10 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
           <QuantityStepper
             value={quantity}
             onChange={setQuantity}
+            onLimitReached={() => notifyStockLimit(product)}
             min={1}
             variant='surface'
+            max={available}
             itemLabel={name}
             className='shrink-0'
           />

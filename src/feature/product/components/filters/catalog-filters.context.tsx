@@ -4,8 +4,10 @@ import { createContext, type ReactNode, useContext } from 'react';
 import type { Category } from '@/feature/categories/type/category.interface';
 import type { Department } from '@/feature/department/type/department.interface';
 import { useProductFilter } from '../../filters/catalog.filter';
+import { useCatalogResultsScroll } from '../../hook/useCatalogResultsScroll';
 
-type CatalogFilterState = ReturnType<typeof useProductFilter>;
+type CatalogFilterState = ReturnType<typeof useProductFilter> &
+  Pick<ReturnType<typeof useCatalogResultsScroll>, 'setScrollSuspended'>;
 
 type CatalogFilterOptions = {
   departments: Department[];
@@ -41,10 +43,13 @@ export function useCatalogFilterOptions() {
 }
 
 export const CatalogFiltersRoot = ({ children }: { children: ReactNode }) => {
-  const filter = useProductFilter();
+  const { requestScroll, setScrollSuspended } = useCatalogResultsScroll();
+  const filter = useProductFilter({ onFilterApplied: requestScroll });
 
   return (
-    <CatalogFilterStateContext.Provider value={filter}>
+    <CatalogFilterStateContext.Provider
+      value={{ ...filter, setScrollSuspended }}
+    >
       {children}
     </CatalogFilterStateContext.Provider>
   );

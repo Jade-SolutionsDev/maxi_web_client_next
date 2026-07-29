@@ -1,5 +1,9 @@
 import type { SearchParams } from 'nuqs/server';
 import { EmptyState } from '@/app/components/feedback/EmptyState';
+import {
+  CATALOG_RESULTS_ID,
+  CATALOG_RESULTS_SCROLL_MARGIN,
+} from '../constants/catalog-anchor';
 import { CATALOG_PATH } from '../constants/catalog-search-href';
 import {
   DEFAULT_SORT_BY,
@@ -8,8 +12,8 @@ import {
 } from '../constants/product-search-params';
 import { getProducts } from '../service/product.service';
 import { SortControl } from './filters/SortControl';
-import { catalogCardSizes, catalogGridClass } from './product-grid.styles';
 import { ProductCard } from './ProductCard';
+import { catalogCardSizes, catalogGridClass } from './product-grid.styles';
 
 type ProductResultsProps = {
   searchParams: Promise<SearchParams>;
@@ -44,7 +48,10 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
   const count = products.length;
 
   return (
-    <div className='flex-1 min-w-0'>
+    <div
+      id={CATALOG_RESULTS_ID}
+      className={`flex-1 min-w-0 ${CATALOG_RESULTS_SCROLL_MARGIN}`}
+    >
       <header className='mb-6 flex flex-wrap items-center justify-between gap-4'>
         <p className='text-sm text-muted'>
           Mostrando <span className='font-bold text-heading'>{count}</span>{' '}

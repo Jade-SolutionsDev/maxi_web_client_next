@@ -3,6 +3,7 @@ import { Fredoka, Geist } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { Toaster } from './components/feedback/Toaster';
 import { Footer } from './components/layout/Footer';
 import { Header } from './components/layout/Header';
 
@@ -17,13 +18,7 @@ export const metadata: Metadata = {
   description:
     'Comprá online en MaxiHabana: departamentos, productos destacados y las mejores ofertas del día con entrega a domicilio.',
   applicationName: 'MaxiHabana',
-  keywords: [
-    'tienda online',
-    'ofertas',
-    'productos',
-    'compras',
-    'MaxiHabana',
-  ],
+  keywords: ['tienda online', 'ofertas', 'productos', 'compras', 'MaxiHabana'],
   openGraph: {
     type: 'website',
     siteName: 'MaxiHabana',
@@ -68,10 +63,7 @@ export default function RootLayout({
     >
       <body className='min-h-full flex flex-col'>
         <ClerkProvider
-          allowedRedirectOrigins={[
-            'http://localhost:3000',
-            siteUrl,
-          ]}
+          allowedRedirectOrigins={['http://localhost:3000', siteUrl]}
         >
           <Header />
           <main className='grow'>
@@ -79,6 +71,7 @@ export default function RootLayout({
           </main>
           <Footer />
         </ClerkProvider>
+        <Toaster />
       </body>
     </html>
   );

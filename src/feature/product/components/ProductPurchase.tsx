@@ -10,6 +10,7 @@ import {
 } from '@/feature/cart/flight/flight-source';
 import { useFlyToCart } from '@/feature/cart/flight/useFlyToCart';
 import { useCartActions } from '@/feature/cart/hook/useCart';
+import { notifyStockLimit } from '@/feature/product/feedback/stock-limit.notify';
 import type { Product } from '@/feature/product/type/product.interface';
 
 type ProductPurchaseProps = {
@@ -17,14 +18,18 @@ type ProductPurchaseProps = {
 };
 
 function ProductPurchase({ product }: ProductPurchaseProps) {
-  const { name } = product;
+  const { name, available } = product;
   const { addToCart } = useCartActions();
   const flyToCart = useFlyToCart();
   const [quantity, setQuantity] = useState(1);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    const added = addToCart(product, quantity);
+
+    if (added < quantity) notifyStockLimit(product);
+    if (added === 0) return;
+
     setQuantity(1);
 
     // The product photo lives in a server component alongside this one, so it
@@ -39,7 +44,9 @@ function ProductPurchase({ product }: ProductPurchaseProps) {
       <QuantityStepper
         value={quantity}
         onChange={setQuantity}
+        onLimitReached={() => notifyStockLimit(product)}
         min={1}
+        max={available}
         variant='surface'
         size='lg'
         itemLabel={name}
