@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import {
   Select,
@@ -22,10 +23,13 @@ interface FormSelectProps {
   options: SelectOption[];
   label?: string;
   placeholder?: string;
+  icon?: ReactNode;
+  size?: 'sm' | 'default' | 'lg';
   required?: boolean;
   disabled?: boolean;
   className?: string;
   triggerClassName?: string;
+  contentClassName?: string;
 
   onValueChange?: (value: string) => void;
 }
@@ -35,10 +39,13 @@ export const FormSelect = ({
   options,
   label,
   placeholder,
+  icon,
+  size,
   required,
   disabled,
   className,
   triggerClassName,
+  contentClassName,
   onValueChange,
 }: FormSelectProps) => {
   'use no memo';
@@ -76,14 +83,16 @@ export const FormSelect = ({
                 <SelectTrigger
                   id={id}
                   ref={field.ref}
+                  size={size}
                   aria-invalid={invalid}
                   onBlur={field.onBlur}
                   className={cn('w-full', triggerClassName)}
                 >
+                  {icon}
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
 
-                <SelectContent>
+                <SelectContent className={contentClassName}>
                   {options.map((option) => (
                     <SelectItem
                       key={option.value}

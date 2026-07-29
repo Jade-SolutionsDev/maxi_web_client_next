@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Building2, MapPin } from 'lucide-react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Form } from '@/app/components/form/Form';
 import { FormSelect } from '@/app/components/form/FormSelect';
@@ -13,6 +14,14 @@ import type {
   LocationOption,
   SelectedLocation,
 } from '@/shared/location/type/location.interface';
+
+const selectTriggerClass =
+  'border-2 border-heading/15 bg-white text-heading shadow-sm transition-colors hover:border-heading/35 data-popup-open:border-heading/70 disabled:bg-white/60';
+
+const selectContentClass =
+  'rounded-xl bg-white p-1.5 ring-heading/10 [&_[data-slot=select-item]]:rounded-lg [&_[data-slot=select-item]]:py-2.5 [&_[data-slot=select-item]]:text-base';
+
+const selectIconClass = 'size-5 text-heading';
 
 interface LocationFormProps {
   provinces: LocationOption[];
@@ -62,6 +71,10 @@ export const LocationForm = ({
         label='Provincia'
         placeholder='Elegí tu provincia'
         options={provinces}
+        size='lg'
+        icon={<MapPin className={selectIconClass} aria-hidden='true' />}
+        triggerClassName={selectTriggerClass}
+        contentClassName={selectContentClass}
         required
         onValueChange={() =>
           form.resetField('municipalityId', { defaultValue: '' })
@@ -73,6 +86,10 @@ export const LocationForm = ({
         label='Municipio'
         placeholder='Elegí tu municipio'
         options={municipalityOptions}
+        size='lg'
+        icon={<Building2 className={selectIconClass} aria-hidden='true' />}
+        triggerClassName={selectTriggerClass}
+        contentClassName={selectContentClass}
         required
       />
 
