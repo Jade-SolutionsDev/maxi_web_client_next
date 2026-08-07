@@ -4,7 +4,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/app/components/ui/carousel';
-import { getDepartments } from '../service/department.service';
+import { getDepartments } from '@/shared/taxonomy/service/taxonomy.service';
 import { DepartmentCard } from './DepartmentCard';
 import {
   departmentSlideClass,

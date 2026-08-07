@@ -6,7 +6,6 @@ type SearchBoundaryProps = {
   className?: string;
 };
 
-
 export const SearchBoundary = ({ className }: SearchBoundaryProps) => (
   <Suspense fallback={<SearchBarFallback className={className} />}>
     <HeaderSearch className={className} />

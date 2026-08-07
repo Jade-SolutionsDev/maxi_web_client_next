@@ -1,8 +1,8 @@
 import { SafeImage } from '@/app/components/ui/safe-image';
-import type { Category } from '@/feature/categories/type/category.interface';
+import type { Taxonomy } from '@/shared/taxonomy/type/taxonomy.interface';
 
 type CategoryCardProps = {
-  category: Category;
+  category: Taxonomy;
   /** Responsive `sizes` hint for next/image, derived from the card's fixed width. */
   imageSizes?: string;
 };

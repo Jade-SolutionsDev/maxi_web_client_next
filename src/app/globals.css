@@ -42,14 +42,13 @@
   --font-sans: var(--font-geist-sans);
   --font-fredoka: var(--font-fredoka); /* títulos display (ej. hero del catálogo) */
 
-
   --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
- 
+
   overflow-x: clip;
 }
 
@@ -69,7 +68,6 @@ body {
     display: none; /* Chrome, Safari */
   }
 }
-
 
 @keyframes status-in {
   from {
@@ -118,7 +116,6 @@ body {
     animation: status-spin 850ms linear infinite;
   }
 }
-
 
 @media (prefers-reduced-motion: reduce) {
   .status-medallion {

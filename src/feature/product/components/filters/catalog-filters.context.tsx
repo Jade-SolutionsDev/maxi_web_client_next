@@ -1,8 +1,7 @@
 'use client';
 
 import { createContext, type ReactNode, useContext } from 'react';
-import type { Category } from '@/feature/categories/type/category.interface';
-import type { Department } from '@/feature/department/type/department.interface';
+import type { Taxonomy } from '@/shared/taxonomy/type/taxonomy.interface';
 import { useProductFilter } from '../../filters/catalog.filter';
 import { useCatalogResultsScroll } from '../../hook/useCatalogResultsScroll';
 
@@ -13,8 +12,8 @@ type CatalogFilterState = ReturnType<typeof useProductFilter> &
   >;
 
 type CatalogFilterOptions = {
-  departments: Department[];
-  categories: Category[];
+  departments: Taxonomy[];
+  categories: Taxonomy[];
 };
 
 const CatalogFilterStateContext = createContext<CatalogFilterState | null>(

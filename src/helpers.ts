@@ -3,13 +3,33 @@
  * duplicating one that already lives here is how the codebase drifts.
  */
 
-const priceFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-});
+import { CURRENCY_CODE, CURRENCY_LOCALE } from '@/lib/currency';
 
-/** Format a numeric price as USD currency (e.g. 1.13 → "$1.13"). */
-export const formatPrice = (value: number) => priceFormatter.format(value);
+const priceFormatters = new Map<string, Intl.NumberFormat>();
+
+const getPriceFormatter = (locale: string, currency: string) => {
+  const key = `${locale}/${currency}`;
+  const cached = priceFormatters.get(key);
+  if (cached) return cached;
+
+  const formatter = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+  });
+  priceFormatters.set(key, formatter);
+
+  return formatter;
+};
+
+/**
+ * Format a numeric price as currency (e.g. 1.13 → "$1.13"). Defaults to the
+ * store currency; pass `currency`/`locale` to format in another one.
+ */
+export const formatPrice = (
+  value: number,
+  currency: string = CURRENCY_CODE,
+  locale: string = CURRENCY_LOCALE,
+) => getPriceFormatter(locale, currency).format(value);
 
 /**
  * Format a discount percentage as a badge label (e.g. 20 → "-20%").

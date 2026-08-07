@@ -1,5 +1,7 @@
-import { getCategories } from '@/feature/categories/service/categories.service';
-import { getDepartments } from '@/feature/department/service/department.service';
+import {
+  getCategories,
+  getDepartments,
+} from '@/shared/taxonomy/service/taxonomy.service';
 import { CatalogFilters } from './filters';
 
 export async function CatalogSidebar() {

@@ -9,4 +9,4 @@ export const locationValueClass =
 export const locationValueSkeletonClass = 'h-5 w-24 bg-white/25';
 
 export const LOCATION_BADGE_LABEL = 'Disponible en:';
-``
+``;
