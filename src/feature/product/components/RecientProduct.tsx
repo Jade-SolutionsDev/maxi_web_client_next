@@ -12,6 +12,7 @@ async function RecientProductSection() {
   const { items: recentProducts } = await getProducts({
     sortBy: 'createdAt',
     sortOrder: 'desc',
+    limit: 10,
   });
 
   return (

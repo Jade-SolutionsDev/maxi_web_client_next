@@ -31,7 +31,7 @@ export interface ProductResponse {
 }
 
 /** Field the product list can be ordered by. */
-export type ProductSortBy = 'name' | 'price' | 'createdAt';
+export type ProductSortBy = 'name' | 'finalPrice' | 'createdAt';
 
 /** Sort direction for `sortBy`. */
 export type ProductSortOrder = 'asc' | 'desc';

@@ -3,7 +3,12 @@ import type {
   DepartmentResponse,
 } from '../type/department.interface';
 
-export const toDepartment = (department: DepartmentResponse): Department => ({
+type DepartmentSource = Pick<
+  DepartmentResponse,
+  'id' | 'name' | 'slug' | 'imageDesktopUrl' | 'imageMobileUrl'
+>;
+
+export const toDepartment = (department: DepartmentSource): Department => ({
   id: department.id,
   name: department.name.trim(),
   slug: department.slug,

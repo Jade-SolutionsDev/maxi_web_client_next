@@ -32,3 +32,19 @@ export interface Category {
   image?: string;
   departmentId: string;
 }
+
+export interface CatalogTreeCategoryResponse {
+  id: string;
+  name: string;
+  slug: string;
+  imageDesktopUrl: string | null;
+  imageMobileUrl: string | null;
+  sortOrder: number;
+  productsCount: number;
+}
+
+export interface CatalogTreeDepartmentResponse
+  extends CatalogTreeCategoryResponse {
+  isFeatured: boolean;
+  categories: CatalogTreeCategoryResponse[];
+}

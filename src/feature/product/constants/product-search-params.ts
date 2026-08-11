@@ -29,7 +29,7 @@ export const FIRST_PAGE = 1;
 /** URL key for the free-text product search. Single source for client and server. */
 export const SEARCH_QUERY_KEY = 'q';
 
-export const SORT_BY_VALUES = ['name', 'price', 'createdAt'] as const;
+export const SORT_BY_VALUES = ['name', 'finalPrice', 'createdAt'] as const;
 export const SORT_ORDER_VALUES = ['asc', 'desc'] as const;
 
 export const DEFAULT_SORT_BY: ProductSortBy = 'createdAt';
@@ -44,15 +44,15 @@ export const SORT_OPTIONS = [
     sortOrder: 'desc',
   },
   {
-    value: 'price:asc',
+    value: 'finalPrice:asc',
     label: 'Precio: menor a mayor',
-    sortBy: 'price',
+    sortBy: 'finalPrice',
     sortOrder: 'asc',
   },
   {
-    value: 'price:desc',
+    value: 'finalPrice:desc',
     label: 'Precio: mayor a menor',
-    sortBy: 'price',
+    sortBy: 'finalPrice',
     sortOrder: 'desc',
   },
   {
@@ -116,6 +116,8 @@ export const parseCatalogSearchParams = (
 
   const minPrice = clamp(parsed.minPrice, PRICE_MIN, PRICE_MAX);
   const maxPrice = clamp(parsed.maxPrice, PRICE_MIN, PRICE_MAX);
+  const lowerPrice = Math.min(minPrice, maxPrice);
+  const upperPrice = Math.max(minPrice, maxPrice);
 
   return {
     // A blank or whitespace-only `?q=` is not a filter: normalize it away so it
@@ -124,8 +126,8 @@ export const parseCatalogSearchParams = (
     departmentId: parsed.departmentId ?? undefined,
     categoryId: parsed.categoryId ?? undefined,
     featured: parsed.featured ?? undefined,
-    minPrice: Math.min(minPrice, maxPrice),
-    maxPrice: Math.max(minPrice, maxPrice),
+    minPrice: lowerPrice > PRICE_MIN ? lowerPrice : undefined,
+    maxPrice: upperPrice < PRICE_MAX ? upperPrice : undefined,
     sortBy: parsed.sortBy,
     sortOrder: parsed.sortOrder,
     page: Math.max(parsed.page, FIRST_PAGE),

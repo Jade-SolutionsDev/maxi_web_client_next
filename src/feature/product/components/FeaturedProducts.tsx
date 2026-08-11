@@ -10,6 +10,7 @@ import { getProducts } from '@/feature/product/service/product.service';
 async function FeaturedProducts() {
   const { items: products } = await getProducts({
     featured: true,
+    limit: 12,
   });
 
   return (

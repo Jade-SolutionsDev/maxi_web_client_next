@@ -1,3 +1,6 @@
+import 'server-only';
+
+import { cacheLife, cacheTag } from 'next/cache';
 import { type ApiResponse, api, type Paginated } from '@/api/http';
 import { toDepartment } from '../adapter/department.adapter';
 import type {
@@ -9,6 +12,10 @@ import type {
 export const getDepartments = async (
   filters: DepartmentFilters = {},
 ): Promise<Department[]> => {
+  'use cache';
+  cacheLife('hours');
+  cacheTag('taxonomy');
+
   const { data } = await api<ApiResponse<Paginated<DepartmentResponse>>>(
     `/public/departments`,
     {
