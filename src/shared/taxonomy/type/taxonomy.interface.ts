@@ -32,3 +32,26 @@ export interface Taxonomy {
   /** Art-direction crop for phones. Falls back to `image`. */
   imageMobile?: string;
 }
+
+export interface CatalogTaxonomyResponse {
+  id: string;
+  name: string;
+  slug: string;
+  imageDesktopUrl: string | null;
+  imageMobileUrl: string | null;
+  sortOrder: number;
+  productsCount: number;
+}
+
+export interface CatalogDepartmentResponse extends CatalogTaxonomyResponse {
+  isFeatured: boolean;
+  categories: CatalogTaxonomyResponse[];
+}
+
+export interface TaxonomyNode extends Taxonomy {
+  productsCount: number;
+}
+
+export interface TaxonomyGroup extends TaxonomyNode {
+  categories: TaxonomyNode[];
+}

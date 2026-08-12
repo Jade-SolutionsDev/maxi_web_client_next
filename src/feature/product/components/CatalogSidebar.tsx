@@ -1,17 +1,11 @@
-import {
-  getCategories,
-  getDepartments,
-} from '@/shared/taxonomy/service/taxonomy.service';
+import { getTaxonomyTree } from '@/shared/taxonomy/service/taxonomy.service';
 import { CatalogFilters } from './filters';
 
 export async function CatalogSidebar() {
-  const [categories, departments] = await Promise.all([
-    getCategories(),
-    getDepartments(),
-  ]);
+  const groups = await getTaxonomyTree();
 
   return (
-    <CatalogFilters.Options departments={departments} categories={categories}>
+    <CatalogFilters.Options groups={groups}>
       <CatalogFilters.Panel />
       <CatalogFilters.Toolbar />
     </CatalogFilters.Options>
