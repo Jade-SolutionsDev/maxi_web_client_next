@@ -23,6 +23,10 @@ const CLERK_ERROR_MESSAGES: Record<string, string> = {
   form_password_pwned:
     'Esta contraseña apareció en una filtración de datos. Elegí otra.',
   form_password_length_too_short: 'La contraseña es demasiado corta.',
+  // Recuperación de contraseña
+  form_code_incorrect: 'El código es incorrecto.',
+  verification_expired: 'El código expiró. Pedí uno nuevo.',
+  verification_failed: 'No pudimos verificar el código. Intentá de nuevo.',
   // Comunes
   form_param_format_invalid: 'El formato ingresado no es válido.',
   form_param_nil: 'Este campo es obligatorio.',
@@ -55,7 +59,7 @@ export const translateClerkError = (error: TranslatableClerkError): string => {
   return CLERK_ERROR_MESSAGES[firstError.code ?? ''] ?? FALLBACK_MESSAGE;
 };
 
-type ClerkErrorField = 'email' | 'password' | null;
+type ClerkErrorField = 'email' | 'password' | 'code' | null;
 
 const CODE_TO_FIELD: Record<string, ClerkErrorField> = {
   form_identifier_not_found: 'email',
@@ -64,6 +68,9 @@ const CODE_TO_FIELD: Record<string, ClerkErrorField> = {
   form_password_not_strong_enough: 'password',
   form_password_pwned: 'password',
   form_password_length_too_short: 'password',
+  form_code_incorrect: 'code',
+  verification_expired: 'code',
+  verification_failed: 'code',
 };
 
 export const clerkErrorField = (
@@ -72,4 +79,14 @@ export const clerkErrorField = (
   const firstError = extractFirstError(error);
   if (!firstError) return null;
   return CODE_TO_FIELD[firstError.code ?? ''] ?? null;
+};
+
+export const clerkErrorTarget = <const T extends string>(
+  error: TranslatableClerkError,
+  fields: readonly T[],
+): T | 'root' => {
+  const field = clerkErrorField(error);
+  return field && (fields as readonly string[]).includes(field)
+    ? (field as T)
+    : 'root';
 };
