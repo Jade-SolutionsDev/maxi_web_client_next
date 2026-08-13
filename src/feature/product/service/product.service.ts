@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { cacheLife, cacheTag } from 'next/cache';
 import { cache } from 'react';
 import { type ApiResponse, api, type Paginated } from '@/api/http';
 import { toProduct } from '../adapter/product.adapter';
@@ -8,17 +9,15 @@ import type {
   ProductFilters,
   ProductResponse,
 } from '../type/product.interface';
-import { cacheLife, cacheTag } from 'next/cache';
 
 export const getProducts = async (
   filters: ProductFilters = {},
 ): Promise<Paginated<Product>> => {
   'use cache';
-  cacheLife('minutes')
-  cacheTag('product-list',Object.values(filters).join('-'));
+  cacheLife('minutes');
+  cacheTag('product-list', Object.values(filters).join('-'));
 
-  const { data } = await 
-  api<ApiResponse<Paginated<ProductResponse>>>(
+  const { data } = await api<ApiResponse<Paginated<ProductResponse>>>(
     '/public/products',
     {
       params: {
@@ -26,6 +25,7 @@ export const getProducts = async (
         departmentId: filters.departmentId,
         categoryId: filters.categoryId,
         locationId: filters.locationId,
+        municipalityId: filters.municipalityId,
         minPrice: filters.minPrice,
         maxPrice: filters.maxPrice,
         featured: filters.featured,

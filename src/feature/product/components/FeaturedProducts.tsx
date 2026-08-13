@@ -6,11 +6,14 @@ import {
   productGridClass,
 } from '@/feature/product/components/product-grid.styles';
 import { getProducts } from '@/feature/product/service/product.service';
+import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 
 async function FeaturedProducts() {
+  const municipalityId = await readMunicipalityId();
   const { items: products } = await getProducts({
     featured: true,
     limit: 12,
+    municipalityId: municipalityId ?? undefined,
   });
 
   return (

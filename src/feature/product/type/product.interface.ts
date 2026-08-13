@@ -46,6 +46,7 @@ export interface ProductFilters {
   categoryId?: string;
   /** Stock for this warehouse; when omitted, total stock is used. */
   locationId?: string;
+  municipalityId?: string;
   minPrice?: number;
   maxPrice?: number;
   featured?: boolean;

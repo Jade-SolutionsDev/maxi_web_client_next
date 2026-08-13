@@ -1,5 +1,6 @@
 import type { SearchParams } from 'nuqs/server';
 import { EmptyState } from '@/app/components/feedback/EmptyState';
+import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import {
   CATALOG_RESULTS_ID,
   CATALOG_RESULTS_SCROLL_MARGIN,
@@ -34,6 +35,8 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
     limit,
   } = parseCatalogSearchParams(await searchParams);
 
+  const municipalityId = await readMunicipalityId();
+
   const {
     items: products,
     total,
@@ -45,6 +48,7 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
     featured,
     maxPrice,
     minPrice,
+    municipalityId: municipalityId ?? undefined,
     sortBy: sortBy ?? DEFAULT_SORT_BY,
     sortOrder: sortOrder ?? DEFAULT_SORT_ORDER,
     page,

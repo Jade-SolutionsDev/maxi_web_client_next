@@ -5,14 +5,17 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/app/components/ui/carousel';
+import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { getProducts } from '../service/product.service';
 import { ProductCard } from './ProductCard';
 
 async function RecientProductSection() {
+  const municipalityId = await readMunicipalityId();
   const { items: recentProducts } = await getProducts({
     sortBy: 'createdAt',
     sortOrder: 'desc',
     limit: 10,
+    municipalityId: municipalityId ?? undefined,
   });
 
   return (

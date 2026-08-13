@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { writeMunicipalityId } from '../cookie/location.cookie';
 import { findSelection } from '../lib/location-catalog';
 import { SelectedMunicipalitySchema } from '../schema/location.schema';
@@ -26,6 +27,8 @@ export const saveLocation = async (
   }
 
   await writeMunicipalityId(selection.municipalityId);
+
+  revalidatePath('/', 'layout');
 
   return {};
 };
