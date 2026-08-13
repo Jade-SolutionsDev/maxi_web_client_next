@@ -1,7 +1,9 @@
 'use client';
 
+import { useAuth } from '@clerk/nextjs';
 import { ArrowRight, PiggyBank } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { SheetClose, SheetFooter } from '@/app/components/ui/sheet';
 import { formatPrice } from '@/helpers';
@@ -9,9 +11,16 @@ import { notify } from '@/lib/notify';
 import { useCartData } from '../hook/useCart';
 import { useCartStore } from '../store/cart.store';
 
-export const CartFooter = () => {
+interface CartFooterProps {
+  closeSheet: () => void;
+}
+
+export const CartFooter = ({ closeSheet }: CartFooterProps) => {
   const router = useRouter();
+  const { isLoaded, isSignedIn } = useAuth();
   const mode = useCartStore((state) => state.mode);
+  const adoptGuestCart = useCartStore((state) => state.actions.adoptGuestCart);
+  const [isPreparing, setIsPreparing] = useState(false);
   const {
     totalItems,
     totalPrice,
@@ -21,8 +30,9 @@ export const CartFooter = () => {
   } = useCartData();
   const hasSavings = totalSavings > 0;
 
-  const handleCheckout = () => {
-    if (mode === 'guest') {
+  const handleCheckout = async () => {
+    if (!isSignedIn) {
+      closeSheet();
       notify.info('Iniciá sesión para completar tu compra', {
         id: 'checkout-login',
         description: 'Tu carrito se conserva al iniciar sesión.',
@@ -30,6 +40,23 @@ export const CartFooter = () => {
       router.push('/login');
       return;
     }
+
+    if (mode === 'guest') {
+      setIsPreparing(true);
+      await adoptGuestCart();
+      setIsPreparing(false);
+
+      if (useCartStore.getState().mode === 'guest') {
+        notify.error('No pudimos validar tu cuenta', {
+          id: 'checkout-account',
+          description:
+            'Cerrá sesión, volvé a entrar e intentá de nuevo. Si sigue fallando, contactanos.',
+        });
+        return;
+      }
+    }
+
+    closeSheet();
     router.push('/checkout');
   };
 
@@ -73,20 +100,17 @@ export const CartFooter = () => {
         </p>
       )}
 
-      <SheetClose
-        render={
-          <Button
-            size='lg'
-            type='button'
-            disabled={hasUnavailableLines || totalItems === 0}
-            onClick={handleCheckout}
-            className='w-full gap-2'
-          >
-            Proceder al pago
-            <ArrowRight className='size-4.5 shrink-0' aria-hidden='true' />
-          </Button>
-        }
-      />
+      <Button
+        size='lg'
+        type='button'
+        disabled={hasUnavailableLines || totalItems === 0 || !isLoaded}
+        loading={isPreparing}
+        onClick={handleCheckout}
+        className='w-full gap-2'
+      >
+        Proceder al pago
+        <ArrowRight className='size-4.5 shrink-0' aria-hidden='true' />
+      </Button>
 
       <SheetClose
         render={
