@@ -20,6 +20,10 @@
   --color-heading: #15231d; /* títulos, texto principal y precios */
   --color-muted: #5c6b64; /* texto secundario / descripciones */
 
+  /* Bandas cálidas de secciones estáticas (ej. "Nuestros servicios") */
+  --color-sand: #f6dcc0;
+  --color-sand-strong: #f1cba6;
+
   /* Acentos */
   --color-accent: #1d9e75; /* etiquetas de categoría y enlaces de acento */
   --color-accent-foreground: var(--color-heading); /* texto sobre --color-accent */

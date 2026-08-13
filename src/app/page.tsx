@@ -5,6 +5,7 @@ import { CategoriesSectionSkeleton } from '@/feature/categories/components/Categ
 import { DepartmentSection } from '@/feature/department/components/DepartmentSection';
 import { DepartmentSectionSkeleton } from '@/feature/department/components/DepartmentSectionSkeleton';
 import { HeroBanner } from '@/feature/home/components/HeroBanner';
+import { ServicesSection } from '@/feature/home/components/ServicesSection';
 import { FeaturedProducts } from '@/feature/product/components/FeaturedProducts';
 import { ProductsSkeleton } from '@/feature/product/components/ProductsSkeleton';
 import RecientProductSection from '@/feature/product/components/RecientProduct';
@@ -27,6 +28,8 @@ export default function Home() {
           <FeaturedProducts />
         </Suspense>
       </SectionBoundary>
+
+      <ServicesSection />
 
       <SectionBoundary label='las categorías'>
         <Suspense fallback={<CategoriesSectionSkeleton />}>
