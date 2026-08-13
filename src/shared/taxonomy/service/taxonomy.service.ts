@@ -13,10 +13,16 @@ import type {
 
 export const TAXONOMY_TREE_TAG = 'taxonomy-tree';
 
+export const TAXONOMY_TAG = 'taxonomy';
+
 const getTaxonomy = async (
   path: string,
   { featured }: TaxonomyFilters,
 ): Promise<Taxonomy[]> => {
+  'use cache';
+  cacheLife('hours');
+  cacheTag(TAXONOMY_TAG);
+
   const { data } = await api<ApiResponse<Paginated<TaxonomyResponse>>>(path, {
     params: { featured },
   });
