@@ -2,6 +2,7 @@
 
 import { Sheet, SheetContent } from '@/app/components/ui/sheet';
 import { useCartData } from '../hook/useCart';
+import { useCartSync } from '../hook/useCartSync';
 import { CartAnnouncer } from './CartAnnouncer';
 import { CartEmpty } from './CartEmpty';
 import { CartFooter } from './CartFooter';
@@ -10,6 +11,8 @@ import { CartItemRow } from './CartRow';
 import { CartTrigger } from './CartTrigger';
 
 export const Cart = () => {
+  useCartSync();
+
   const { cartItems } = useCartData();
   const hasItems = cartItems.length > 0;
 
@@ -24,7 +27,7 @@ export const Cart = () => {
         {hasItems ? (
           <ul className='flex-1 divide-y divide-input overflow-y-auto px-5 py-4'>
             {cartItems.map((item) => (
-              <CartItemRow key={item.id} item={item} />
+              <CartItemRow key={item.productId} item={item} />
             ))}
           </ul>
         ) : (

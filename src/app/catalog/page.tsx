@@ -12,18 +12,8 @@ import { Section } from '../components/layout/Section';
 
 const title = 'Catálogo de productos';
 const description =
-  'Explorá el catálogo de MaxiHabana: filtrá por departamento, categoría y precio, y encontrá las mejores ofertas con entrega a domicilio.';
+  'Explorá el catálogo de MaxiHabana: filtrá por departamento, categoría y precio, y encontrá las mejores ofertas con recogida en tienda.';
 
-/**
- * Static on purpose. The filters live in search params, so every combination
- * (`?q=arroz&sortBy=price&…`) is a distinct crawlable url over the same
- * products — an unbounded crawl space that splits the page's authority.
- * The bare `/catalog` canonical folds all of them back into one indexed url.
- *
- * Deriving this from `searchParams` would also force the route out of the
- * static shell, which is the opposite of what the nested Suspense setup below
- * is built for.
- */
 export const metadata: Metadata = {
   title,
   description,

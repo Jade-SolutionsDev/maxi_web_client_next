@@ -59,6 +59,12 @@ export const truncate = (text: string, max: number): string => {
 export const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 
+/**
+ * Round a money amount to cents. Summing prices in binary floating point drifts
+ * (0.1 * 3 = 0.30000000000000004), and a total is read digit by digit.
+ */
+export const roundMoney = (value: number) => Math.round(value * 100) / 100;
+
 /** Ascending list of the integers in the inclusive `[from, to]` range. */
 export const range = (from: number, to: number): number[] =>
   Array.from({ length: Math.max(to - from + 1, 0) }, (_, i) => from + i);

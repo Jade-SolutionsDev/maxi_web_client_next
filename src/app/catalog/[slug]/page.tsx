@@ -6,9 +6,9 @@ import { extractProductId } from '@/feature/product/constants/product-detail-hre
 import { buildProductMetadata } from '@/feature/product/seo/product-metadata';
 import { getProductById } from '@/feature/product/service/product.service';
 
+
 type Props = {
   params: Promise<{
-    /** Canonical form is `<product-slug>-<uuid>`; a bare uuid also resolves. */
     slug: string;
   }>;
 };
@@ -18,8 +18,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const id = extractProductId(slug);
   if (!id) return {};
 
-  // An unresolvable product is the page's problem — it renders the 404.
-  // Metadata just steps aside and lets the root layout defaults stand.
   const product = await getProductById(id).catch(() => null);
 
   return product ? buildProductMetadata(product) : {};

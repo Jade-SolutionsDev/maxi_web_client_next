@@ -19,11 +19,14 @@ export const SignOutConfirmDialog = ({
   isOpen,
   onClose,
 }: SignOutConfirmDialogProps) => {
-  const { signOut } = useAuth();
+  const { isLoaded, isSignedIn, signOut } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  // Clerk redirects on success, so the pending state is never reset here: the
-  // whole tree unmounts with the navigation.
+
+  if (isSigningOut && isLoaded && !isSignedIn) {
+    setIsSigningOut(false);
+  }
+
   const handleConfirm = () => {
     setIsSigningOut(true);
     signOut({ redirectUrl: '/' });

@@ -8,16 +8,17 @@ import type {
   ProductFilters,
   ProductResponse,
 } from '../type/product.interface';
+import { cacheLife, cacheTag } from 'next/cache';
 
-/**
- * Returns the whole pagination envelope, not just the page: `total` and
- * `totalPages` are what the catalog needs to render its result count and its
- * pager. Callers that only want the products read `.items`.
- */
 export const getProducts = async (
   filters: ProductFilters = {},
 ): Promise<Paginated<Product>> => {
-  const { data } = await api<ApiResponse<Paginated<ProductResponse>>>(
+  'use cache';
+  cacheLife('minutes')
+  cacheTag('product-list',Object.values(filters).join('-'));
+
+  const { data } = await 
+  api<ApiResponse<Paginated<ProductResponse>>>(
     '/public/products',
     {
       params: {
@@ -40,10 +41,6 @@ export const getProducts = async (
   return { ...data, items: data.items.map(toProduct) };
 };
 
-/**
- * Memoized per request: the detail route needs the product twice, once in
- * `generateMetadata` and once to render. `cache` keeps that at one HTTP call.
- */
 export const getProductById = cache(async (uuid: string): Promise<Product> => {
   const { data } = await api<ApiResponse<ProductResponse>>(
     `/public/products/${encodeURIComponent(uuid)}`,

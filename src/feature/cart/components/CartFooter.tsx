@@ -7,7 +7,8 @@ import { formatPrice } from '@/helpers';
 import { useCartData } from '../hook/useCart';
 
 export const CartFooter = () => {
-  const { totalPrice, originalTotalPrice, totalSavings } = useCartData();
+  const { totalPrice, originalTotalPrice, totalSavings, hasUnavailableLines } =
+    useCartData();
   const hasSavings = totalSavings > 0;
 
   return (
@@ -44,8 +45,19 @@ export const CartFooter = () => {
         </div>
       </dl>
 
+      {hasUnavailableLines && (
+        <p className='rounded-xl bg-destructive/10 px-3 py-2 text-sm font-semibold text-destructive'>
+          Ajustá o quitá los productos sin stock para continuar.
+        </p>
+      )}
+
       {/* TODO: enlazar a /checkout cuando exista la ruta correspondiente. */}
-      <Button size='lg' type='button' className='w-full gap-2'>
+      <Button
+        size='lg'
+        type='button'
+        disabled={hasUnavailableLines}
+        className='w-full gap-2'
+      >
         Proceder al pago
         <ArrowRight className='size-4.5 shrink-0' aria-hidden='true' />
       </Button>

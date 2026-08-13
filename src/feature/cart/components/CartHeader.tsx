@@ -1,13 +1,21 @@
 'use client';
 
 import { ShoppingCart, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { SheetClose, SheetHeader, SheetTitle } from '@/app/components/ui/sheet';
-import { useCartActions, useCartData } from '../hook/useCart';
+import { useCartData } from '../hook/useCart';
+import { CartClearConfirmDialog } from './CartClearConfirmDialog';
 
 export const CartHeader = () => {
   const { totalItems, totalLines } = useCartData();
-  const { clearCart } = useCartActions();
+  const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
+
+  const closeClearConfirm = () => setIsClearConfirmOpen(false);
+
+  if (isClearConfirmOpen && totalLines === 0) {
+    setIsClearConfirmOpen(false);
+  }
 
   return (
     <>
@@ -47,7 +55,7 @@ export const CartHeader = () => {
           <Button
             variant='ghost'
             type='button'
-            onClick={clearCart}
+            onClick={() => setIsClearConfirmOpen(true)}
             className='gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-muted hover:bg-destructive/10 hover:text-destructive hover:brightness-100 focus-visible:ring-destructive/40'
           >
             <Trash2 className='size-4 shrink-0' aria-hidden='true' />
@@ -55,6 +63,11 @@ export const CartHeader = () => {
           </Button>
         </div>
       )}
+
+      <CartClearConfirmDialog
+        isOpen={isClearConfirmOpen}
+        onClose={closeClearConfirm}
+      />
     </>
   );
 };
