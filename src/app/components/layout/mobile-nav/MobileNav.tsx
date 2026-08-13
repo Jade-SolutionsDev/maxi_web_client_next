@@ -9,7 +9,6 @@ import { MobileNavList } from './MobileNavList';
 import { MobileNavTrigger } from './MobileNavTrigger';
 
 export const MobileNav = () => {
-
   const signOutConfirm = useSignOutConfirm();
 
   return (

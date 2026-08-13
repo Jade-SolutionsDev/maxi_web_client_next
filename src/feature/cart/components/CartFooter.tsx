@@ -1,15 +1,37 @@
 'use client';
 
 import { ArrowRight, PiggyBank } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/app/components/ui/button';
 import { SheetClose, SheetFooter } from '@/app/components/ui/sheet';
 import { formatPrice } from '@/helpers';
+import { notify } from '@/lib/notify';
 import { useCartData } from '../hook/useCart';
+import { useCartStore } from '../store/cart.store';
 
 export const CartFooter = () => {
-  const { totalPrice, originalTotalPrice, totalSavings, hasUnavailableLines } =
-    useCartData();
+  const router = useRouter();
+  const mode = useCartStore((state) => state.mode);
+  const {
+    totalItems,
+    totalPrice,
+    originalTotalPrice,
+    totalSavings,
+    hasUnavailableLines,
+  } = useCartData();
   const hasSavings = totalSavings > 0;
+
+  const handleCheckout = () => {
+    if (mode === 'guest') {
+      notify.info('Iniciá sesión para completar tu compra', {
+        id: 'checkout-login',
+        description: 'Tu carrito se conserva al iniciar sesión.',
+      });
+      router.push('/login');
+      return;
+    }
+    router.push('/checkout');
+  };
 
   return (
     <SheetFooter className='gap-4 border-t border-input bg-white p-5'>
@@ -51,16 +73,20 @@ export const CartFooter = () => {
         </p>
       )}
 
-      {/* TODO: enlazar a /checkout cuando exista la ruta correspondiente. */}
-      <Button
-        size='lg'
-        type='button'
-        disabled={hasUnavailableLines}
-        className='w-full gap-2'
-      >
-        Proceder al pago
-        <ArrowRight className='size-4.5 shrink-0' aria-hidden='true' />
-      </Button>
+      <SheetClose
+        render={
+          <Button
+            size='lg'
+            type='button'
+            disabled={hasUnavailableLines || totalItems === 0}
+            onClick={handleCheckout}
+            className='w-full gap-2'
+          >
+            Proceder al pago
+            <ArrowRight className='size-4.5 shrink-0' aria-hidden='true' />
+          </Button>
+        }
+      />
 
       <SheetClose
         render={
