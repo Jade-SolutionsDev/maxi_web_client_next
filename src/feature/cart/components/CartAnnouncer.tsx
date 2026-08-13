@@ -12,16 +12,20 @@ import { useHydrated } from '../hook/useHydrated';
  * add-to-cart flow is silent for anyone not watching the animation.
  */
 export const CartAnnouncer = () => {
-  const { totalItems } = useCartData();
+  const { totalItems, status } = useCartData();
   const hydrated = useHydrated();
 
   const previous = useRef(totalItems);
-  /** Rehydrating from localStorage is not a change the user made. */
+  /**
+   * Neither rehydrating from localStorage nor the first read of the account
+   * cart is a change the user made — announcing them would greet every page
+   * load with "producto añadido".
+   */
   const settled = useRef(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || status === 'idle' || status === 'loading') return;
 
     if (!settled.current) {
       settled.current = true;
@@ -39,7 +43,7 @@ export const CartAnnouncer = () => {
         ? `Producto añadido al carrito. ${totalItems} ${totalItems === 1 ? 'artículo' : 'artículos'} en total.`
         : `Carrito actualizado. ${totalItems} ${totalItems === 1 ? 'artículo' : 'artículos'} en total.`,
     );
-  }, [hydrated, totalItems]);
+  }, [hydrated, status, totalItems]);
 
   return (
     // `<output>` carries an implicit `role="status"` — polite live region, no ARIA needed.

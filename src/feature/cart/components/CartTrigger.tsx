@@ -33,7 +33,7 @@ const RING_KEYFRAMES = [
 const PULSE_KEYFRAMES = [{ opacity: 1 }, { opacity: 0.5 }, { opacity: 1 }];
 
 export const CartTrigger = () => {
-  const { totalLines } = useCartData();
+  const { totalLines, status } = useCartData();
   const hydrated = useHydrated();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -41,7 +41,10 @@ export const CartTrigger = () => {
   /** Kept so rapid adds retarget the reaction instead of stacking it. */
   const reactionRef = useRef<Animation | null>(null);
 
-  const count = hydrated ? totalLines : 0;
+  // Until the cart is settled the count is unknown, and rolling the badge from
+  // a made-up 0 to the real number reads as items appearing on their own.
+  const settled = hydrated && status !== 'idle' && status !== 'loading';
+  const count = settled ? totalLines : 0;
   const hasItems = count > 0;
   const label = hasItems
     ? `Carrito de compra, ${count} ${count === 1 ? 'artículo' : 'artículos'}`

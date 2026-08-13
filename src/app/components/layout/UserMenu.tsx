@@ -3,7 +3,6 @@
 import { useAuth, useUser } from '@clerk/nextjs';
 import { LogOut, User } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 import {
   Menu,
   MenuContent,
@@ -13,18 +12,16 @@ import {
 } from '@/app/components/ui/menu';
 import { getInitials } from '@/helpers';
 import { SignOutConfirmDialog } from './SignOutConfirmDialog';
+import { useSignOutConfirm } from './useSignOutConfirm';
 
-/**
- * Same footprint in every state (loading, signed out, signed in) so the header
- * never shifts while Clerk resolves the session.
- */
+
 const triggerBase =
   'flex size-9 shrink-0 items-center justify-center rounded-full md:size-10';
 
 export const UserMenu = () => {
   const { isLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
-  const [isSignOutOpen, setIsSignOutOpen] = useState(false);
+  const signOutConfirm = useSignOutConfirm();
 
   if (!isLoaded) {
     return (
@@ -84,7 +81,7 @@ export const UserMenu = () => {
           <MenuSeparator />
 
           <MenuItem
-            onClick={() => setIsSignOutOpen(true)}
+            onClick={signOutConfirm.open}
             className='justify-center font-semibold'
           >
             <LogOut className='text-muted' aria-hidden='true' />
@@ -94,8 +91,8 @@ export const UserMenu = () => {
       </Menu>
 
       <SignOutConfirmDialog
-        isOpen={isSignOutOpen}
-        onClose={() => setIsSignOutOpen(false)}
+        isOpen={signOutConfirm.isOpen}
+        onClose={signOutConfirm.close}
       />
     </>
   );
