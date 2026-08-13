@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { Form } from '@/app/components/form/Form';
 import { FormInput } from '@/app/components/form/FormInput';
@@ -8,7 +9,7 @@ import { FormPassword } from '@/app/components/form/FormPassword';
 import { Button } from '@/app/components/ui/button';
 import { useSignIn } from '@/feature/auth/hook/useSignIn';
 import {
-  clerkErrorField,
+  clerkErrorTarget,
   translateClerkError,
 } from '@/feature/auth/lib/clerkErrors';
 import {
@@ -32,7 +33,7 @@ export const LoginForm = () => {
     const { error } = await login(data);
     if (!error) return;
 
-    form.setError(clerkErrorField(error) ?? 'root', {
+    form.setError(clerkErrorTarget(error, ['email', 'password']), {
       message: translateClerkError(error),
     });
   };
@@ -63,15 +64,12 @@ export const LoginForm = () => {
         {isSubmitting ? 'Entrando...' : 'Iniciar sesión'}
       </Button>
 
-      {/* TODO: implementar el flujo de recuperación de contraseña y habilitar este botón. */}
-      <button
-        type='button'
-        disabled
-        aria-disabled='true'
-        className='text-center text-sm font-medium text-heading/50 cursor-not-allowed transition-colors'
+      <Link
+        href='/reset-password'
+        className='text-center text-sm font-medium text-primary transition-colors hover:underline'
       >
-        ¿Olvidaste tu contraseña? (próximamente)
-      </button>
+        ¿Olvidaste tu contraseña?
+      </Link>
     </Form>
   );
 };

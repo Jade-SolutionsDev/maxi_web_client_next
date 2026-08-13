@@ -8,7 +8,7 @@ import { FormPassword } from '@/app/components/form/FormPassword';
 import { Button } from '@/app/components/ui/button';
 import { useSignUp } from '@/feature/auth/hook/useSignUp';
 import {
-  clerkErrorField,
+  clerkErrorTarget,
   translateClerkError,
 } from '@/feature/auth/lib/clerkErrors';
 import {
@@ -44,7 +44,7 @@ export const RegisterForm = () => {
     const { error } = await register(data);
     if (!error) return;
 
-    form.setError(clerkErrorField(error) ?? 'root', {
+    form.setError(clerkErrorTarget(error, ['email', 'password']), {
       message: translateClerkError(error),
     });
   };
