@@ -7,7 +7,7 @@ import {
   CarouselItem,
 } from '@/app/components/ui/carousel';
 import { CategoryCard } from '@/feature/categories/components/CategoryCard';
-import { getCategories } from '../service/categories.service';
+import { getCategories } from '@/shared/taxonomy/service/taxonomy.service';
 
 async function CategoriesSection() {
   const categories = await getCategories();

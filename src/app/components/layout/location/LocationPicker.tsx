@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { LocationBadge } from './LocationBadge';
-import { LocationForm } from './LocationForm';
 import {
   Dialog,
   DialogContent,
@@ -15,6 +13,8 @@ import type {
   LocationOption,
   SelectedLocation,
 } from '@/shared/location/type/location.interface';
+import { LocationBadge } from './LocationBadge';
+import { LocationForm } from './LocationForm';
 
 interface LocationPickerProps {
   provinces: LocationOption[];

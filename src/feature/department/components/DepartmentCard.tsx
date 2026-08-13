@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { SafeImage } from '@/app/components/ui/safe-image';
 import { cn } from '@/lib/utils';
-import type { Department } from '../type/department.interface';
+import type { Taxonomy } from '@/shared/taxonomy/type/taxonomy.interface';
 import { departmentSlideMediaClass } from './department-carousel.styles';
 
 type DepartmentCardProps = {
-  department: Department;
+  department: Taxonomy;
 };
 
 const imageClass =
@@ -15,13 +15,13 @@ const imageClass =
 const IMAGE_SIZES = '(min-width: 1024px) 27rem, (min-width: 768px) 50vw, 100vw';
 
 function DepartmentCard({ department }: DepartmentCardProps) {
-  const { imageMobile, imageDesktop } = department;
+  const { imageMobile, image } = department;
 
   // Art direction costs a second <img>, and a hidden <img> is still downloaded.
   // Only pay for it when the API actually returns two different crops — today
   // `imageMobileUrl` is null and the adapter falls back to the desktop URL.
   const hasArtDirection = Boolean(
-    imageMobile && imageDesktop && imageMobile !== imageDesktop,
+    imageMobile && image && imageMobile !== image,
   );
 
   return (
@@ -45,7 +45,7 @@ function DepartmentCard({ department }: DepartmentCardProps) {
               className={`block ${imageClass} md:hidden`}
             />
             <SafeImage
-              src={imageDesktop}
+              src={image}
               alt={department.name}
               fill
               sizes='26rem'
@@ -54,7 +54,7 @@ function DepartmentCard({ department }: DepartmentCardProps) {
           </>
         ) : (
           <SafeImage
-            src={imageDesktop ?? imageMobile}
+            src={image ?? imageMobile}
             alt={department.name}
             fill
             sizes={IMAGE_SIZES}

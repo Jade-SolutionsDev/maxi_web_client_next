@@ -6,7 +6,6 @@ interface LocationBoundaryProps {
   className?: string;
 }
 
-
 export const LocationBoundary = ({ className }: LocationBoundaryProps) => (
   <Suspense fallback={<LocationBadgeFallback className={className} />}>
     <LocationGate className={className} />

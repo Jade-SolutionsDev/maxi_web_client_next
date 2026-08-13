@@ -23,8 +23,8 @@ export const VerifyStatusPanel = ({ status }: VerifyStatusPanelProps) => {
       className='flex min-h-[calc(100vh-64px)] items-center justify-center bg-surface px-4 py-12 sm:px-6'
     >
       <div
-        role='status'
         aria-live='polite'
+        aria-atomic='true'
         className='w-full max-w-lg rounded-3xl border border-input bg-background p-8 text-center shadow-[0_1px_2px_rgba(21,35,29,0.04),0_12px_40px_-16px_rgba(21,35,29,0.18)] sm:p-12'
       >
         <span

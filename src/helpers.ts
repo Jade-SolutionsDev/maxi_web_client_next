@@ -3,13 +3,33 @@
  * duplicating one that already lives here is how the codebase drifts.
  */
 
-const priceFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-});
+import { CURRENCY_CODE, CURRENCY_LOCALE } from '@/lib/currency';
 
-/** Format a numeric price as USD currency (e.g. 1.13 → "$1.13"). */
-export const formatPrice = (value: number) => priceFormatter.format(value);
+const priceFormatters = new Map<string, Intl.NumberFormat>();
+
+const getPriceFormatter = (locale: string, currency: string) => {
+  const key = `${locale}/${currency}`;
+  const cached = priceFormatters.get(key);
+  if (cached) return cached;
+
+  const formatter = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+  });
+  priceFormatters.set(key, formatter);
+
+  return formatter;
+};
+
+/**
+ * Format a numeric price as currency (e.g. 1.13 → "$1.13"). Defaults to the
+ * store currency; pass `currency`/`locale` to format in another one.
+ */
+export const formatPrice = (
+  value: number,
+  currency: string = CURRENCY_CODE,
+  locale: string = CURRENCY_LOCALE,
+) => getPriceFormatter(locale, currency).format(value);
 
 /**
  * Format a discount percentage as a badge label (e.g. 20 → "-20%").
@@ -38,6 +58,12 @@ export const truncate = (text: string, max: number): string => {
 /** Constrain `value` to the inclusive `[min, max]` range. */
 export const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
+
+/**
+ * Round a money amount to cents. Summing prices in binary floating point drifts
+ * (0.1 * 3 = 0.30000000000000004), and a total is read digit by digit.
+ */
+export const roundMoney = (value: number) => Math.round(value * 100) / 100;
 
 /** Ascending list of the integers in the inclusive `[from, to]` range. */
 export const range = (from: number, to: number): number[] =>

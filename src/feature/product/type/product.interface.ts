@@ -1,11 +1,11 @@
-import type { CategoryResponse } from '@/feature/categories/type/category.interface';
+import type { TaxonomyResponse } from '@/shared/taxonomy/type/taxonomy.interface';
 
 /** Raw product as returned by the API (camelCase, money as decimal strings). */
 export interface ProductResponse {
   id: string;
   categoryId: string;
   /** Read-only relation used to derive the product's department (parent). */
-  category?: CategoryResponse;
+  category?: TaxonomyResponse;
   sku: string;
   name: string;
   slug: string;

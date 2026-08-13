@@ -1,12 +1,12 @@
+import { Skeleton } from '@/app/components/ui/skeleton';
+import { cn } from '@/lib/utils';
+import { LocationMarker } from './LocationMarker';
 import {
   LOCATION_BADGE_LABEL,
   locationBadgeClass,
   locationLabelClass,
   locationValueSkeletonClass,
 } from './location-badge.styles';
-import { LocationMarker } from './LocationMarker';
-import { Skeleton } from '@/app/components/ui/skeleton';
-import { cn } from '@/lib/utils';
 
 interface LocationBadgeFallbackProps {
   label?: string;

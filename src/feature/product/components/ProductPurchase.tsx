@@ -25,17 +25,15 @@ function ProductPurchase({ product }: ProductPurchaseProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleAddToCart = () => {
-    const added = addToCart(product, quantity);
-
-    if (added < quantity) notifyStockLimit(product);
-    if (added === 0) return;
-
-    setQuantity(1);
-
     // The product photo lives in a server component alongside this one, so it
     // is found by attribute. The CTA is the fallback origin if it is missing.
     flyToCart({
       sourceEl: findFlightSource(PRODUCT_DETAIL_SOURCE) ?? buttonRef.current,
+    });
+    setQuantity(1);
+
+    void addToCart(product, quantity).then((added) => {
+      if (added < quantity) notifyStockLimit(product);
     });
   };
 

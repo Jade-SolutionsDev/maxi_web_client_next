@@ -59,4 +59,3 @@ export const getLocationCatalog = async (): Promise<LocationCatalog> => {
     ),
   };
 };
- 

@@ -1,8 +1,12 @@
 import 'server-only';
 
-import { getSessionToken, SessionRequiredError } from './session';
+import { ApiError, SessionRequiredError } from './error';
+import { getSessionToken } from './session';
+
+export { ApiError, SessionRequiredError } from './error';
 
 const BASE_URL = process.env.API_URL;
+
 
 if (!BASE_URL) {
   throw new Error('Missing API_URL environment variable');
@@ -11,17 +15,6 @@ if (!BASE_URL) {
 const trimTrailingSlash = (url: string) => url.replace(/\/+$/, '');
 
 const API_BASE = trimTrailingSlash(BASE_URL);
-
-export class ApiError extends Error {
-  constructor(
-    public status: number,
-    message: string,
-    public body?: unknown,
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
 
 export type ApiResponse<T> = {
   data: T;
@@ -37,7 +30,7 @@ export type Paginated<T> = {
   totalPages: number;
 };
 
-type ApiOptions = Omit<RequestInit, 'body'> & {
+export type ApiOptions = Omit<RequestInit, 'body'> & {
   params?: Record<string, string | number | boolean | undefined>;
   body?: unknown;
   next?: NextFetchRequestConfig;

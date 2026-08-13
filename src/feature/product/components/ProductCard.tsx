@@ -34,14 +34,14 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
   const previousPrice = computePreviousPrice(price, discount);
 
   const handleAddToCart = () => {
-    // State first: the cart must be right even if the animation cannot run.
-    const added = addToCart(product, quantity);
-
-    if (added < quantity) notifyStockLimit(product);
-    if (added === 0) return;
-
-    setQuantity(1);
+    // Fired on the click, not on the response: the animation acknowledges the
+    // intent. A rejected add is corrected by the toast and the cart re-read.
     flyToCart({ sourceEl: imageRef.current });
+    setQuantity(1);
+
+    void addToCart(product, quantity).then((added) => {
+      if (added < quantity) notifyStockLimit(product);
+    });
   };
 
   return (

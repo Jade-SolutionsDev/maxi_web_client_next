@@ -1,11 +1,11 @@
+import { cn } from '@/lib/utils';
+import { LocationMarker } from './LocationMarker';
 import {
   LOCATION_BADGE_LABEL,
   locationBadgeClass,
   locationLabelClass,
   locationValueClass,
 } from './location-badge.styles';
-import { LocationMarker } from './LocationMarker';
-import { cn } from '@/lib/utils';
 
 interface LocationBadgeProps {
   location: string;

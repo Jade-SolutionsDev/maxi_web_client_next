@@ -48,10 +48,12 @@ describe('toLocationOptions', () => {
   });
 
   it('groups municipality options under their owning province', () => {
-    expect(toLocationOptions(catalog).municipalitiesByProvince[habana]).toEqual([
-      { value: habanaVieja, label: 'Habana Vieja' },
-      { value: plaza, label: 'Plaza de la Revolución' },
-    ]);
+    expect(toLocationOptions(catalog).municipalitiesByProvince[habana]).toEqual(
+      [
+        { value: habanaVieja, label: 'Habana Vieja' },
+        { value: plaza, label: 'Plaza de la Revolución' },
+      ],
+    );
   });
 
   it('keeps a province with no municipalities as an empty array', () => {

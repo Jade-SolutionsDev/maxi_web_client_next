@@ -1,6 +1,10 @@
 import { useQueryStates } from 'nuqs';
 import { useTransition } from 'react';
-import { productSearchParams } from '../constants/product-search-params';
+import {
+  PRICE_MAX,
+  PRICE_MIN,
+  productSearchParams,
+} from '../constants/product-search-params';
 import type {
   ProductSortBy,
   ProductSortOrder,
@@ -26,6 +30,7 @@ export const useProductFilter = ({
   const handleCategoryFilter = (categoryId: string) => {
     setFilters((prev) => ({
       categoryId: prev.categoryId === categoryId ? null : categoryId,
+      departmentId: null,
       page: null,
     }));
     onFilterApplied?.();
@@ -34,6 +39,7 @@ export const useProductFilter = ({
   const handleDepartmentFilter = (departmentId: string) => {
     setFilters((prev) => ({
       departmentId: prev.departmentId === departmentId ? null : departmentId,
+      categoryId: null,
       page: null,
     }));
     onFilterApplied?.();
@@ -76,10 +82,14 @@ export const useProductFilter = ({
     onFilterApplied?.();
   };
 
+  const hasPriceFilter =
+    filters.minPrice !== PRICE_MIN || filters.maxPrice !== PRICE_MAX;
+
   const activeFilterCount = [
     filters.categoryId,
     filters.departmentId,
     filters.featured,
+    hasPriceFilter || null,
   ].filter(Boolean).length;
 
   const hasActiveFilter = activeFilterCount > 0;

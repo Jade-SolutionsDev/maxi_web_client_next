@@ -88,7 +88,6 @@ export function SafeImage({
         loading={loading}
         unoptimized={unoptimized}
         className={cn(
-         
           !showPreview && [
             'transition-opacity duration-300 motion-reduce:transition-none',
             loaded ? 'opacity-100' : 'opacity-0',

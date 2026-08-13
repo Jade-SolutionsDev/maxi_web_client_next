@@ -1,4 +1,3 @@
-import { LocationPicker } from './LocationPicker';
 import { saveLocation } from '@/shared/location/action/location.action';
 import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import {
@@ -6,6 +5,7 @@ import {
   toLocationOptions,
 } from '@/shared/location/lib/location-catalog';
 import { getLocationCatalog } from '@/shared/location/service/location.service';
+import { LocationPicker } from './LocationPicker';
 
 interface LocationGateProps {
   className?: string;

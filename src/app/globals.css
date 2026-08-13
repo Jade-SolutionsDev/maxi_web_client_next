@@ -20,6 +20,10 @@
   --color-heading: #15231d; /* títulos, texto principal y precios */
   --color-muted: #5c6b64; /* texto secundario / descripciones */
 
+  /* Bandas cálidas de secciones estáticas (ej. "Nuestros servicios") */
+  --color-sand: #f6dcc0;
+  --color-sand-strong: #f1cba6;
+
   /* Acentos */
   --color-accent: #1d9e75; /* etiquetas de categoría y enlaces de acento */
   --color-accent-foreground: var(--color-heading); /* texto sobre --color-accent */
@@ -42,14 +46,13 @@
   --font-sans: var(--font-geist-sans);
   --font-fredoka: var(--font-fredoka); /* títulos display (ej. hero del catálogo) */
 
-
   --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
- 
+
   overflow-x: clip;
 }
 
@@ -69,7 +72,6 @@ body {
     display: none; /* Chrome, Safari */
   }
 }
-
 
 @keyframes status-in {
   from {
@@ -118,7 +120,6 @@ body {
     animation: status-spin 850ms linear infinite;
   }
 }
-
 
 @media (prefers-reduced-motion: reduce) {
   .status-medallion {
