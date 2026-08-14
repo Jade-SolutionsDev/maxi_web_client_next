@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
   },
   images: {
     dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: 'https',
