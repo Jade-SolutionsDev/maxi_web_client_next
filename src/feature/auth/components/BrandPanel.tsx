@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import sustento from '@/assets/SUSTENTODELICIOSO.webp';
 
-export type BrandPanelVariant = 'login' | 'register';
+export type BrandPanelVariant = 'login' | 'register' | 'reset';
 
 type BrandPanelContent = { title: string; description: string };
 
@@ -15,6 +15,11 @@ const CONTENT: Record<BrandPanelVariant, BrandPanelContent> = {
     title: 'Únete a Maxi',
     description:
       'Creá tu cuenta y accedé a ofertas exclusivas con envío rápido a toda La Habana.',
+  },
+  reset: {
+    title: 'Recuperá tu acceso',
+    description:
+      'Te enviamos un código a tu correo para que crees una nueva contraseña y vuelvas a comprar en minutos.',
   },
 };
 
