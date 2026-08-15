@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { type ApiOptions, type ApiResponse, apiAuth } from '@/api/http';
+import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { toCart } from '../adapter/cart.adapter';
 import {
   type Cart,
@@ -19,7 +20,11 @@ const linePath = (productId: string) =>
  * returns the new state and no caller ever needs a follow-up GET.
  */
 const request = async (path: string, init: ApiOptions) => {
-  const response = await apiAuth<ApiResponse<CartResponse> | null>(path, init);
+  const municipalityId = (await readMunicipalityId()) ?? undefined;
+  const response = await apiAuth<ApiResponse<CartResponse> | null>(path, {
+    ...init,
+    params: { municipalityId, ...init.params },
+  });
 
   // `DELETE /cart` answers 204, which `apiAuth` surfaces as null.
   return response ? toCart(response.data) : EMPTY_CART;
