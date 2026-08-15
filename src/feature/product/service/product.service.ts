@@ -3,6 +3,7 @@ import 'server-only';
 import { cacheLife, cacheTag } from 'next/cache';
 import { cache } from 'react';
 import { type ApiResponse, api, type Paginated } from '@/api/http';
+import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { toProduct } from '../adapter/product.adapter';
 import type {
   Product,
@@ -15,7 +16,7 @@ export const getProducts = async (
 ): Promise<Paginated<Product>> => {
   'use cache';
   cacheLife('minutes');
-  cacheTag('product-list', Object.values(filters).join('-'));
+  cacheTag('product-list');
 
   const { data } = await api<ApiResponse<Paginated<ProductResponse>>>(
     '/public/products',
@@ -42,8 +43,10 @@ export const getProducts = async (
 };
 
 export const getProductById = cache(async (uuid: string): Promise<Product> => {
+  const municipalityId = (await readMunicipalityId()) ?? undefined;
   const { data } = await api<ApiResponse<ProductResponse>>(
     `/public/products/${encodeURIComponent(uuid)}`,
+    { params: { municipalityId } },
   );
   return toProduct(data);
 });
