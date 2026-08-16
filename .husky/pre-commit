@@ -1,0 +1,4 @@
+if git diff --cached --name-only | grep -qx 'bun.lock'; then
+  node scripts/fix-lockfile-registry.mjs
+  git add bun.lock
+fi
