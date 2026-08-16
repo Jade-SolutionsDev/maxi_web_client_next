@@ -45,6 +45,7 @@ export interface CmsStaffMemberResponse {
   name: string;
   role: string;
   photoUrl: string | null;
+  resume: string | null;
   sortOrder: number;
   isActive: boolean;
 }
@@ -54,6 +55,7 @@ export interface StaffMember {
   name: string;
   role: string;
   photo?: string;
+  resume?: string;
 }
 
 export interface CmsPageResponse {

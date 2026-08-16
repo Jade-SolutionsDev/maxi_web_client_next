@@ -56,7 +56,10 @@ reintroduce hardcoded copy, banner images, or service cards.
   toggles). Payment logos stay bundled in `src/assets`; settings only decide
   which render.
 - About us (`src/app/sobre-nosotros/page.tsx`) → `getCmsPage('sobre-nosotros')`
-  (Markdown intro) + `getStaff()` (team cards).
+  (Markdown intro) + `getStaff()` rendered by
+  `src/shared/cms/components/StaffCarousel.tsx` (vertical auto-scrolling
+  slider, 3 visible, avatar + name/role/resume; static list when ≤3 members,
+  autoplay disabled under reduced motion).
 - Contacto (`src/app/contacto/page.tsx`) → `getSiteSettings().contact`.
 - Info pages (`src/app/paginas/[slug]/page.tsx`) → `getCmsPage(slug)`,
   rendered with `src/app/components/ui/markdown.tsx` (react-markdown, no raw

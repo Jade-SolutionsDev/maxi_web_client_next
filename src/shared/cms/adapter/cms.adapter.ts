@@ -30,6 +30,7 @@ export const toStaffMember = (member: CmsStaffMemberResponse): StaffMember => ({
   name: member.name.trim(),
   role: member.role.trim(),
   photo: member.photoUrl ?? undefined,
+  resume: member.resume?.trim() || undefined,
 });
 
 export const toCmsPage = (page: CmsPageResponse): CmsPage => ({
