@@ -5,6 +5,7 @@ import { CategoriesSectionSkeleton } from '@/feature/categories/components/Categ
 import { DepartmentSection } from '@/feature/department/components/DepartmentSection';
 import { DepartmentSectionSkeleton } from '@/feature/department/components/DepartmentSectionSkeleton';
 import { HeroBanner } from '@/feature/home/components/HeroBanner';
+import { HeroBannerSkeleton } from '@/feature/home/components/HeroBannerSkeleton';
 import { ServicesSection } from '@/feature/home/components/ServicesSection';
 import { FeaturedProducts } from '@/feature/product/components/FeaturedProducts';
 import { ProductsSkeleton } from '@/feature/product/components/ProductsSkeleton';
@@ -15,7 +16,11 @@ export default function Home() {
     <>
       <h1 className='sr-only'>Maxi — Supermercado online</h1>
 
-      <HeroBanner />
+      <SectionBoundary label='las promociones'>
+        <Suspense fallback={<HeroBannerSkeleton />}>
+          <HeroBanner />
+        </Suspense>
+      </SectionBoundary>
 
       <SectionBoundary label='los departamentos'>
         <Suspense fallback={<DepartmentSectionSkeleton />}>
@@ -29,7 +34,11 @@ export default function Home() {
         </Suspense>
       </SectionBoundary>
 
-      <ServicesSection />
+      <SectionBoundary label='nuestros servicios'>
+        <Suspense>
+          <ServicesSection />
+        </Suspense>
+      </SectionBoundary>
 
       <SectionBoundary label='las categorías'>
         <Suspense fallback={<CategoriesSectionSkeleton />}>

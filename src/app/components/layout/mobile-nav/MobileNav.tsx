@@ -8,8 +8,7 @@ import { MobileNavHeader } from './MobileNavHeader';
 import { MobileNavList } from './MobileNavList';
 import { MobileNavTrigger } from './MobileNavTrigger';
 
-export const MobileNav = () => {
-
+export const MobileNav = ({ phone }: { phone: string }) => {
   const signOutConfirm = useSignOutConfirm();
 
   return (
@@ -20,7 +19,7 @@ export const MobileNav = () => {
         <SheetContent side='left' showCloseButton={false} className='gap-0 p-0'>
           <MobileNavHeader />
           <MobileNavList />
-          <MobileNavFooter onSignOut={signOutConfirm.open} />
+          <MobileNavFooter phone={phone} onSignOut={signOutConfirm.open} />
         </SheetContent>
       </Sheet>
 

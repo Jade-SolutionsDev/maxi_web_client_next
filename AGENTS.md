@@ -33,3 +33,47 @@ Every section and component must be built with SEO in mind — not as an afterth
 - Give interactive elements clear states: hover, focus, disabled, and loading where relevant.
 - Respect the design tokens in `globals.css` (`text-heading`, `bg-primary`, `text-muted`, …) — do not hardcode hex colors in components.
 - Keep feedback obvious: prices, offers, quantities, and actions must read at a glance and never rely on color alone.
+## CMS content (mandatory)
+
+Editorial content is NOT hardcoded in this repo — it is managed from the
+backoffice and served by the API. When redesigning any of the surfaces below,
+change the JSX/Tailwind freely but KEEP the data source: fetch through
+`src/shared/cms/service/cms.service.ts`, never inline `fetch` and never
+reintroduce hardcoded copy, banner images, or service cards.
+
+- Hero slider (`src/feature/home/components/HeroBanner.tsx`) → `getBanners()`.
+  Each slide carries desktop/tablet/mobile variants with intrinsic
+  `width`/`height` used to build the `next/image` srcsets — always render
+  through `BannerPicture` or preserve that art-direction contract.
+- "Nuestros servicios" (`src/feature/home/components/ServicesSection.tsx`) →
+  `getCmsServices()` + `getSiteSettings().services` for the heading. Icons are
+  NAMES resolved via `src/feature/home/constants/service-icons.ts`; that
+  allowlist must stay in sync with the admin's
+  `src/pages/cms-services/service-icons.ts` (maxi_admin_react). Unknown names
+  fall back to a default icon — never crash on one.
+- Footer (`src/app/components/layout/Footer.tsx`) and the header phone →
+  `getSiteSettings()` (blurb, contact, copyright, legal links, payment
+  toggles). Payment logos stay bundled in `src/assets`; settings only decide
+  which render.
+- About us (`src/app/sobre-nosotros/page.tsx`) → `getCmsPage('sobre-nosotros')`
+  (Markdown intro) + `getStaff()` (team cards).
+- Contacto (`src/app/contacto/page.tsx`) → `getSiteSettings().contact`.
+- Info pages (`src/app/paginas/[slug]/page.tsx`) → `getCmsPage(slug)`,
+  rendered with `src/app/components/ui/markdown.tsx` (react-markdown, no raw
+  HTML). New pages need no code: create them in the backoffice.
+
+Contracts to preserve when touching these surfaces:
+
+- Every service function is `'use cache'` + `cacheLife('hours')` +
+  `cacheTag('cms')`. The API pings `POST /api/revalidate` with the `cms` tag on
+  every admin write, so edits appear without redeploys. Keep new CMS fetches on
+  the same tag.
+- The services swallow fetch failures and return `[]` / `null` /
+  `DEFAULT_SITE_SETTINGS` — the footer renders in the layout of every page, so
+  a CMS outage must degrade to defaults, never throw. Components return `null`
+  on empty lists.
+- CMS image hosts must be allowed in `next.config.ts` via
+  `NEXT_PUBLIC_MEDIA_URL` (the API's public storage base URL); the hardcoded
+  S3 entry only covers legacy `/BANNER/**` paths.
+- API endpoints (all under `GET /public/cms/`): `settings`, `banners`,
+  `services`, `staff`, `pages`, `pages/:slug`.

@@ -132,3 +132,6 @@ export const getInitials = (name: string): string => {
   const last = parts.length > 1 ? parts[parts.length - 1].charAt(0) : '';
   return (first + last).toUpperCase();
 };
+
+export const toTelHref = (phone: string): string =>
+  `tel:${phone.replace(/[^+\d]/g, '')}`;

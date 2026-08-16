@@ -1,6 +1,7 @@
 import type { StaticImageData } from 'next/image';
 import mastercard from '@/assets/mastercard.svg';
 import visa from '@/assets/visa.svg';
+import type { SiteSettings } from '@/shared/cms/type/cms.interface';
 
 export interface FooterLink {
   label: string;
@@ -13,8 +14,8 @@ export interface FooterColumn {
   links: FooterLink[];
 }
 
-export interface PaymentMethod {
-  src: StaticImageData;
+export interface PaymentMethodDisplay {
+  src: StaticImageData | null;
   alt: string;
 }
 
@@ -31,7 +32,7 @@ export const columns: FooterColumn[] = [
     title: 'Servicio al cliente',
     label: 'Servicio al cliente',
     links: [
-      { label: 'Contáctenos', href: '#' },
+      { label: 'Contáctenos', href: '/contacto' },
       { label: 'Métodos de Pago', href: '#' },
     ],
   },
@@ -45,7 +46,11 @@ export const columns: FooterColumn[] = [
   },
 ];
 
-export const paymentMethods: PaymentMethod[] = [
-  { src: visa, alt: 'Visa' },
-  { src: mastercard, alt: 'Mastercard' },
-];
+export const paymentLogos: Record<
+  keyof SiteSettings['payments'],
+  PaymentMethodDisplay
+> = {
+  visa: { src: visa, alt: 'Visa' },
+  mastercard: { src: mastercard, alt: 'Mastercard' },
+  mibilletera: { src: null, alt: 'Mi Billetera' },
+};

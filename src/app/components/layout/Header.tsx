@@ -9,7 +9,8 @@ import { UserMenu } from '@/app/components/layout/UserMenu';
 import { SearchBoundary } from '@/app/components/search/SearchBoundary';
 import logo from '@/assets/logo.svg';
 import { Cart } from '@/feature/cart/components/Cart';
-import { contactPhone } from './constants/nav.constants';
+import { toTelHref } from '@/helpers';
+import { getSiteSettings } from '@/shared/cms/service/cms.service';
 
 /** Own row at full width on mobile, centered from md up. */
 const searchBarClass =
@@ -19,14 +20,16 @@ const searchBarClass =
 const locationBadgeHeaderClass =
   'shrink-0 rounded-none bg-transparent px-0 py-0';
 
-export const Header = () => {
+export const Header = async () => {
+  const { contact } = await getSiteSettings();
+
   return (
     <header className='sticky top-0 z-20 bg-primary shadow-sm'>
       <Container>
         <div className='flex flex-wrap items-center gap-x-4 gap-y-3 py-3 md:flex-nowrap md:gap-x-6'>
           {/* Izquierda: menú mobile + logo + ubicación */}
           <div className='flex shrink-0 items-center gap-2 md:gap-4'>
-            <MobileNav />
+            <MobileNav phone={contact.phone} />
             <Link href='/'>
               <Image
                 src={logo}
@@ -58,11 +61,11 @@ export const Header = () => {
             <PrimaryNavBoundary />
 
             <a
-              href={contactPhone.href}
+              href={toTelHref(contact.phone)}
               className='flex shrink-0 items-center gap-2 rounded-sm text-sm font-bold text-white/90 whitespace-nowrap underline transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange'
             >
               <Phone className='h-4 w-4 shrink-0' aria-hidden='true' />
-              {contactPhone.label}
+              {contact.phone}
             </a>
           </div>
         </Container>

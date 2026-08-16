@@ -1,10 +1,6 @@
 import { getImageProps } from 'next/image';
-import type { BannerSlide } from '@/feature/home/mock/banners';
-
-// La caja fija el alto en cada breakpoint: sin esto el carrusel salta de altura
-// al cambiar de slide y la imagen provoca layout shift al terminar de cargar.
-const frame =
-  'relative block w-full aspect-[1081/1609] md:aspect-[745/1048] lg:aspect-[1921/393]';
+import type { BannerSlide } from '@/shared/cms/type/cms.interface';
+import { bannerFrameClass as frame } from './hero-banner.styles';
 
 type BannerPictureProps = {
   slide: BannerSlide;

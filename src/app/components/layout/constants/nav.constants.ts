@@ -15,8 +15,3 @@ export const navItems: NavItem[] = [
   { label: 'Sobre nosotros', href: '/sobre-nosotros', icon: Info },
   { label: 'Contacto', href: '/contacto', icon: Mail },
 ];
-
-export const contactPhone: NavItem = {
-  label: '+53 5 432 6665',
-  href: 'tel:+5354326665',
-};

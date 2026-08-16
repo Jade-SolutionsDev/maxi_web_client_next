@@ -6,6 +6,7 @@ const ALLOWED_TAGS = new Set([
   'taxonomy-tree',
   'location-catalog',
   'product-list',
+  'cms',
 ]);
 
 export async function POST(request: Request) {

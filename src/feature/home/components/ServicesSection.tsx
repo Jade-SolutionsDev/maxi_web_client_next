@@ -1,10 +1,29 @@
 import { Container } from '@/app/components/layout/Container';
 import { ServiceCard } from '@/feature/home/components/ServiceCard';
-import { services } from '@/feature/home/constants/services';
+import { resolveServiceIcon } from '@/feature/home/constants/service-icons';
+import {
+  getCmsServices,
+  getSiteSettings,
+} from '@/shared/cms/service/cms.service';
 
 const titleId = 'nuestros-servicios';
 
-function ServicesSection() {
+async function ServicesSection() {
+  const [items, settings] = await Promise.all([
+    getCmsServices(),
+    getSiteSettings(),
+  ]);
+
+  if (items.length === 0) return null;
+
+  const services = items.map((item) => ({
+    id: item.id,
+    icon: resolveServiceIcon(item.icon),
+    title: item.title,
+    description: item.description,
+    featured: item.featured,
+  }));
+
   return (
     <section aria-labelledby={titleId} className='mt-11'>
       <Container className='bg-linear-135 from-sand to-sand-strong pb-12 pt-10 lg:pb-[60px] lg:pt-[54px]'>
@@ -13,11 +32,10 @@ function ServicesSection() {
             id={titleId}
             className='font-fredoka text-3xl font-bold text-heading sm:text-4xl lg:text-[42px]'
           >
-            Nuestros servicios
+            {settings.services.heading}
           </h2>
           <p className='mt-3 text-pretty text-base text-muted'>
-            Cuidamos cada pedido para que tu familia en La Habana reciba lo que
-            necesita, con la mejor calidad.
+            {settings.services.subheading}
           </p>
         </header>
 

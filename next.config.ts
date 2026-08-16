@@ -1,5 +1,23 @@
 import type { NextConfig } from 'next';
 
+// CMS uploads (banners, staff photos) live on the object-storage host the API
+// is configured with; the hardcoded S3 entry below only allows /BANNER/**.
+// Set NEXT_PUBLIC_MEDIA_URL to that storage's public base URL per environment.
+const mediaUrl = process.env.NEXT_PUBLIC_MEDIA_URL;
+const mediaPattern = mediaUrl
+  ? (() => {
+      const url = new URL(mediaUrl);
+      return [
+        {
+          protocol: url.protocol.replace(':', '') as 'http' | 'https',
+          hostname: url.hostname,
+          ...(url.port ? { port: url.port } : {}),
+          pathname: `${url.pathname.replace(/\/$/, '')}/**`,
+        },
+      ];
+    })()
+  : [];
+
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
@@ -15,6 +33,7 @@ const nextConfig: NextConfig = {
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
+      ...mediaPattern,
       {
         protocol: 'https',
         hostname: 'maxi-media-prod.s3.us-east-1.amazonaws.com',

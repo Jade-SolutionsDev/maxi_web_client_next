@@ -4,12 +4,20 @@ import Link from 'next/link';
 import { Container } from '@/app/components/layout/Container';
 import jade from '@/assets/jade.svg';
 import logo from '@/assets/logo.svg';
-import { columns, paymentMethods } from './constants/footer.constants';
+import { toTelHref } from '@/helpers';
+import { getSiteSettings } from '@/shared/cms/service/cms.service';
+import { columns, paymentLogos } from './constants/footer.constants';
 
 const linkClass =
   'text-sm text-white/80 transition-colors hover:text-white hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange rounded-sm';
 
-export const Footer = () => {
+export const Footer = async () => {
+  const { footer, contact, payments } = await getSiteSettings();
+
+  const enabledMethods = (
+    Object.keys(paymentLogos) as (keyof typeof paymentLogos)[]
+  ).filter((method) => payments[method]);
+
   return (
     <footer className='bg-footer text-white'>
       <Container className='py-12'>
@@ -21,24 +29,23 @@ export const Footer = () => {
             </Link>
 
             <p className='max-w-xs text-sm leading-relaxed text-white/80'>
-              Del mercado a tu mesa, sin complicaciones. Productos frescos y de
-              confianza, con entrega rápida en toda La Habana.
+              {footer.blurb}
             </p>
 
             <address className='flex flex-col gap-3 not-italic'>
               <a
-                href='mailto:comercialmaxihabana@gmail.com'
+                href={`mailto:${contact.email}`}
                 className={`flex items-center gap-3 ${linkClass}`}
               >
                 <Mail className='h-5 w-5 shrink-0' aria-hidden='true' />
-                comercialmaxihabana@gmail.com
+                {contact.email}
               </a>
               <a
-                href='tel:+5354326665'
+                href={toTelHref(contact.phone)}
                 className={`flex items-center gap-3 ${linkClass}`}
               >
                 <Phone className='h-5 w-5 shrink-0' aria-hidden='true' />
-                +53 5 432 6665
+                {contact.phone}
               </a>
             </address>
           </div>
@@ -63,28 +70,39 @@ export const Footer = () => {
         </div>
 
         {/* Métodos de pago */}
-        <div className='mt-10 flex flex-wrap items-center gap-4'>
-          <span className='text-xs font-semibold tracking-wider text-white/60'>
-            MÉTODOS DE PAGO
-          </span>
-          <ul className='flex flex-wrap items-center gap-3'>
-            {paymentMethods.map((method) => (
-              <li
-                key={method.alt}
-                className='flex h-9 items-center justify-center rounded-md bg-white px-3'
-              >
-                <Image src={method.src} alt={method.alt} height={16} />
-              </li>
-            ))}
-          </ul>
-        </div>
+        {enabledMethods.length > 0 && (
+          <div className='mt-10 flex flex-wrap items-center gap-4'>
+            <span className='text-xs font-semibold tracking-wider text-white/60'>
+              MÉTODOS DE PAGO
+            </span>
+            <ul className='flex flex-wrap items-center gap-3'>
+              {enabledMethods.map((method) => {
+                const display = paymentLogos[method];
+                return (
+                  <li
+                    key={method}
+                    className='flex h-9 items-center justify-center rounded-md bg-white px-3'
+                  >
+                    {display.src ? (
+                      <Image src={display.src} alt={display.alt} height={16} />
+                    ) : (
+                      <span className='text-xs font-bold text-heading'>
+                        {display.alt}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </Container>
 
       {/* Barra inferior */}
       <div className='border-t border-white/10'>
         <Container className='flex flex-col gap-4 py-6 text-sm text-white/70 md:flex-row md:items-center md:justify-between'>
           <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
-            <span>© 2026 Maxi. Todos los derechos reservados.</span>
+            <span>{footer.copyright}</span>
             <span className='flex items-center gap-2'>
               Desarrollado por
               <Image src={jade} alt='Jade' height={20} />
@@ -92,12 +110,15 @@ export const Footer = () => {
           </div>
 
           <div className='flex flex-wrap gap-x-6 gap-y-2'>
-            <Link href='#' className={linkClass}>
-              Política de privacidad
-            </Link>
-            <Link href='#' className={linkClass}>
-              Términos y condiciones
-            </Link>
+            {footer.legalLinks.map((link) => (
+              <Link
+                key={link.slug}
+                href={`/paginas/${link.slug}`}
+                className={linkClass}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </Container>
       </div>
