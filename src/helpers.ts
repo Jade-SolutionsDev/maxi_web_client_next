@@ -135,3 +135,14 @@ export const getInitials = (name: string): string => {
 
 export const toTelHref = (phone: string): string =>
   `tel:${phone.replace(/[^+\d]/g, '')}`;
+
+export const markdownToPlainText = (markdown: string): string =>
+  markdown
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`[^`]*`/g, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/^[>\s]*[-*+]\s+/gm, ' ')
+    .replace(/[#*_>|~]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();

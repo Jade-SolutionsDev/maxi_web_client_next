@@ -69,7 +69,7 @@ export const LocationForm = ({
       <FormSelect
         name='provinceId'
         label='Provincia'
-        placeholder='Elegí tu provincia'
+        placeholder='Elige tu provincia'
         options={provinces}
         size='lg'
         icon={<MapPin className={selectIconClass} aria-hidden='true' />}
@@ -84,7 +84,7 @@ export const LocationForm = ({
       <FormSelect
         name='municipalityId'
         label='Municipio'
-        placeholder='Elegí tu municipio'
+        placeholder='Elige tu municipio'
         options={municipalityOptions}
         size='lg'
         icon={<Building2 className={selectIconClass} aria-hidden='true' />}

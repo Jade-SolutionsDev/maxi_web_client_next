@@ -12,8 +12,8 @@ const AUTO_SCROLL_MS = 20_000;
 const VISIBLE_ROWS = 3;
 
 const StaffCard = ({ member }: { member: StaffMember }) => (
-  <article className='flex h-full items-center gap-4 rounded-2xl border border-black/5 bg-white p-4 shadow-sm sm:gap-6 sm:p-5'>
-    <div className='relative size-20 shrink-0 overflow-hidden rounded-full border border-black/5 bg-surface sm:size-24'>
+  <article className='flex h-full items-center gap-4 rounded-2xl border border-heading/5 bg-background p-4 shadow-sm sm:gap-6 sm:p-5'>
+    <div className='relative size-20 shrink-0 overflow-hidden rounded-full border border-heading/5 bg-surface sm:size-24'>
       <SafeImage
         src={member.photo}
         alt={member.name}
@@ -82,22 +82,16 @@ export const StaffCarousel = ({ staff }: { staff: StaffMember[] }) => {
         </div>
         <div
           aria-hidden='true'
-          className='pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-background to-transparent'
+          className='pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-surface to-transparent'
         />
       </div>
 
-      <div
-        role='tablist'
-        aria-label='Ir a un miembro del equipo'
-        aria-orientation='vertical'
-        className='flex flex-col items-center justify-center gap-2'
-      >
+      <div className='flex flex-col items-center justify-center gap-2'>
         {staff.map((member, index) => (
           <button
             key={member.id}
             type='button'
-            role='tab'
-            aria-selected={index === selected}
+            aria-current={index === selected}
             aria-label={`Ver a ${member.name}`}
             onClick={() => emblaApi?.scrollTo(index)}
             className={cn(

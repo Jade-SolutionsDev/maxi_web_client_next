@@ -18,6 +18,7 @@
 
   /* Texto */
   --color-heading: #15231d; /* títulos, texto principal y precios */
+  --color-body: #2b3a34; /* prosa larga (páginas de CMS): entre heading y muted */
   --color-muted: #5c6b64; /* texto secundario / descripciones */
 
   /* Bandas cálidas de secciones estáticas (ej. "Nuestros servicios") */

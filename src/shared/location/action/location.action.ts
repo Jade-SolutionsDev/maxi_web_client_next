@@ -16,7 +16,7 @@ export const saveLocation = async (
   const parsed = SelectedMunicipalitySchema.safeParse(input);
 
   if (!parsed.success) {
-    return { error: 'Elegí un municipio' };
+    return { error: 'Elige un municipio' };
   }
 
   const catalog = await getLocationCatalog();

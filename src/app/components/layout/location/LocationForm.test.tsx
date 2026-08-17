@@ -100,7 +100,7 @@ describe('LocationForm', () => {
 
     await user.click(screen.getByRole('button', { name: /Confirmar/ }));
 
-    expect(await screen.findByText(/Elegí un municipio/)).toBeTruthy();
+    expect(await screen.findByText(/Elige un municipio/)).toBeTruthy();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -117,7 +117,7 @@ describe('LocationForm', () => {
 
     const municipality = screen.getByLabelText(/Municipio/);
     expect(municipality.textContent).not.toContain(plaza);
-    expect(municipality.textContent).toContain('Elegí tu municipio');
+    expect(municipality.textContent).toContain('Elige tu municipio');
   });
 
   it('clears a pending municipality error when the province changes', async () => {
@@ -127,12 +127,12 @@ describe('LocationForm', () => {
     await chooseOption(user, /Provincia/, /La Habana/);
     await user.click(screen.getByRole('button', { name: /Confirmar/ }));
 
-    expect(await screen.findByText(/Elegí un municipio/)).toBeTruthy();
+    expect(await screen.findByText(/Elige un municipio/)).toBeTruthy();
 
     await chooseOption(user, /Provincia/, /Pinar del Río/);
 
     await waitFor(() => {
-      expect(screen.queryByText(/Elegí un municipio/)).toBeNull();
+      expect(screen.queryByText(/Elige un municipio/)).toBeNull();
     });
   });
 
@@ -171,7 +171,7 @@ describe('LocationForm', () => {
     await chooseOption(user, /Provincia/, /La Habana/);
     await user.click(screen.getByRole('button', { name: /Confirmar/ }));
 
-    expect(await screen.findByText(/Elegí un municipio/)).toBeTruthy();
+    expect(await screen.findByText(/Elige un municipio/)).toBeTruthy();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 

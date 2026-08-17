@@ -5,7 +5,7 @@ import { Container } from '@/app/components/layout/Container';
 import { Markdown } from '@/app/components/ui/markdown';
 import { PageHero } from '@/app/components/ui/page-hero';
 import { Skeleton } from '@/app/components/ui/skeleton';
-import { truncate } from '@/helpers';
+import { markdownToPlainText, truncate } from '@/helpers';
 import { getCmsPage } from '@/shared/cms/service/cms.service';
 
 type CmsPageProps = {
@@ -22,7 +22,7 @@ export async function generateMetadata({
 
   return {
     title: page.title,
-    description: truncate(page.content.replace(/[#*_>[\]`-]/g, ' '), 155),
+    description: truncate(markdownToPlainText(page.content), 155),
     alternates: { canonical: `/paginas/${page.slug}` },
   };
 }

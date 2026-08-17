@@ -68,7 +68,7 @@ export const LocationPicker = ({
             ¿Dónde estás?
           </DialogTitle>
           <DialogDescription className='text-muted'>
-            Elegí tu provincia y municipio para ver los productos disponibles en
+            Elige tu provincia y municipio para ver los productos disponibles en
             tu zona.
           </DialogDescription>
         </DialogHeader>
