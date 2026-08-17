@@ -27,6 +27,8 @@ export async function generateMetadata({
   };
 }
 
+const TITLE_ID = 'cms-page-titulo';
+
 async function CmsPageContent({ params }: CmsPageProps) {
   const { slug } = await params;
   const page = await getCmsPage(slug);
@@ -37,11 +39,14 @@ async function CmsPageContent({ params }: CmsPageProps) {
     <>
       <PageHero
         title={page.title}
+        titleId={TITLE_ID}
         breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: page.title }]}
       />
-      <Container size='sm' className='py-12'>
-        <Markdown content={page.content} />
-      </Container>
+      <article aria-labelledby={TITLE_ID}>
+        <Container size='sm' className='py-12 sm:py-16'>
+          <Markdown content={page.content} />
+        </Container>
+      </article>
     </>
   );
 }
@@ -68,7 +73,7 @@ function CmsPageSkeleton() {
         </svg>
       </section>
 
-      <Container size='sm' className='py-12'>
+      <Container size='sm' className='py-12 sm:py-16'>
         <div className='space-y-3'>
           <Skeleton className='h-4 w-full' />
           <Skeleton className='h-4 w-5/6' />
