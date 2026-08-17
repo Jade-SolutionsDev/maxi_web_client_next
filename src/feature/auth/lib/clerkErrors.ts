@@ -21,7 +21,7 @@ const CLERK_ERROR_MESSAGES: Record<string, string> = {
   form_password_not_strong_enough:
     'La contraseña no es lo suficientemente segura. Agregá más palabras poco comunes.',
   form_password_pwned:
-    'Esta contraseña apareció en una filtración de datos. Elegí otra.',
+    'Esta contraseña apareció en una filtración de datos. Elige otra.',
   form_password_length_too_short: 'La contraseña es demasiado corta.',
   // Recuperación de contraseña
   form_code_incorrect: 'El código es incorrecto.',

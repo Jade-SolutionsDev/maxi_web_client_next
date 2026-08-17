@@ -5,7 +5,7 @@ import { Container } from '@/app/components/layout/Container';
 import { Markdown } from '@/app/components/ui/markdown';
 import { PageHero } from '@/app/components/ui/page-hero';
 import { Skeleton } from '@/app/components/ui/skeleton';
-import { truncate } from '@/helpers';
+import { markdownToPlainText, truncate } from '@/helpers';
 import { getCmsPage } from '@/shared/cms/service/cms.service';
 
 type CmsPageProps = {
@@ -22,10 +22,12 @@ export async function generateMetadata({
 
   return {
     title: page.title,
-    description: truncate(page.content.replace(/[#*_>[\]`-]/g, ' '), 155),
+    description: truncate(markdownToPlainText(page.content), 155),
     alternates: { canonical: `/paginas/${page.slug}` },
   };
 }
+
+const TITLE_ID = 'cms-page-titulo';
 
 async function CmsPageContent({ params }: CmsPageProps) {
   const { slug } = await params;
@@ -37,11 +39,14 @@ async function CmsPageContent({ params }: CmsPageProps) {
     <>
       <PageHero
         title={page.title}
+        titleId={TITLE_ID}
         breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: page.title }]}
       />
-      <Container size='sm' className='py-12'>
-        <Markdown content={page.content} />
-      </Container>
+      <article aria-labelledby={TITLE_ID}>
+        <Container size='sm' className='py-12 sm:py-16'>
+          <Markdown content={page.content} />
+        </Container>
+      </article>
     </>
   );
 }
@@ -68,7 +73,7 @@ function CmsPageSkeleton() {
         </svg>
       </section>
 
-      <Container size='sm' className='py-12'>
+      <Container size='sm' className='py-12 sm:py-16'>
         <div className='space-y-3'>
           <Skeleton className='h-4 w-full' />
           <Skeleton className='h-4 w-5/6' />

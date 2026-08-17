@@ -1,7 +1,7 @@
 import z from 'zod';
 
 export const SelectedMunicipalitySchema = z.object({
-  municipalityId: z.string().trim().min(1, { message: 'Elegí un municipio' }),
+  municipalityId: z.string().trim().min(1, { message: 'Elige un municipio' }),
 });
 
 export type SelectedMunicipalitySchemaType = z.infer<
@@ -9,8 +9,8 @@ export type SelectedMunicipalitySchemaType = z.infer<
 >;
 
 export const LocationFormSchema = z.object({
-  provinceId: z.string().trim().min(1, { message: 'Elegí una provincia' }),
-  municipalityId: z.string().trim().min(1, { message: 'Elegí un municipio' }),
+  provinceId: z.string().trim().min(1, { message: 'Elige una provincia' }),
+  municipalityId: z.string().trim().min(1, { message: 'Elige un municipio' }),
 });
 
 export type LocationFormSchemaType = z.infer<typeof LocationFormSchema>;
