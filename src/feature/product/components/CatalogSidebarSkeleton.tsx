@@ -11,7 +11,6 @@ export function CatalogSidebarSkeleton() {
 
       <aside className={catalogSidebarClass}>
         <div className='mb-6'>
-          <Skeleton className='h-5 w-32' />
           <Skeleton className='mt-4 h-5 w-28' />
         </div>
         <div>
