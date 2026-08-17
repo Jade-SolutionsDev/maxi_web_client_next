@@ -33,7 +33,7 @@ async function CategoriesSection() {
                 className='basis-1/2 pl-4 sm:basis-1/3 md:basis-1/4 lg:basis-1/5'
               >
                 <Link
-                  href={`/catalog?categoryId=${category.id}`}
+                  href={`/catalog?category=${category.slug}`}
                   className='cursor-pointer'
                 >
                   <CategoryCard category={category} />

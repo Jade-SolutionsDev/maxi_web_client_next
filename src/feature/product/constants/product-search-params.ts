@@ -70,8 +70,8 @@ export const SORT_OPTIONS = [
 
 export const productSearchParams = {
   [SEARCH_QUERY_KEY]: parseAsString,
-  departmentId: parseAsString,
-  categoryId: parseAsString,
+  department: parseAsString,
+  category: parseAsString,
   featured: parseAsBoolean,
   minPrice: parseAsInteger.withDefault(PRICE_MIN),
   maxPrice: parseAsInteger.withDefault(PRICE_MAX),
@@ -85,8 +85,8 @@ export const productSearchParams = {
 export type CatalogSearchParams = {
   /** Free-text search over the product name. */
   q?: string;
-  departmentId?: string;
-  categoryId?: string;
+  department?: string;
+  category?: string;
   featured?: boolean;
   minPrice?: number;
   maxPrice?: number;
@@ -115,8 +115,8 @@ export const parseCatalogSearchParams = (
 
   return {
     q: parsed.q?.trim() || undefined,
-    departmentId: parsed.departmentId ?? undefined,
-    categoryId: parsed.categoryId ?? undefined,
+    department: parsed.department ?? undefined,
+    category: parsed.category ?? undefined,
     featured: parsed.featured ?? undefined,
     minPrice: lowerPrice > PRICE_MIN ? lowerPrice : undefined,
     maxPrice: upperPrice < PRICE_MAX ? upperPrice : undefined,

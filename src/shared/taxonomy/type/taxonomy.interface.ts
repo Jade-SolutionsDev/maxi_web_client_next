@@ -27,6 +27,7 @@ export interface TaxonomyFilters {
 export interface Taxonomy {
   id: string;
   name: string;
+  slug: string;
   /** Primary artwork; absent when the API has no image for the node. */
   image?: string;
   /** Art-direction crop for phones. Falls back to `image`. */

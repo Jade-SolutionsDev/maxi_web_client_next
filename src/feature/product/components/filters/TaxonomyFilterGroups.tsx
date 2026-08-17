@@ -14,9 +14,9 @@ import {
 
 const TAXONOMY_HEADING_ID = 'catalog-taxonomy-filter';
 
-const findGroupOfCategory = (groups: TaxonomyGroup[], categoryId: string) =>
+const findGroupOfCategory = (groups: TaxonomyGroup[], categorySlug: string) =>
   groups.find((group) =>
-    group.categories.some((category) => category.id === categoryId),
+    group.categories.some((category) => category.slug === categorySlug),
   );
 
 const countClass = 'ml-auto text-xs text-muted tabular-nums';
@@ -27,18 +27,20 @@ export const TaxonomyFilterGroups = () => {
     useCatalogFilterState();
 
   const [openGroups, setOpenGroups] = useState<string[]>(() => {
-    if (filters.departmentId) return [filters.departmentId];
-    if (!filters.categoryId) return [];
+    if (filters.department) return [filters.department];
+    if (!filters.category) return [];
 
-    const owner = findGroupOfCategory(groups, filters.categoryId);
-    return owner ? [owner.id] : [];
+    const owner = findGroupOfCategory(groups, filters.category);
+    return owner ? [owner.slug] : [];
   });
 
-  const selectDepartment = (departmentId: string) => {
+  const selectDepartment = (departmentSlug: string) => {
     setOpenGroups((previous) =>
-      previous.includes(departmentId) ? previous : [...previous, departmentId],
+      previous.includes(departmentSlug)
+        ? previous
+        : [...previous, departmentSlug],
     );
-    handleDepartmentFilter(departmentId);
+    handleDepartmentFilter(departmentSlug);
   };
 
   return (
@@ -60,13 +62,13 @@ export const TaxonomyFilterGroups = () => {
         )}
       >
         {groups.map((group) => (
-          <Accordion.Item key={group.id} value={group.id}>
+          <Accordion.Item key={group.id} value={group.slug}>
             <Accordion.Header render={<div />}>
               <div className='flex items-center gap-2.5'>
                 <Checkbox
                   id={`department-${group.id}`}
-                  checked={filters.departmentId === group.id}
-                  onCheckedChange={() => selectDepartment(group.id)}
+                  checked={filters.department === group.slug}
+                  onCheckedChange={() => selectDepartment(group.slug)}
                 />
                 <Label
                   htmlFor={`department-${group.id}`}
@@ -93,8 +95,10 @@ export const TaxonomyFilterGroups = () => {
                   <li key={category.id} className='flex items-center gap-2.5'>
                     <Checkbox
                       id={`category-${category.id}`}
-                      checked={filters.categoryId === category.id}
-                      onCheckedChange={() => handleCategoryFilter(category.id)}
+                      checked={filters.category === category.slug}
+                      onCheckedChange={() =>
+                        handleCategoryFilter(category.slug)
+                      }
                     />
                     <Label
                       htmlFor={`category-${category.id}`}

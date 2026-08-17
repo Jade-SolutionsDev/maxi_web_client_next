@@ -25,6 +25,8 @@ export const getProducts = async (
         q: filters.q,
         departmentId: filters.departmentId,
         categoryId: filters.categoryId,
+        categorySlug: filters.categorySlug,
+        departmentSlug: filters.departmentSlug,
         locationId: filters.locationId,
         municipalityId: filters.municipalityId,
         minPrice: filters.minPrice,

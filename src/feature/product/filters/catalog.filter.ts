@@ -27,19 +27,19 @@ export const useProductFilter = ({
    * Every filter change resets `page`. Page 4 of an unfiltered catalog is not
    * page 4 of the filtered one — keeping it lands the user on an empty grid.
    */
-  const handleCategoryFilter = (categoryId: string) => {
+  const handleCategoryFilter = (categorySlug: string) => {
     setFilters((prev) => ({
-      categoryId: prev.categoryId === categoryId ? null : categoryId,
-      departmentId: null,
+      category: prev.category === categorySlug ? null : categorySlug,
+      department: null,
       page: null,
     }));
     onFilterApplied?.();
   };
 
-  const handleDepartmentFilter = (departmentId: string) => {
+  const handleDepartmentFilter = (departmentSlug: string) => {
     setFilters((prev) => ({
-      departmentId: prev.departmentId === departmentId ? null : departmentId,
-      categoryId: null,
+      department: prev.department === departmentSlug ? null : departmentSlug,
+      category: null,
       page: null,
     }));
     onFilterApplied?.();
@@ -70,8 +70,8 @@ export const useProductFilter = ({
 
   const clearAllFilter = () => {
     setFilters({
-      categoryId: null,
-      departmentId: null,
+      category: null,
+      department: null,
       featured: null,
       maxPrice: null,
       minPrice: null,
@@ -86,8 +86,8 @@ export const useProductFilter = ({
     filters.minPrice !== PRICE_MIN || filters.maxPrice !== PRICE_MAX;
 
   const activeFilterCount = [
-    filters.categoryId,
-    filters.departmentId,
+    filters.category,
+    filters.department,
     filters.featured,
     hasPriceFilter || null,
   ].filter(Boolean).length;

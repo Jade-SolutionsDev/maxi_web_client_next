@@ -9,12 +9,13 @@ import type {
 
 type TaxonomyImageSource = Pick<
   TaxonomyResponse,
-  'id' | 'name' | 'imageDesktopUrl' | 'imageMobileUrl'
+  'id' | 'name' | 'slug' | 'imageDesktopUrl' | 'imageMobileUrl'
 >;
 
 const toTaxonomyBase = (taxonomy: TaxonomyImageSource): Taxonomy => ({
   id: taxonomy.id,
   name: taxonomy.name.trim(),
+  slug: taxonomy.slug,
   image: taxonomy.imageDesktopUrl ?? undefined,
   imageMobile: taxonomy.imageMobileUrl ?? taxonomy.imageDesktopUrl ?? undefined,
 });

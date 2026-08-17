@@ -38,13 +38,17 @@ export const getCategories = (
   filters: TaxonomyFilters = {},
 ): Promise<Taxonomy[]> => getTaxonomy('/public/categories', filters);
 
-export const getTaxonomyTree = async (): Promise<TaxonomyGroup[]> => {
+export const getTaxonomyTree = async (
+  municipalityId?: string,
+): Promise<TaxonomyGroup[]> => {
   'use cache';
   cacheLife('hours');
   cacheTag(TAXONOMY_TREE_TAG);
 
-  const { data } =
-    await api<ApiResponse<CatalogDepartmentResponse[]>>('/public/catalog');
+  const { data } = await api<ApiResponse<CatalogDepartmentResponse[]>>(
+    '/public/catalog',
+    { params: { municipalityId } },
+  );
 
   return data.map(toTaxonomyGroup);
 };

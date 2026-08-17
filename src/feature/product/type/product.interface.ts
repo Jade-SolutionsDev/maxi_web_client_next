@@ -44,6 +44,8 @@ export interface ProductFilters {
   departmentId?: string;
   /** Exact category match. */
   categoryId?: string;
+  categorySlug?: string;
+  departmentSlug?: string;
   /** Stock for this warehouse; when omitted, total stock is used. */
   locationId?: string;
   municipalityId?: string;

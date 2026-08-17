@@ -26,7 +26,7 @@ function DepartmentCard({ department }: DepartmentCardProps) {
 
   return (
     <Link
-      href={`/catalog?departmentId=${department.id}`}
+      href={`/catalog?department=${department.slug}`}
       className='group block overflow-hidden rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
     >
       <div

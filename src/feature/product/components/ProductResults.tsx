@@ -24,8 +24,8 @@ type ProductResultsProps = {
 export async function ProductResults({ searchParams }: ProductResultsProps) {
   const {
     q,
-    departmentId,
-    categoryId,
+    department,
+    category,
     featured,
     maxPrice,
     minPrice,
@@ -43,8 +43,8 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
     totalPages,
   } = await getProducts({
     q,
-    departmentId,
-    categoryId,
+    departmentSlug: department,
+    categorySlug: category,
     featured,
     maxPrice,
     minPrice,
