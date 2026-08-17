@@ -9,18 +9,18 @@ import { PageHero } from '@/app/components/ui/page-hero';
 import { Skeleton } from '@/app/components/ui/skeleton';
 import { markdownToPlainText, toTelHref, truncate } from '@/helpers';
 import { cn } from '@/lib/utils';
-import { StaffCarousel } from '@/shared/cms/components/StaffCarousel';
+// import { StaffCarousel } from '@/shared/cms/components/StaffCarousel';
 import {
   getCmsPage,
   getSiteSettings,
-  getStaff,
+  // getStaff,
 } from '@/shared/cms/service/cms.service';
-import type { StaffMember } from '@/shared/cms/type/cms.interface';
+// import type { StaffMember } from '@/shared/cms/type/cms.interface';
 
 const SLUG = 'sobre-nosotros';
 const FALLBACK_TITLE = 'Sobre nosotros';
 const TITLE_ID = 'sobre-nosotros-titulo';
-const TEAM_ID = 'sobre-nosotros-equipo';
+// const TEAM_ID = 'sobre-nosotros-equipo';
 const CONTACT_ID = 'sobre-nosotros-contacto';
 
 const breadcrumbs = [{ label: 'Inicio', href: '/' }, { label: FALLBACK_TITLE }];
@@ -38,19 +38,19 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const TeamBand = ({ staff }: { staff: StaffMember[] }) => (
-  <section aria-labelledby={TEAM_ID} className='bg-surface py-14 sm:py-20'>
-    <Container className='flex flex-col gap-10 sm:gap-12'>
-      <h2
-        id={TEAM_ID}
-        className='text-center font-fredoka text-3xl font-bold text-balance text-heading sm:text-4xl'
-      >
-        Nuestro equipo
-      </h2>
-      <StaffCarousel staff={staff} />
-    </Container>
-  </section>
-);
+// const TeamBand = ({ staff }: { staff: StaffMember[] }) => (
+//   <section aria-labelledby={TEAM_ID} className='bg-surface py-14 sm:py-20'>
+//     <Container className='flex flex-col gap-10 sm:gap-12'>
+//       <h2
+//         id={TEAM_ID}
+//         className='text-center font-fredoka text-3xl font-bold text-balance text-heading sm:text-4xl'
+//       >
+//         Nuestro equipo
+//       </h2>
+//       <StaffCarousel staff={staff} />
+//     </Container>
+//   </section>
+// );
 
 const ContactBand = ({ email, phone }: { email: string; phone: string }) => (
   <section aria-labelledby={CONTACT_ID} className='py-14 sm:py-20'>
@@ -92,9 +92,9 @@ const ContactBand = ({ email, phone }: { email: string; phone: string }) => (
 );
 
 async function SobreNosotrosContent() {
-  const [page, staff, settings] = await Promise.all([
+  const [page, settings] = await Promise.all([
     getCmsPage(SLUG),
-    getStaff(),
+    // getStaff(),
     getSiteSettings(),
   ]);
 
@@ -120,7 +120,7 @@ async function SobreNosotrosContent() {
         </Container>
       </article>
 
-      {staff.length > 0 && <TeamBand staff={staff} />}
+      {/* {staff.length > 0 && <TeamBand staff={staff} />} */}
 
       <ContactBand
         email={settings.contact.email}
