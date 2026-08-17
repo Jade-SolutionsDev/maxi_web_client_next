@@ -12,14 +12,14 @@ async function FeaturedProducts() {
   const municipalityId = await readMunicipalityId();
   const { items: products } = await getProducts({
     featured: true,
-    limit: 12,
+    limit: 15,
     municipalityId: municipalityId ?? undefined,
   });
 
   return (
     <Section
       title='Productos destacados'
-      action={{ href: '/catalog', label: 'Ver todos →' }}
+      action={{ href: '/catalog?featured=true', label: 'Ver todos →' }}
     >
       {!products.length ? (
         <EmptyState

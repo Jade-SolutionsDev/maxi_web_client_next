@@ -59,34 +59,12 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
   // renders as a silent empty grid that looks like "no products exist".
   const isPageOutOfRange = total > 0 && products.length === 0;
 
-  const from = (page - 1) * limit + 1;
-  const to = Math.min(page * limit, total);
-
   return (
     <div
       id={CATALOG_RESULTS_ID}
       className={`flex-1 min-w-0 ${CATALOG_RESULTS_SCROLL_MARGIN}`}
     >
-      <header className='mb-6 flex flex-wrap items-center justify-between gap-4'>
-        <p className='text-sm text-muted'>
-          Mostrando{' '}
-          {products.length > 0 && (
-            <>
-              <span className='font-bold text-heading'>
-                {from}–{to}
-              </span>{' '}
-              de{' '}
-            </>
-          )}
-          <span className='font-bold text-heading'>{total}</span>{' '}
-          {total === 1 ? 'producto' : 'productos'}
-          {q && (
-            <>
-              {' '}
-              para <span className='font-bold text-heading'>«{q}»</span>
-            </>
-          )}
-        </p>
+      <header className='mb-6 flex flex-wrap items-center justify-end gap-4'>
         <div className='hidden md:block'>
           <SortControl />
         </div>
