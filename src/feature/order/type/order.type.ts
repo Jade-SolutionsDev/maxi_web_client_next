@@ -24,14 +24,27 @@ export const TERMINAL_CHARGE_STATUSES: ChargeStatus[] = [
   'CANCELLED',
 ];
 
+export type PaymentKind = 'redirect' | 'instructions' | 'manual';
+
+export interface PaymentMethod {
+  code: string;
+  label: string;
+  description: string | null;
+  icon: string | null;
+  kind: PaymentKind;
+}
+
 export interface PaymentCharge {
   provider: string;
+  kind: PaymentKind;
   reference: string;
   status: ChargeStatus;
+  redirectUrl: string | null;
   depositAddress: string | null;
   amount: string | null;
   token: string | null;
   blockchain: string | null;
+  currency: string | null;
   expiresAt: string | null;
   feeAmount: string | null;
   settlementAmount: string | null;

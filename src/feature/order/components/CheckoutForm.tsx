@@ -16,20 +16,32 @@ import {
   type CheckoutInput,
   CheckoutInputSchema,
 } from '../schema/checkout.schema';
+import type { PaymentMethod } from '../type/order.type';
+import { PaymentMethodSelector } from './PaymentMethodSelector';
 
 interface CheckoutFormProps {
   municipalityName: string | null;
+  paymentMethods: PaymentMethod[];
 }
 
-export const CheckoutForm = ({ municipalityName }: CheckoutFormProps) => {
+export const CheckoutForm = ({
+  municipalityName,
+  paymentMethods,
+}: CheckoutFormProps) => {
   const router = useRouter();
   const { refreshIfStale } = useCartActions();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<CheckoutInput>({
     resolver: zodResolver(CheckoutInputSchema),
-    defaultValues: { direccion: '', referencias: '', notas: '' },
+    defaultValues: {
+      direccion: '',
+      referencias: '',
+      notas: '',
+      paymentMethod: paymentMethods[0]?.code ?? '',
+    },
   });
+  const paymentMethod = form.watch('paymentMethod') ?? '';
 
   const handleSubmit = async (values: CheckoutInput) => {
     setIsSubmitting(true);
@@ -73,6 +85,13 @@ export const CheckoutForm = ({ municipalityName }: CheckoutFormProps) => {
         name='notas'
         label='Notas para la entrega (opcional)'
         placeholder='Horario preferido, instrucciones para el repartidor…'
+      />
+
+      <PaymentMethodSelector
+        methods={paymentMethods}
+        value={paymentMethod}
+        onChange={(code) => form.setValue('paymentMethod', code)}
+        disabled={isSubmitting}
       />
 
       <Button

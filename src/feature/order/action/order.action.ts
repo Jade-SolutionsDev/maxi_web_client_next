@@ -7,6 +7,7 @@ import * as orders from '../service/order.service';
 import type {
   OrderListResult,
   OrderResult,
+  PaymentMethod,
   PaymentResult,
 } from '../type/order.type';
 
@@ -19,6 +20,7 @@ export const checkoutAction = async (input: unknown): Promise<OrderResult> => {
     const municipalityId = await readMunicipalityId();
     const order = await orders.checkout({
       deliveryMunicipalityId: municipalityId ?? undefined,
+      paymentMethod: parsed.data.paymentMethod || undefined,
       deliveryAddress: {
         direccion: parsed.data.direccion,
         ...(parsed.data.referencias
@@ -74,10 +76,19 @@ export const fetchPaymentStatus = async (
 
 export const startPaymentAttempt = async (
   orderId: string,
+  method?: string,
 ): Promise<PaymentResult> => {
   try {
-    return { payment: await orders.startPayment(orderId) };
+    return { payment: await orders.startPayment(orderId, method) };
   } catch (error) {
     return { failure: toOrderFailure(error) };
+  }
+};
+
+export const fetchPaymentMethods = async (): Promise<PaymentMethod[]> => {
+  try {
+    return await orders.getPaymentMethods();
+  } catch {
+    return [];
   }
 };

@@ -3,12 +3,13 @@
 import {
   CircleCheckBig,
   CircleDollarSign,
+  ExternalLink,
   HandCoins,
   TriangleAlert,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button } from '@/app/components/ui/button';
+import { Button, buttonVariants } from '@/app/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
   fetchPaymentStatus,
@@ -18,25 +19,30 @@ import { CHARGE_FAILURE_COPY } from '../constants/order-status.constants';
 import {
   notifyOrderPaid,
   notifyPaymentFailure,
+  notifyPaymentReturn,
 } from '../feedback/order.notify';
 import { secondsUntil } from '../lib/payment-time';
 import {
   type Order,
   type PaymentCharge,
+  type PaymentMethod,
   TERMINAL_CHARGE_STATUSES,
 } from '../type/order.type';
 import { CopyButton } from './CopyButton';
 import { PaymentCountdown } from './PaymentCountdown';
+import { PaymentMethodSelector } from './PaymentMethodSelector';
 
 const POLL_INTERVAL_MS = 8000;
 
 interface PaymentPanelProps {
   order: Order;
+  paymentMethods?: PaymentMethod[];
 }
 
 type PanelMode =
   | 'paid'
   | 'refunded'
+  | 'redirect'
   | 'instructions'
   | 'confirming'
   | 'charge-failed'
@@ -54,12 +60,16 @@ const resolveMode = (
   if (order.paymentStatus === 'refunded') return 'refunded';
   if (charge) {
     if (charge.status === 'REQUIRES_ACTION') {
-      return secondsUntil(charge.expiresAt) > 0
-        ? 'instructions'
-        : 'charge-failed';
+      if (charge.expiresAt && secondsUntil(charge.expiresAt) <= 0) {
+        return 'charge-failed';
+      }
+
+      return charge.kind === 'redirect' && charge.redirectUrl
+        ? 'redirect'
+        : 'instructions';
     }
     if (charge.status === 'PENDING' || charge.status === 'PROCESSING') {
-      return 'confirming';
+      return charge.kind === 'manual' ? 'manual-pending' : 'confirming';
     }
     return 'charge-failed';
   }
@@ -67,14 +77,21 @@ const resolveMode = (
   return gatewayDown ? 'manual-pending' : 'start';
 };
 
-export const PaymentPanel = ({ order }: PaymentPanelProps) => {
+export const PaymentPanel = ({
+  order,
+  paymentMethods = [],
+}: PaymentPanelProps) => {
   const router = useRouter();
+  const gatewayOutcome = useSearchParams().get('pago');
   const [charge, setCharge] = useState<PaymentCharge | null>(
     order.payment ?? null,
   );
   const [gatewayDown, setGatewayDown] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [expiredLocally, setExpiredLocally] = useState(false);
+  const [method, setMethod] = useState(
+    order.payment?.provider ?? paymentMethods[0]?.code ?? '',
+  );
   const paidNotified = useRef(order.paymentStatus === 'paid');
 
   const applyCharge = useCallback(
@@ -100,6 +117,13 @@ export const PaymentPanel = ({ order }: PaymentPanelProps) => {
     }
     if (result.failure.kind === 'gateway-unavailable') setGatewayDown(true);
   }, [order.id, applyCharge]);
+
+  useEffect(() => {
+    if (!gatewayOutcome) return;
+
+    notifyPaymentReturn(gatewayOutcome);
+    void refresh();
+  }, [gatewayOutcome, refresh]);
 
   const isPolling =
     !paidNotified.current &&
@@ -128,7 +152,7 @@ export const PaymentPanel = ({ order }: PaymentPanelProps) => {
   const handleStart = async () => {
     setIsStarting(true);
     setExpiredLocally(false);
-    const result = await startPaymentAttempt(order.id);
+    const result = await startPaymentAttempt(order.id, method || undefined);
     setIsStarting(false);
 
     if (result.payment) {
@@ -198,6 +222,62 @@ export const PaymentPanel = ({ order }: PaymentPanelProps) => {
         />
       )}
 
+      {mode === 'redirect' && charge?.redirectUrl && (
+        <div className='flex flex-col gap-4'>
+          <p className='text-sm text-muted'>
+            Vas a pagar{' '}
+            <strong className='text-heading'>
+              {charge.amount} {charge.currency}
+            </strong>{' '}
+            en la pasarela segura. Al terminar volvés a esta página.
+          </p>
+
+          <a
+            href={charge.redirectUrl}
+            rel='noopener'
+            className={cn(
+              buttonVariants({ size: 'lg' }),
+              'w-full gap-2 sm:w-auto sm:self-start',
+            )}
+          >
+            Pagar ahora
+            <ExternalLink className='size-4' aria-hidden='true' />
+          </a>
+
+          {charge.expiresAt && (
+            <PaymentCountdown
+              expiresAt={charge.expiresAt}
+              onExpire={handleExpire}
+            />
+          )}
+
+          <p className='text-center text-xs text-muted'>
+            ¿Ya pagaste? Esta pantalla se actualiza sola en cuanto lo
+            confirmemos. Referencia: {charge.reference}
+          </p>
+
+          <PaymentMethodSelector
+            methods={paymentMethods}
+            value={method}
+            onChange={setMethod}
+            legend='¿Preferís otra forma de pago?'
+            disabled={isStarting}
+          />
+
+          {method !== charge.provider && (
+            <Button
+              type='button'
+              variant='outline'
+              loading={isStarting}
+              onClick={handleStart}
+              className='w-full sm:w-auto sm:self-start'
+            >
+              Cambiar forma de pago
+            </Button>
+          )}
+        </div>
+      )}
+
       {mode === 'instructions' && charge && (
         <div className='flex flex-col gap-4'>
           <p className='text-sm text-muted'>
@@ -255,6 +335,14 @@ export const PaymentPanel = ({ order }: PaymentPanelProps) => {
               ''
             }
           />
+          <PaymentMethodSelector
+            methods={paymentMethods}
+            value={method}
+            onChange={setMethod}
+            legend='Elegí cómo reintentar'
+            disabled={isStarting}
+          />
+
           <Button
             type='button'
             size='lg'
@@ -270,9 +358,16 @@ export const PaymentPanel = ({ order }: PaymentPanelProps) => {
       {mode === 'start' && (
         <div className='flex flex-col gap-4'>
           <p className='text-sm text-muted'>
-            Tu pedido está reservado. Generá las instrucciones para pagarlo con
-            criptomonedas.
+            Tu pedido está reservado. Elegí cómo pagarlo para continuar.
           </p>
+
+          <PaymentMethodSelector
+            methods={paymentMethods}
+            value={method}
+            onChange={setMethod}
+            disabled={isStarting}
+          />
+
           <Button
             type='button'
             size='lg'
@@ -280,7 +375,7 @@ export const PaymentPanel = ({ order }: PaymentPanelProps) => {
             onClick={handleStart}
             className='w-full sm:w-auto sm:self-start'
           >
-            Generar instrucciones de pago
+            Continuar con el pago
           </Button>
         </div>
       )}

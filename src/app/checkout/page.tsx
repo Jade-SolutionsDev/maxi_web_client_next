@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { Container } from '@/app/components/layout/Container';
 import { PageHero } from '@/app/components/ui/page-hero';
 import { getCart } from '@/feature/cart/service/cart.service';
+import { fetchPaymentMethods } from '@/feature/order/action/order.action';
 import { CheckoutForm } from '@/feature/order/components/CheckoutForm';
 import { CheckoutSummary } from '@/feature/order/components/CheckoutSummary';
 import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
@@ -37,7 +38,10 @@ async function CheckoutContent() {
 
   if (cart.lines.length === 0) redirect('/catalog');
 
-  const municipalityName = await resolveMunicipalityName();
+  const [municipalityName, paymentMethods] = await Promise.all([
+    resolveMunicipalityName(),
+    fetchPaymentMethods(),
+  ]);
 
   return (
     <Container className='grid gap-6 py-8 lg:grid-cols-[1fr_minmax(320px,420px)] lg:items-start'>
@@ -51,7 +55,10 @@ async function CheckoutContent() {
         >
           Datos de entrega
         </h2>
-        <CheckoutForm municipalityName={municipalityName} />
+        <CheckoutForm
+          municipalityName={municipalityName}
+          paymentMethods={paymentMethods}
+        />
       </section>
 
       <CheckoutSummary cart={cart} />

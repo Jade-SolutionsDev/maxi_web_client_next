@@ -7,6 +7,7 @@ import { ApiError } from '@/api/error';
 import { Container } from '@/app/components/layout/Container';
 import { PageHero } from '@/app/components/ui/page-hero';
 import { SafeImage } from '@/app/components/ui/safe-image';
+import { fetchPaymentMethods } from '@/feature/order/action/order.action';
 import { CancelOrderButton } from '@/feature/order/components/CancelOrderButton';
 import {
   OrderStatusPill,
@@ -47,7 +48,10 @@ async function OrderDetailContent({
   if (!userId) redirect('/login');
 
   const { id } = await params;
-  const order = await loadOrder(id);
+  const [order, paymentMethods] = await Promise.all([
+    loadOrder(id),
+    fetchPaymentMethods(),
+  ]);
 
   return (
     <Container className='flex flex-col gap-6 py-8'>
@@ -176,7 +180,9 @@ async function OrderDetailContent({
           </div>
         </div>
 
-        {order.status !== 'cancelled' && <PaymentPanel order={order} />}
+        {order.status !== 'cancelled' && (
+          <PaymentPanel order={order} paymentMethods={paymentMethods} />
+        )}
       </div>
     </Container>
   );

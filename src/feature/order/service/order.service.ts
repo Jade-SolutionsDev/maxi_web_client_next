@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { type ApiResponse, apiAuth } from '@/api/http';
-import type { Order, PaymentCharge } from '../type/order.type';
+import type { Order, PaymentCharge, PaymentMethod } from '../type/order.type';
 
 const ORDERS_PATH = '/storefront/orders';
 
@@ -17,7 +17,16 @@ export interface CheckoutPayload {
   deliveryMunicipalityId?: string;
   deliveryAddress?: Record<string, string>;
   customerNotes?: string;
+  paymentMethod?: string;
 }
+
+export const getPaymentMethods = async (): Promise<PaymentMethod[]> => {
+  const response = await apiAuth<ApiResponse<PaymentMethod[]>>(
+    '/storefront/payment-methods',
+  );
+
+  return response.data;
+};
 
 export const checkout = async (payload: CheckoutPayload): Promise<Order> => {
   const response = await apiAuth<ApiResponse<Order>>(ORDERS_PATH, {
@@ -62,10 +71,13 @@ export const getPayment = async (orderId: string): Promise<PaymentCharge> => {
   return response.data;
 };
 
-export const startPayment = async (orderId: string): Promise<PaymentCharge> => {
+export const startPayment = async (
+  orderId: string,
+  method?: string,
+): Promise<PaymentCharge> => {
   const response = await apiAuth<ApiResponse<PaymentCharge>>(
     `${orderPath(orderId)}/payment`,
-    { method: 'POST' },
+    { method: 'POST', body: method ? { method } : {} },
   );
 
   return response.data;

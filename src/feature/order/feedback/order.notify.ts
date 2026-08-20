@@ -70,6 +70,23 @@ export const notifyOrderCancelled = () => {
   });
 };
 
+export const notifyPaymentReturn = (outcome: string) => {
+  const id = 'payment-return';
+
+  if (outcome === 'ok') {
+    notify.info('Estamos confirmando tu pago', {
+      id,
+      description: 'En cuanto la pasarela lo confirme verás el pedido pagado.',
+    });
+    return;
+  }
+
+  notify.warning('No pudimos completar el pago', {
+    id,
+    description: 'Podés reintentar o elegir otra forma de pago.',
+  });
+};
+
 export const notifyOrderPaid = () => {
   notify.success('¡Pago confirmado!', {
     id: 'order-paid',
