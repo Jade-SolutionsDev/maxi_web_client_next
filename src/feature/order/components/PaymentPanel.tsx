@@ -10,6 +10,7 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, buttonVariants } from '@/app/components/ui/button';
+import { formatPrice } from '@/helpers';
 import { cn } from '@/lib/utils';
 import {
   fetchPaymentStatus,
@@ -227,7 +228,10 @@ export const PaymentPanel = ({
           <p className='text-sm text-muted'>
             Vas a pagar{' '}
             <strong className='text-heading'>
-              {charge.amount} {charge.currency}
+              {formatPrice(
+                Number(charge.amount ?? 0),
+                charge.currency ?? undefined,
+              )}
             </strong>{' '}
             en la pasarela segura. Al terminar volvés a esta página.
           </p>
