@@ -1,15 +1,64 @@
 'use client';
 
+import { useAuth } from '@clerk/nextjs';
 import { ArrowRight, PiggyBank } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { SheetClose, SheetFooter } from '@/app/components/ui/sheet';
 import { formatPrice } from '@/helpers';
+import { notify } from '@/lib/notify';
 import { useCartData } from '../hook/useCart';
+import { useCartStore } from '../store/cart.store';
 
-export const CartFooter = () => {
-  const { totalPrice, originalTotalPrice, totalSavings, hasUnavailableLines } =
-    useCartData();
+interface CartFooterProps {
+  closeSheet: () => void;
+}
+
+export const CartFooter = ({ closeSheet }: CartFooterProps) => {
+  const router = useRouter();
+  const { isLoaded, isSignedIn } = useAuth();
+  const mode = useCartStore((state) => state.mode);
+  const adoptGuestCart = useCartStore((state) => state.actions.adoptGuestCart);
+  const [isPreparing, setIsPreparing] = useState(false);
+  const {
+    totalItems,
+    totalPrice,
+    originalTotalPrice,
+    totalSavings,
+    hasUnavailableLines,
+  } = useCartData();
   const hasSavings = totalSavings > 0;
+
+  const handleCheckout = async () => {
+    if (!isSignedIn) {
+      closeSheet();
+      notify.info('Iniciá sesión para completar tu compra', {
+        id: 'checkout-login',
+        description: 'Tu carrito se conserva al iniciar sesión.',
+      });
+      router.push('/login');
+      return;
+    }
+
+    if (mode === 'guest') {
+      setIsPreparing(true);
+      await adoptGuestCart();
+      setIsPreparing(false);
+
+      if (useCartStore.getState().mode === 'guest') {
+        notify.error('No pudimos validar tu cuenta', {
+          id: 'checkout-account',
+          description:
+            'Cerrá sesión, volvé a entrar e intentá de nuevo. Si sigue fallando, contactanos.',
+        });
+        return;
+      }
+    }
+
+    closeSheet();
+    router.push('/checkout');
+  };
 
   return (
     <SheetFooter className='gap-4 border-t border-input bg-white p-5'>
@@ -51,11 +100,12 @@ export const CartFooter = () => {
         </p>
       )}
 
-      {/* TODO: enlazar a /checkout cuando exista la ruta correspondiente. */}
       <Button
         size='lg'
         type='button'
-        disabled={hasUnavailableLines}
+        disabled={hasUnavailableLines || totalItems === 0 || !isLoaded}
+        loading={isPreparing}
+        onClick={handleCheckout}
         className='w-full gap-2'
       >
         Proceder al pago

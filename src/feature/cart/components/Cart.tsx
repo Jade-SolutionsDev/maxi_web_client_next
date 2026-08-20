@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Sheet, SheetContent } from '@/app/components/ui/sheet';
 import { useCartData } from '../hook/useCart';
 import { useCartSync } from '../hook/useCartSync';
@@ -13,11 +14,12 @@ import { CartTrigger } from './CartTrigger';
 export const Cart = () => {
   useCartSync();
 
+  const [isOpen, setIsOpen] = useState(false);
   const { cartItems } = useCartData();
   const hasItems = cartItems.length > 0;
 
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <CartAnnouncer />
       <CartTrigger />
 
@@ -34,7 +36,7 @@ export const Cart = () => {
           <CartEmpty />
         )}
 
-        {hasItems && <CartFooter />}
+        {hasItems && <CartFooter closeSheet={() => setIsOpen(false)} />}
       </SheetContent>
     </Sheet>
   );

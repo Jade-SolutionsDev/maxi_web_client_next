@@ -41,7 +41,7 @@ export const columns: FooterColumn[] = [
     label: 'Mi Cuenta',
     links: [
       { label: 'Iniciar sesión', href: '/login' },
-      { label: 'Historial de pedidos', href: '#' },
+      { label: 'Historial de pedidos', href: '/pedidos' },
     ],
   },
 ];

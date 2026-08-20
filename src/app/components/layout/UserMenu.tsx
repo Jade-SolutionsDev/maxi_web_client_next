@@ -1,8 +1,9 @@
 'use client';
 
 import { useAuth, useUser } from '@clerk/nextjs';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, ShoppingBag, User } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Menu,
   MenuContent,
@@ -14,11 +15,11 @@ import { getInitials } from '@/helpers';
 import { SignOutConfirmDialog } from './SignOutConfirmDialog';
 import { useSignOutConfirm } from './useSignOutConfirm';
 
-
 const triggerBase =
   'flex size-9 shrink-0 items-center justify-center rounded-full md:size-10';
 
 export const UserMenu = () => {
+  const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
   const signOutConfirm = useSignOutConfirm();
@@ -77,6 +78,16 @@ export const UserMenu = () => {
               </p>
             )}
           </div>
+
+          <MenuSeparator />
+
+          <MenuItem
+            onClick={() => router.push('/pedidos')}
+            className='justify-center font-semibold'
+          >
+            <ShoppingBag className='text-muted' aria-hidden='true' />
+            Mis pedidos
+          </MenuItem>
 
           <MenuSeparator />
 

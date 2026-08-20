@@ -19,8 +19,7 @@ const attempt = async (run: () => Promise<Cart>): Promise<CartResult> => {
   }
 };
 
-export const fetchCart = async (): Promise<CartResult> =>
-  attempt(cart.getCart);
+export const fetchCart = async (): Promise<CartResult> => attempt(cart.getCart);
 
 export const addCartLine = async (input: unknown): Promise<CartResult> => {
   const parsed = CartLineInputSchema.safeParse(input);
