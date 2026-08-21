@@ -1,4 +1,4 @@
-import { ChevronRight, ShoppingBag } from 'lucide-react';
+import { ChevronRight, CreditCard, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { formatPrice } from '@/helpers';
 import type { Order } from '../type/order.type';
@@ -26,6 +26,13 @@ export const OrderCard = ({ order }: { order: Order }) => (
           <OrderStatusPill status={order.status} />
           <PaymentStatusPill status={order.paymentStatus} />
         </div>
+
+        {order.paymentMethod && (
+          <p className='mt-1.5 flex items-center gap-1.5 text-xs text-muted'>
+            <CreditCard className='size-3.5 shrink-0' aria-hidden='true' />
+            {order.paymentMethod.label}
+          </p>
+        )}
       </div>
 
       <div className='flex shrink-0 items-center gap-2'>

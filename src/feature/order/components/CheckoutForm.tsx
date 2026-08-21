@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Form } from '@/app/components/form/Form';
 import { FormInput } from '@/app/components/form/FormInput';
@@ -42,6 +42,19 @@ export const CheckoutForm = ({
     },
   });
   const paymentMethod = form.watch('paymentMethod') ?? '';
+
+  useEffect(() => {
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (!event.persisted) return;
+
+      setIsSubmitting(false);
+      router.refresh();
+    };
+
+    window.addEventListener('pageshow', handlePageShow);
+
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, [router]);
 
   const handleSubmit = async (values: CheckoutInput) => {
     setIsSubmitting(true);

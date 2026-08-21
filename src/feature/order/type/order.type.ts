@@ -34,6 +34,11 @@ export interface PaymentMethod {
   kind: PaymentKind;
 }
 
+export interface OrderPaymentMethod {
+  code: string;
+  label: string;
+}
+
 export interface PaymentCharge {
   provider: string;
   kind: PaymentKind;
@@ -74,6 +79,7 @@ export interface Order {
   customerNotes: string | null;
   items?: OrderItem[];
   payment?: PaymentCharge;
+  paymentMethod?: OrderPaymentMethod;
   createdAt: string;
   updatedAt: string;
 }
