@@ -49,6 +49,7 @@
   --font-fredoka: var(--font-fredoka); /* títulos display (ej. hero del catálogo) */
 
   --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 body {
@@ -78,6 +79,27 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   html:has(.category-band) {
     scroll-behavior: smooth;
+  }
+}
+
+@keyframes category-cell-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .category-grid > li {
+      animation: category-cell-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
   }
 }
 

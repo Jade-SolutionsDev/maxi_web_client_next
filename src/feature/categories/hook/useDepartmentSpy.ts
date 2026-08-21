@@ -19,7 +19,7 @@ export const useDepartmentSpy = (slugs: string[]) => {
 
     setActiveSlug(entries[0][0]);
 
-    const slugByElement = new Map(
+    const slugByElement = new Map<Element, string>(
       entries.map(([slug, element]) => [element, slug]),
     );
 

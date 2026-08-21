@@ -12,8 +12,17 @@ type CategoryCardProps = {
   priority?: boolean;
 };
 
+const rootClass =
+  'flex w-full min-w-0 flex-col items-center gap-3 text-center transition-transform duration-300 ease-spring group-hover:-translate-y-1 group-active:scale-[0.97] motion-reduce:transition-none motion-reduce:transform-none';
+
 const thumbClass =
-  'relative aspect-square w-full max-w-24 overflow-hidden rounded-full bg-accent transition-transform duration-300 group-focus-visible:ring-2 group-focus-visible:ring-primary/50 motion-reduce:transform-none sm:max-w-32 md:max-w-40 lg:max-w-50';
+  'relative aspect-square w-full max-w-24 overflow-hidden rounded-full bg-surface transition-shadow duration-300 ease-spring group-hover:shadow-popover group-hover:ring-4 group-hover:ring-primary/15 motion-reduce:transition-none sm:max-w-32 md:max-w-40 lg:max-w-50';
+
+const artworkClass =
+  'h-full w-full object-cover transition-transform duration-500 ease-spring group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:transform-none';
+
+const initialsClass =
+  'font-fredoka text-2xl font-semibold text-total transition-transform duration-500 ease-spring group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:transform-none sm:text-3xl lg:text-4xl';
 
 function CategoryCard({
   category,
@@ -25,9 +34,9 @@ function CategoryCard({
   const artwork = image ?? imageMobile;
 
   return (
-    <div className='group flex w-full min-w-0 flex-col items-center gap-3 text-center outline-none'>
-      {artwork ? (
-        <div className={thumbClass}>
+    <div className={rootClass}>
+      <div className={thumbClass}>
+        {artwork ? (
           <SafeImage
             src={artwork}
             alt={name}
@@ -35,20 +44,20 @@ function CategoryCard({
             sizes={imageSizes}
             loading={priority ? 'eager' : 'lazy'}
             fetchPriority={priority ? 'high' : 'auto'}
-            className='h-full w-full object-cover'
+            className={artworkClass}
           />
-        </div>
-      ) : (
-        <div
-          className={`${thumbClass} grid place-items-center bg-sand font-fredoka text-2xl font-semibold text-total sm:text-3xl lg:text-4xl`}
-          aria-hidden='true'
-        >
-          {getInitials(name)}
-        </div>
-      )}
+        ) : (
+          <div
+            aria-hidden='true'
+            className='grid h-full w-full place-items-center bg-sand'
+          >
+            <span className={initialsClass}>{getInitials(name)}</span>
+          </div>
+        )}
+      </div>
 
       <div className='flex w-full flex-col gap-0.5'>
-        <h3 className='line-clamp-2 w-full wrap-break-word text-sm font-bold uppercase tracking-wide text-accent sm:text-base'>
+        <h3 className='line-clamp-2 w-full wrap-break-word text-sm font-bold uppercase tracking-wide text-accent transition-colors duration-300 group-hover:text-total motion-reduce:transition-none sm:text-base'>
           {name}
         </h3>
 

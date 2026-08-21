@@ -35,7 +35,7 @@ async function CategoriesSection() {
               >
                 <Link
                   href={categoryHref(category.slug)}
-                  className='cursor-pointer'
+                  className='group block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
                 >
                   <CategoryCard category={category} />
                 </Link>

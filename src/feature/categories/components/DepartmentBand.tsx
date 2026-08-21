@@ -82,7 +82,7 @@ export const DepartmentBand = ({
             <Link
               itemProp='url'
               href={categoryHref(category.slug)}
-              className='block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
+              className='group block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
             >
               <CategoryCard
                 category={category}
