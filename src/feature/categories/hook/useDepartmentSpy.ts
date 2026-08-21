@@ -19,7 +19,9 @@ export const useDepartmentSpy = (slugs: string[]) => {
 
     setActiveSlug(entries[0][0]);
 
-    const bySlug = new Map(entries.map(([slug, element]) => [element, slug]));
+    const slugByElement = new Map(
+      entries.map(([slug, element]) => [element, slug]),
+    );
 
     const observer = new IntersectionObserver(
       (records) => {
@@ -29,7 +31,7 @@ export const useDepartmentSpy = (slugs: string[]) => {
             (a, b) => a.boundingClientRect.top - b.boundingClientRect.top,
           )[0];
 
-        const slug = visible && bySlug.get(visible.target);
+        const slug = visible && slugByElement.get(visible.target);
         if (slug) setActiveSlug(slug);
       },
       { rootMargin: ROOT_MARGIN },
