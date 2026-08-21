@@ -7,6 +7,7 @@ import {
   CarouselItem,
 } from '@/app/components/ui/carousel';
 import { CategoryCard } from '@/feature/categories/components/CategoryCard';
+import { categoryHref } from '@/feature/product/constants/catalog-taxonomy-href';
 import { getCategories } from '@/shared/taxonomy/service/taxonomy.service';
 
 async function CategoriesSection() {
@@ -33,7 +34,7 @@ async function CategoriesSection() {
                 className='basis-1/2 pl-4 sm:basis-1/3 md:basis-1/4 lg:basis-1/5'
               >
                 <Link
-                  href={`/catalog?category=${category.slug}`}
+                  href={categoryHref(category.slug)}
                   className='cursor-pointer'
                 >
                   <CategoryCard category={category} />

@@ -14,7 +14,6 @@ import { getInitials } from '@/helpers';
 import { SignOutConfirmDialog } from './SignOutConfirmDialog';
 import { useSignOutConfirm } from './useSignOutConfirm';
 
-
 const triggerBase =
   'flex size-9 shrink-0 items-center justify-center rounded-full md:size-10';
 
