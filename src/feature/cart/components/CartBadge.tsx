@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from 'react';
 import { EASE_OUT, prefersReducedMotion } from '@/lib/motion';
+import { cn } from '@/lib/utils';
 
 const MAX_BADGE_COUNT = 99;
 
@@ -15,6 +16,7 @@ const ROLL_KEYFRAMES = [
 
 interface CartBadgeProps {
   count: number;
+  className?: string;
 }
 
 const format = (count: number) =>
@@ -28,7 +30,7 @@ const format = (count: number) =>
  * up by one slot, and only then does `previous` catch up — the swap happens
  * while the new value is already the one on screen, so there is no flash.
  */
-export const CartBadge = ({ count }: CartBadgeProps) => {
+export const CartBadge = ({ count, className }: CartBadgeProps) => {
   const [previous, setPrevious] = useState(count);
   const columnRef = useRef<HTMLSpanElement>(null);
 
@@ -56,7 +58,10 @@ export const CartBadge = ({ count }: CartBadgeProps) => {
   return (
     <span
       aria-hidden='true'
-      className='absolute -top-0.5 -right-1 flex h-4 min-w-4 items-start justify-center overflow-hidden rounded-full bg-orange px-1 text-[0.625rem] font-bold text-heading leading-none tabular-nums ring-2 ring-primary'
+      className={cn(
+        'absolute -top-0.5 -right-1 flex h-4 min-w-4 items-start justify-center overflow-hidden rounded-full bg-orange px-1 text-[0.625rem] font-bold text-heading leading-none tabular-nums ring-2 ring-primary',
+        className,
+      )}
     >
       <span ref={columnRef} className='flex flex-col'>
         <span className='flex h-4 items-center justify-center'>

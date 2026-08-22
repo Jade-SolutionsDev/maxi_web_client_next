@@ -3,7 +3,9 @@ import { Fredoka, Geist } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { CartSync } from '@/feature/cart/components/CartSync';
 import { Toaster } from './components/feedback/Toaster';
+import { BottomNav } from './components/layout/bottom-nav';
 import { Footer } from './components/layout/Footer';
 import { Header } from './components/layout/Header';
 
@@ -61,15 +63,17 @@ export default function RootLayout({
       lang='es'
       className={`${geistSans.variable} ${fredoka.variable} h-full antialiased`}
     >
-      <body className='min-h-full flex flex-col'>
+      <body className='flex min-h-full flex-col pb-[var(--bottom-nav-height)]'>
         <ClerkProvider
           allowedRedirectOrigins={['http://localhost:3000', siteUrl]}
         >
+          <CartSync />
           <Header />
           <main className='grow'>
             <NuqsAdapter>{children}</NuqsAdapter>
           </main>
           <Footer />
+          <BottomNav />
         </ClerkProvider>
         <Toaster />
       </body>

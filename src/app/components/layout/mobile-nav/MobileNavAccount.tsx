@@ -1,9 +1,11 @@
 'use client';
 
 import { useAuth } from '@clerk/nextjs';
-import { ChevronRight, User } from 'lucide-react';
 import Link from 'next/link';
 import { SheetClose } from '@/app/components/ui/sheet';
+
+const ctaClass =
+  'flex min-h-11 flex-1 items-center justify-center rounded-full px-4 text-sm font-bold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/40';
 
 export const MobileNavAccount = () => {
   const { isLoaded, isSignedIn } = useAuth();
@@ -13,30 +15,35 @@ export const MobileNavAccount = () => {
   }
 
   return (
-    <SheetClose
-      nativeButton={false}
-      render={
-        <Link
-          href='/login'
-          className='flex items-center gap-3 rounded-xl bg-white/10 p-3 text-left outline-none transition-colors hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-white/60'
-        >
-          <span className='flex size-10 shrink-0 items-center justify-center rounded-full bg-white/15'>
-            <User className='size-5 text-white' aria-hidden='true' />
-          </span>
-          <span className='min-w-0 flex-1'>
-            <span className='block text-sm font-bold text-white'>
-              Iniciá sesión
-            </span>
-            <span className='block truncate text-xs text-white/80'>
-              Accedé a tus pedidos y ofertas
-            </span>
-          </span>
-          <ChevronRight
-            className='size-4 shrink-0 text-white/80'
-            aria-hidden='true'
-          />
-        </Link>
-      }
-    />
+    <div className='flex flex-col gap-3 rounded-2xl bg-surface p-4'>
+      <p className='text-sm font-medium text-heading'>
+        Inicia sesión para ver tus pedidos y direcciones
+      </p>
+
+      <div className='flex gap-2'>
+        <SheetClose
+          nativeButton={false}
+          render={
+            <Link
+              href='/login'
+              className={`${ctaClass} bg-primary text-white hover:brightness-95`}
+            >
+              Iniciar sesión
+            </Link>
+          }
+        />
+        <SheetClose
+          nativeButton={false}
+          render={
+            <Link
+              href='/register'
+              className={`${ctaClass} border-2 border-primary bg-white text-accent hover:bg-surface`}
+            >
+              Registrarse
+            </Link>
+          }
+        />
+      </div>
+    </div>
   );
 };

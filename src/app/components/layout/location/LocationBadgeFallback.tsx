@@ -21,7 +21,7 @@ export const LocationBadgeFallback = ({
     <span className={cn(locationBadgeClass, className)}>
       <LocationMarker />
 
-      <span className='flex flex-col text-left leading-tight'>
+      <span className='flex min-w-0 flex-col text-left leading-tight'>
         <span className={locationLabelClass}>{label}</span>
         <Skeleton className={locationValueSkeletonClass} />
       </span>

@@ -4,8 +4,16 @@
   --background: #ffffff;
   --foreground: #171717;
 
-  --header-height: 7rem;
+  --header-height: 7.25rem;
   --categories-rail-height: 8.5rem;
+  --bottom-nav-height: calc(3.5rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --header-height: 6.5rem;
+    --bottom-nav-height: 0rem;
+  }
 }
 
 @theme inline {
@@ -55,8 +63,6 @@
 body {
   background: var(--background);
   color: var(--foreground);
-
-  overflow-x: clip;
 }
 
 @layer utilities {

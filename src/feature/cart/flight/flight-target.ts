@@ -1,22 +1,35 @@
 /**
  * Where the cart lives on screen.
  *
- * The cart button publishes its own node here on mount; any add-to-cart action
- * reads it at click time. A module-level slot instead of React context: the
- * value is a DOM node, nothing re-renders when it changes, and callers do not
- * need a provider above them.
+ * Every cart button publishes its own node here on mount; any add-to-cart
+ * action reads it at click time. A module-level registry instead of React
+ * context: the values are DOM nodes, nothing re-renders when they change, and
+ * callers do not need a provider above them.
+ *
+ * More than one button is registered at a time — the header holds one from
+ * `md` up and the bottom tab bar holds another below it — so the reader picks
+ * the candidate that is actually laid out instead of trusting mount order.
  */
 
-let target: HTMLElement | null = null;
+const candidates = new Set<HTMLElement>();
 
-/** Registers the flight destination. Returns the cleanup for `useEffect`. */
+/** Registers a flight destination. Returns the cleanup for `useEffect`. */
 export const registerFlightTarget = (element: HTMLElement) => {
-  target = element;
+  candidates.add(element);
 
   return () => {
-    // Guard against a remount having already claimed the slot.
-    if (target === element) target = null;
+    candidates.delete(element);
   };
 };
 
-export const getFlightTarget = () => target;
+/** An element hidden by `display: none` reports no client rects. */
+const isRendered = (element: HTMLElement) =>
+  element.getClientRects().length > 0;
+
+export const getFlightTarget = () => {
+  for (const candidate of candidates) {
+    if (isRendered(candidate)) return candidate;
+  }
+
+  return null;
+};

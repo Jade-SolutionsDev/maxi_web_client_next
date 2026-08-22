@@ -15,3 +15,13 @@ export const navItems: NavItem[] = [
   { label: 'Sobre nosotros', href: '/sobre-nosotros', icon: Info },
   { label: 'Contacto', href: '/contacto', icon: Mail },
 ];
+
+const bottomNavHrefs = ['/', '/catalog'];
+
+export const bottomNavItems = bottomNavHrefs
+  .map((href) => navItems.find((item) => item.href === href))
+  .filter((item) => item !== undefined);
+
+export const sheetNavItems = navItems.filter(
+  (item) => !bottomNavHrefs.includes(item.href),
+);

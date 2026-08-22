@@ -1,25 +1,25 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { Sheet, SheetContent } from '@/app/components/ui/sheet';
 import { useCartData } from '../hook/useCart';
-import { useCartSync } from '../hook/useCartSync';
-import { CartAnnouncer } from './CartAnnouncer';
 import { CartEmpty } from './CartEmpty';
 import { CartFooter } from './CartFooter';
 import { CartHeader } from './CartHeader';
 import { CartItemRow } from './CartRow';
 import { CartTrigger } from './CartTrigger';
 
-export const Cart = () => {
-  useCartSync();
+interface CartProps {
+  trigger?: ReactNode;
+}
 
+export const Cart = ({ trigger = <CartTrigger /> }: CartProps) => {
   const { cartItems } = useCartData();
   const hasItems = cartItems.length > 0;
 
   return (
     <Sheet>
-      <CartAnnouncer />
-      <CartTrigger />
+      {trigger}
 
       <SheetContent side='right' showCloseButton={false} className='p-0'>
         <CartHeader />

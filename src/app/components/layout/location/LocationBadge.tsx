@@ -22,7 +22,7 @@ export const LocationBadge = ({
     <span className={cn(locationBadgeClass, className)}>
       <LocationMarker />
 
-      <span className='flex flex-col text-left leading-tight'>
+      <span className='flex min-w-0 flex-col text-left leading-tight'>
         <span className={locationLabelClass}>{label}</span>
         <span className={locationValueClass}>{location}</span>
       </span>
