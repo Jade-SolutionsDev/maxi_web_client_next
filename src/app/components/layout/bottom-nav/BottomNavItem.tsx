@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import type { NavItem } from '../constants/nav.constants';
 import { bottomNavIconClass, bottomNavItemClass } from './bottom-nav.styles';
