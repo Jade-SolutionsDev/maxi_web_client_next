@@ -1,4 +1,5 @@
 import type {
+  CancellationReason,
   ChargeStatus,
   OrderPaymentStatus,
   OrderStatus,
@@ -18,6 +19,13 @@ export const PAYMENT_STATUS_LABELS: Record<OrderPaymentStatus, string> = {
   paid: 'Pagado',
   failed: 'Pago fallido',
   refunded: 'Reembolsado',
+};
+
+export const CANCELLATION_REASON_COPY: Record<CancellationReason, string> = {
+  payment_not_received:
+    'No recibimos el pago a tiempo, así que liberamos los productos reservados.',
+  paid_after_expiry_out_of_stock:
+    'Recibimos tu pago fuera de plazo y ya no queda stock. Te contactamos para devolverte el importe.',
 };
 
 export const ORDER_STATUS_CLASSES: Record<OrderStatus, string> = {
