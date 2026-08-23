@@ -6,7 +6,6 @@ import { extractProductId } from '@/feature/product/constants/product-detail-hre
 import { buildProductMetadata } from '@/feature/product/seo/product-metadata';
 import { getProductById } from '@/feature/product/service/product.service';
 
-
 type Props = {
   params: Promise<{
     slug: string;

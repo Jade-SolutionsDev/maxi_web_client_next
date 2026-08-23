@@ -22,7 +22,6 @@ export const SignOutConfirmDialog = ({
   const { isLoaded, isSignedIn, signOut } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-
   if (isSigningOut && isLoaded && !isSignedIn) {
     setIsSigningOut(false);
   }

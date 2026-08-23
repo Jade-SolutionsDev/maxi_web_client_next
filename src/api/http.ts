@@ -7,7 +7,6 @@ export { ApiError, SessionRequiredError } from './error';
 
 const BASE_URL = process.env.API_URL;
 
-
 if (!BASE_URL) {
   throw new Error('Missing API_URL environment variable');
 }
