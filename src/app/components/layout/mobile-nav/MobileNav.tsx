@@ -8,6 +8,9 @@ import { MobileNavHeader } from './MobileNavHeader';
 import { MobileNavList } from './MobileNavList';
 import { MobileNavTrigger } from './MobileNavTrigger';
 
+const sheetContentClass =
+  'mb-[var(--bottom-nav-height)] max-h-[75svh] gap-0 overflow-hidden p-0';
+
 export const MobileNav = ({ phone }: { phone: string }) => {
   const signOutConfirm = useSignOutConfirm();
 
@@ -16,7 +19,11 @@ export const MobileNav = ({ phone }: { phone: string }) => {
       <Sheet>
         <MobileNavTrigger />
 
-        <SheetContent side='left' showCloseButton={false} className='gap-0 p-0'>
+        <SheetContent
+          side='bottom'
+          showCloseButton={false}
+          className={sheetContentClass}
+        >
           <MobileNavHeader />
           <MobileNavList />
           <MobileNavFooter phone={phone} onSignOut={signOutConfirm.open} />

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SafeImage } from '@/app/components/ui/safe-image';
+import { departmentHref } from '@/feature/product/constants/catalog-taxonomy-href';
 import { cn } from '@/lib/utils';
 import type { Taxonomy } from '@/shared/taxonomy/type/taxonomy.interface';
 import { departmentSlideMediaClass } from './department-carousel.styles';
@@ -26,7 +27,7 @@ function DepartmentCard({ department }: DepartmentCardProps) {
 
   return (
     <Link
-      href={`/catalog?department=${department.slug}`}
+      href={departmentHref(department.slug)}
       className='group block overflow-hidden rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
     >
       <div

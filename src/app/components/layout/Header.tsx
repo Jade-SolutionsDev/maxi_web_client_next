@@ -3,7 +3,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Container } from '@/app/components/layout/Container';
 import { LocationBoundary } from '@/app/components/layout/location';
-import { MobileNav } from '@/app/components/layout/mobile-nav';
 import { PrimaryNavBoundary } from '@/app/components/layout/PrimaryNavBoundary';
 import { UserMenu } from '@/app/components/layout/UserMenu';
 import { SearchBoundary } from '@/app/components/search/SearchBoundary';
@@ -18,7 +17,7 @@ const searchBarClass =
 
 /** El badge se integra al header: sin fondo ni padding propios. */
 const locationBadgeHeaderClass =
-  'shrink-0 rounded-none bg-transparent px-0 py-0';
+  'min-w-0 rounded-none bg-transparent px-0 py-0';
 
 export const Header = async () => {
   const { contact } = await getSiteSettings();
@@ -27,10 +26,9 @@ export const Header = async () => {
     <header className='sticky top-0 z-20 bg-primary shadow-sm'>
       <Container>
         <div className='flex flex-wrap items-center gap-x-4 gap-y-3 py-3 md:flex-nowrap md:gap-x-6'>
-          {/* Izquierda: menú mobile + logo + ubicación */}
-          <div className='flex shrink-0 items-center gap-2 md:gap-4'>
-            <MobileNav phone={contact.phone} />
-            <Link href='/'>
+          {/* Izquierda: logo + ubicación */}
+          <div className='flex min-w-0 items-center gap-2 md:gap-4'>
+            <Link href='/' className='shrink-0'>
               <Image
                 src={logo}
                 alt='Maxi Habana'
@@ -45,11 +43,11 @@ export const Header = async () => {
 
           {/* Derecha: usuario + carrito */}
           <div className='ml-auto flex shrink-0 items-center gap-4 md:ml-0'>
-            <div className='hidden md:block'>
-              <UserMenu />
-            </div>
+            <UserMenu />
 
-            <Cart />
+            <div className='hidden md:block'>
+              <Cart />
+            </div>
           </div>
         </div>
       </Container>

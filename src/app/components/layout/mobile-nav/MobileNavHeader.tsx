@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { X } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import {
   SheetClose,
@@ -8,26 +8,25 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/app/components/ui/sheet';
-import logo from '@/assets/logo.svg';
 import { MobileNavAccount } from './MobileNavAccount';
 
 export const MobileNavHeader = () => (
-  <SheetHeader className='gap-4 bg-primary p-4 pb-5'>
+  <SheetHeader className='gap-4 p-4 pb-2'>
     <div className='flex items-center justify-between gap-3'>
-      <Image src={logo} alt='Maxi Habana' className='h-8 w-auto' />
+      <span className='text-xs font-bold tracking-widest text-muted uppercase'>
+        Menú
+      </span>
       <SheetClose
         render={
           <Button
             variant='ghost'
             size='icon-sm'
             aria-label='Cerrar menú'
-            className='rounded-lg text-white hover:bg-white/15 focus-visible:ring-white/60'
+            className='rounded-full text-heading hover:bg-surface focus-visible:ring-primary/40'
           />
         }
       >
-        <span aria-hidden='true' className='text-xl leading-none'>
-          &times;
-        </span>
+        <X aria-hidden='true' />
       </SheetClose>
     </div>
 

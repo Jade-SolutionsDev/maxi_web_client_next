@@ -52,7 +52,7 @@ export const LocationPicker = ({
                 ? `Ubicación actual: ${selected.municipalityName}. Cambiar ubicación`
                 : 'Elegir tu ubicación'
             }
-            className='rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange'
+            className='min-w-0 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange'
           >
             <LocationBadge
               location={selected?.municipalityName ?? 'Elegir'}

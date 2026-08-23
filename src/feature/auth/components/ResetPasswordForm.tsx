@@ -8,7 +8,6 @@ import { FormInput } from '@/app/components/form/FormInput';
 import { FormPassword } from '@/app/components/form/FormPassword';
 import { Button } from '@/app/components/ui/button';
 import { useResetPassword } from '@/feature/auth/hook/useResetPassword';
-import { notify } from '@/lib/notify';
 import {
   clerkErrorTarget,
   type TranslatableClerkError,
@@ -20,6 +19,7 @@ import {
   ResetRequestSchema,
   type ResetRequestSchemaType,
 } from '@/feature/auth/schemas/reset.schema';
+import { notify } from '@/lib/notify';
 
 type StepResult = { error: TranslatableClerkError };
 

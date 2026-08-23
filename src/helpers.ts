@@ -133,6 +133,13 @@ export const getInitials = (name: string): string => {
   return (first + last).toUpperCase();
 };
 
+export const normalizeSearchText = (text: string): string =>
+  text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
 export const toTelHref = (phone: string): string =>
   `tel:${phone.replace(/[^+\d]/g, '')}`;
 
