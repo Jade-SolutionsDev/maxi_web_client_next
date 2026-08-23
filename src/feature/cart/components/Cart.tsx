@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { Sheet, SheetContent } from '@/app/components/ui/sheet';
 import { useCartData } from '../hook/useCart';
 import { CartEmpty } from './CartEmpty';
@@ -14,11 +14,12 @@ interface CartProps {
 }
 
 export const Cart = ({ trigger = <CartTrigger /> }: CartProps) => {
+  const [isOpen, setIsOpen] = useState(false);
   const { cartItems } = useCartData();
   const hasItems = cartItems.length > 0;
 
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       {trigger}
 
       <SheetContent side='right' showCloseButton={false} className='p-0'>

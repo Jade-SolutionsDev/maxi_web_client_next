@@ -16,6 +16,6 @@ if (!LOCAL_REGISTRY.test(content)) {
 }
 
 writeFileSync(LOCKFILE, content.replaceAll(LOCAL_REGISTRY, PUBLIC_REGISTRY));
-console.log(
-  `${LOCKFILE}: local registry URLs rewritten to ${PUBLIC_REGISTRY}`,
+process.stdout.write(
+  `${LOCKFILE}: local registry URLs rewritten to ${PUBLIC_REGISTRY}\n`,
 );
