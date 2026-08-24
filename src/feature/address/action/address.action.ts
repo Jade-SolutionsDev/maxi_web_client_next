@@ -11,7 +11,7 @@ import type { AddressPayload } from '../service/address.service';
 import * as addresses from '../service/address.service';
 import type { AddressActionResult } from '../type/address.interface';
 
-const ADDRESSES_ROUTE = '/cuenta/direcciones';
+const ADDRESSES_ROUTE = '/direcciones';
 
 // The form says "no value" with an empty string; the API wants the field absent.
 const toPayload = (values: AddressFormValues): AddressPayload => ({
