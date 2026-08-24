@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth, useUser } from '@clerk/nextjs';
-import { LogOut, ShoppingBag, User } from 'lucide-react';
+import { LogOut, MapPin, ShoppingBag, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -87,6 +87,14 @@ export const UserMenu = () => {
           >
             <ShoppingBag className='text-muted' aria-hidden='true' />
             Mis pedidos
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => router.push('/direcciones')}
+            className='justify-center font-semibold'
+          >
+            <MapPin className='text-muted' aria-hidden='true' />
+            Mis direcciones
           </MenuItem>
 
           <MenuSeparator />
