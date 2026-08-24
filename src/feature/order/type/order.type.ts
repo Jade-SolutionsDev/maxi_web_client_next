@@ -34,6 +34,10 @@ export interface PaymentMethod {
   kind: PaymentKind;
 }
 
+export type CancellationReason =
+  | 'payment_not_received'
+  | 'paid_after_expiry_out_of_stock';
+
 export interface OrderPaymentMethod {
   code: string;
   label: string;
@@ -80,6 +84,7 @@ export interface Order {
   items?: OrderItem[];
   payment?: PaymentCharge;
   paymentMethod?: OrderPaymentMethod;
+  cancellationReason: CancellationReason | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -8,6 +8,7 @@ import { Container } from '@/app/components/layout/Container';
 import { PageHero } from '@/app/components/ui/page-hero';
 import { SafeImage } from '@/app/components/ui/safe-image';
 import { fetchPaymentMethods } from '@/feature/order/action/order.action';
+import { CancellationNotice } from '@/feature/order/components/CancellationNotice';
 import { CancelOrderButton } from '@/feature/order/components/CancelOrderButton';
 import {
   OrderStatusPill,
@@ -70,6 +71,8 @@ async function OrderDetailContent({
           )}
         </div>
       </header>
+
+      <CancellationNotice order={order} />
 
       <div className='grid gap-6 lg:grid-cols-[1fr_minmax(320px,420px)] lg:items-start'>
         <div className='flex flex-col gap-6'>
