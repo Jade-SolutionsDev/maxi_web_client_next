@@ -32,7 +32,7 @@ export const notifyCheckoutFailure = (failure: OrderFailure) => {
 
   notify.error('No pudimos crear tu pedido', {
     id,
-    description: 'Revisá tu conexión e intentá de nuevo.',
+    description: 'Revisa tu conexión e inténtalo de nuevo.',
   });
 };
 
@@ -48,7 +48,7 @@ export const notifyPaymentFailure = (failure: OrderFailure) => {
     notify.info('La pasarela de pago no está disponible', {
       id,
       description:
-        'Tu pedido queda registrado y lo confirmaremos manualmente. También podés reintentar más tarde.',
+        'Tu pedido queda registrado y lo confirmaremos manualmente. También puedes reintentar más tarde.',
     });
     return;
   }
@@ -59,7 +59,7 @@ export const notifyPaymentFailure = (failure: OrderFailure) => {
 
   notify.error('No pudimos actualizar el estado del pago', {
     id,
-    description: 'Revisá tu conexión e intentá de nuevo.',
+    description: 'Revisa tu conexión e inténtalo de nuevo.',
   });
 };
 
@@ -83,7 +83,7 @@ export const notifyPaymentReturn = (outcome: string) => {
 
   notify.warning('No pudimos completar el pago', {
     id,
-    description: 'Podés reintentar o elegir otra forma de pago.',
+    description: 'Puedes reintentar o elegir otra forma de pago.',
   });
 };
 

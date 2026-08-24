@@ -305,7 +305,7 @@ export const PaymentPanel = ({
           </div>
 
           <div className='rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900'>
-            Usá únicamente la red {charge.blockchain}. Un envío por otra red
+            Usa únicamente la red {charge.blockchain}. Un envío por otra red
             puede perder los fondos.
           </div>
 
@@ -343,7 +343,7 @@ export const PaymentPanel = ({
             methods={paymentMethods}
             value={method}
             onChange={setMethod}
-            legend='Elegí cómo reintentar'
+            legend='Elige cómo reintentar'
             disabled={isStarting}
           />
 
@@ -362,7 +362,7 @@ export const PaymentPanel = ({
       {mode === 'start' && (
         <div className='flex flex-col gap-4'>
           <p className='text-sm text-muted'>
-            Tu pedido está reservado. Elegí cómo pagarlo para continuar.
+            Tu pedido está reservado. Elige cómo pagarlo para continuar.
           </p>
 
           <PaymentMethodSelector
@@ -389,7 +389,7 @@ export const PaymentPanel = ({
           tone='progress'
           icon={<HandCoins className='size-8' aria-hidden='true' />}
           title='Pago pendiente de confirmación'
-          description='La pasarela de pago no está disponible en este momento. Tu pedido queda registrado y confirmaremos el pago manualmente; también podés reintentar más tarde.'
+          description='La pasarela de pago no está disponible en este momento. Tu pedido queda registrado y confirmaremos el pago manualmente; también puedes reintentar más tarde.'
         />
       )}
     </section>

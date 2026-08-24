@@ -38,7 +38,7 @@ export async function AboutContent() {
           ) : (
             <EmptyState
               title='Todavía no publicamos esta página'
-              description='Estamos preparando el contenido. Mientras tanto podés recorrer el catálogo o escribirnos.'
+              description='Estamos preparando el contenido. Mientras tanto puedes recorrer el catálogo o escribirnos.'
               action={{ href: '/catalog', label: 'Ver el catálogo' }}
             />
           )}

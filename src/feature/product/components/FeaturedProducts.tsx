@@ -24,7 +24,7 @@ async function FeaturedProducts() {
       {!products.length ? (
         <EmptyState
           title='Aún no hay productos destacados'
-          description='Cuando destaquemos productos, vas a verlos acá primero. Mientras tanto, explorá todo el catálogo.'
+          description='Cuando destaquemos productos, los verás aquí primero. Mientras tanto, explora todo el catálogo.'
           action={{ href: '/catalog', label: 'Ver todos los productos' }}
         />
       ) : (

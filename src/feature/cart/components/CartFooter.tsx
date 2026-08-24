@@ -50,7 +50,7 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
         notify.error('No pudimos validar tu cuenta', {
           id: 'checkout-account',
           description:
-            'Cerrá sesión, volvé a entrar e intentá de nuevo. Si sigue fallando, contactanos.',
+            'Cierra sesión, vuelve a entrar e inténtalo de nuevo. Si sigue fallando, contáctanos.',
         });
         return;
       }

@@ -30,10 +30,10 @@ async function OrdersContent() {
             <PackageOpen className='size-8' aria-hidden='true' />
           </span>
           <h2 className='text-xl font-bold text-heading'>
-            Todavía no tenés pedidos
+            Todavía no tienes pedidos
           </h2>
           <p className='text-sm text-muted'>
-            Cuando completes tu primera compra vas a poder seguirla desde acá.
+            Cuando completes tu primera compra podrás seguirla desde aquí.
           </p>
           <Link href='/catalog' className={buttonVariants({ size: 'lg' })}>
             Explorar el catálogo

@@ -25,7 +25,7 @@ export const VERIFY_STATUS_VIEWS: Record<VerifyStatus, VerifyStatusView> = {
     icon: CircleCheckBig,
     title: '¡Listo! Tu correo está verificado',
     description:
-      'Volvé a la pestaña donde empezaste el registro para terminar de crear tu cuenta.',
+      'Vuelve a la pestaña donde empezaste el registro para terminar de crear tu cuenta.',
     action: { href: '/', label: 'Ir a la tienda' },
   },
   client_mismatch: {
@@ -33,7 +33,7 @@ export const VERIFY_STATUS_VIEWS: Record<VerifyStatus, VerifyStatusView> = {
     icon: MonitorSmartphone,
     title: 'Abrí el enlace en el mismo navegador',
     description:
-      'Este enlace se abrió en un navegador o dispositivo distinto al que usaste para registrarte. Por seguridad tenés que abrirlo donde empezaste.',
+      'Este enlace se abrió en un navegador o dispositivo distinto al que usaste para registrarte. Por seguridad tienes que abrirlo donde empezaste.',
     action: { href: '/register', label: 'Volver al registro' },
     hint: 'Copiá el enlace del correo y pegalo en el navegador donde iniciaste el registro.',
   },
@@ -42,7 +42,7 @@ export const VERIFY_STATUS_VIEWS: Record<VerifyStatus, VerifyStatusView> = {
     icon: Clock,
     title: 'El enlace ya venció',
     description:
-      'Por seguridad los enlaces caducan y solo se pueden usar una vez. Pedí uno nuevo y volvé a intentarlo.',
+      'Por seguridad los enlaces caducan y solo se pueden usar una vez. Pide uno nuevo y vuelve a intentarlo.',
     action: { href: '/register', label: 'Pedir un enlace nuevo' },
   },
   failed: {
@@ -59,7 +59,7 @@ export const VERIFY_STATUS_VIEWS: Record<VerifyStatus, VerifyStatusView> = {
     icon: TriangleAlert,
     title: 'La verificación está tardando demasiado',
     description:
-      'No recibimos una respuesta. Revisá tu conexión y volvé a abrir el enlace del correo.',
+      'No recibimos una respuesta. Revisa tu conexión y vuelve a abrir el enlace del correo.',
     action: { href: '/register', label: 'Volver al registro' },
     hint: SUPPORT_HINT,
   },

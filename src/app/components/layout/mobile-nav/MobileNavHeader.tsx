@@ -32,7 +32,7 @@ export const MobileNavHeader = () => (
 
     <SheetTitle className='sr-only'>Menú de navegación</SheetTitle>
     <SheetDescription className='sr-only'>
-      Accedé a las secciones de la tienda y a tu cuenta.
+      Accede a las secciones de la tienda y a tu cuenta.
     </SheetDescription>
 
     <MobileNavAccount />
