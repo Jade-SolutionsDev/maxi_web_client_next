@@ -88,37 +88,37 @@ describe('CheckoutForm', () => {
     });
   });
 
-  it('clears the busy state when the page is restored from the back/forward cache', async () => {
+  it('does not leave the button busy once navigation is done', async () => {
     render(<CheckoutForm municipalityName={null} paymentMethods={methods} />);
 
     await submit();
     await waitFor(() => expect(push).toHaveBeenCalled());
 
     const button = screen.getByRole('button', { name: /Confirmar pedido/ });
-    expect(button.getAttribute('aria-busy')).toBe('true');
-
-    await act(async () => {
-      const event = new Event('pageshow');
-      Object.defineProperty(event, 'persisted', { value: true });
-      window.dispatchEvent(event);
+    await waitFor(() => {
+      expect(button.getAttribute('aria-busy')).toBe('false');
+      expect((button as HTMLButtonElement).disabled).toBe(false);
     });
-
-    expect(button.getAttribute('aria-busy')).toBe('false');
-    expect((button as HTMLButtonElement).disabled).toBe(false);
   });
 
-  it('revalidates the restored page so a spent cart cannot be re-submitted', async () => {
+  it('blocks a second submit while the order is being created', async () => {
+    let release: (value: unknown) => void = () => {};
+    checkoutAction.mockReturnValue(
+      new Promise((resolve) => {
+        release = resolve;
+      }),
+    );
     render(<CheckoutForm municipalityName={null} paymentMethods={methods} />);
 
     await submit();
-    await waitFor(() => expect(push).toHaveBeenCalled());
+    const button = screen.getByRole('button', { name: /Confirmar pedido/ });
+    await waitFor(() => expect(button.getAttribute('aria-busy')).toBe('true'));
+
+    await userEvent.click(button);
+    expect(checkoutAction).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      const event = new Event('pageshow');
-      Object.defineProperty(event, 'persisted', { value: true });
-      window.dispatchEvent(event);
+      release({ order: { id: 'order-1' } });
     });
-
-    expect(refresh).toHaveBeenCalled();
   });
 });
