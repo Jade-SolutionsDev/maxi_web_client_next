@@ -50,7 +50,7 @@ export const VERIFY_STATUS_VIEWS: Record<VerifyStatus, VerifyStatusView> = {
     icon: TriangleAlert,
     title: 'No pudimos verificar tu correo',
     description:
-      'Algo salió mal al validar el enlace. Registrate de nuevo para recibir uno nuevo.',
+      'Algo salió mal al validar el enlace. Regístrate de nuevo para recibir uno nuevo.',
     action: { href: '/register', label: 'Volver al registro' },
     hint: SUPPORT_HINT,
   },
