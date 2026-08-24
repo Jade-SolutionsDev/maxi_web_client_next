@@ -196,7 +196,7 @@ export const ResetPasswordForm = () => {
 
     if (!result.error) {
       notify.success('Contraseña actualizada', {
-        description: 'Ya podés iniciar sesión con tu nueva contraseña.',
+        description: 'Ya puedes iniciar sesión con tu nueva contraseña.',
       });
     }
 

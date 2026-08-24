@@ -14,7 +14,7 @@ const CONTENT: Record<BrandPanelVariant, BrandPanelContent> = {
   register: {
     title: 'Únete a Maxi',
     description:
-      'Creá tu cuenta y accedé a ofertas exclusivas con envío rápido a toda La Habana.',
+      'Crea tu cuenta y accede a ofertas exclusivas con envío rápido a toda La Habana.',
   },
   reset: {
     title: 'Recuperá tu acceso',

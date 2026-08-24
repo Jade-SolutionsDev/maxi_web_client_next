@@ -73,7 +73,7 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
       {isPageOutOfRange ? (
         <EmptyState
           title='Esta página ya no tiene productos'
-          description='El catálogo cambió desde que llegaste acá. Volvé al principio para verlo completo.'
+          description='El catálogo cambió desde que llegaste aquí. Vuelve al principio para verlo completo.'
           action={{ href: CATALOG_PATH, label: 'Ir a la primera página' }}
         />
       ) : total === 0 ? (

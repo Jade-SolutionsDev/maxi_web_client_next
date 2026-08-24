@@ -50,7 +50,7 @@ export const CHARGE_FAILURE_COPY: Partial<
   FAILED: {
     title: 'El pago falló',
     description:
-      'La pasarela no pudo liquidar el pago. Podés generar un nuevo intento.',
+      'La pasarela no pudo liquidar el pago. Puedes generar un nuevo intento.',
   },
   EXPIRED: {
     title: 'El tiempo para pagar venció',
@@ -59,6 +59,6 @@ export const CHARGE_FAILURE_COPY: Partial<
   },
   CANCELLED: {
     title: 'El intento de pago fue cancelado',
-    description: 'Podés generar un nuevo intento cuando quieras.',
+    description: 'Puedes generar un nuevo intento cuando quieras.',
   },
 };

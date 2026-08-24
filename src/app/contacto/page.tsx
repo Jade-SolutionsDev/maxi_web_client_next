@@ -18,7 +18,7 @@ export default async function ContactoPage() {
       />
       <Container size='md' className='py-12'>
         <p className='mx-auto max-w-2xl text-center text-lg text-muted'>
-          ¿Tenés dudas sobre un pedido o querés trabajar con nosotros?
+          ¿Tienes dudas sobre un pedido o quieres trabajar con nosotros?
           Escribinos o llamanos y te respondemos lo antes posible.
         </p>
 

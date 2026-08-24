@@ -32,7 +32,7 @@ export const notifyCartFailure = (failure: CartFailure, name: string) => {
 
   notify.error('No pudimos actualizar tu carrito', {
     id,
-    description: 'Revisá tu conexión e intentá de nuevo.',
+    description: 'Revisa tu conexión e inténtalo de nuevo.',
   });
 };
 

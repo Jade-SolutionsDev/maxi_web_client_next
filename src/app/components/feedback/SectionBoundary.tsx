@@ -26,7 +26,7 @@ function SectionErrorFallback(
       >
         <p className='font-medium text-heading'>No pudimos cargar {label}.</p>
         <p className='text-sm text-muted'>
-          Revisá tu conexión e intentá de nuevo.
+          Revisa tu conexión e inténtalo de nuevo.
         </p>
         <Button type='button' size='lg' onClick={() => unstable_retry()}>
           Reintentar

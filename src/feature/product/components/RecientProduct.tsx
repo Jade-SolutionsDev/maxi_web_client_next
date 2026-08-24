@@ -27,7 +27,7 @@ async function RecientProductSection() {
       {recentProducts.length === 0 ? (
         <EmptyState
           title='Todavía no hay productos recientes'
-          description='Estamos sumando productos nuevos al catálogo. Volvé pronto para ver las últimas novedades.'
+          description='Estamos sumando productos nuevos al catálogo. Vuelve pronto para ver las últimas novedades.'
           action={{ href: '/catalog', label: 'Ver todos los productos' }}
         />
       ) : (

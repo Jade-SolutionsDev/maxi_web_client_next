@@ -39,7 +39,7 @@ export const SignOutConfirmDialog = ({
       variant='warning'
       icon={LogOut}
       title='¿Cerrar sesión?'
-      description='Vas a salir de tu cuenta. Tenés que iniciar sesión de nuevo para ver tus pedidos.'
+      description='Vas a salir de tu cuenta. Tendrás que iniciar sesión de nuevo para ver tus pedidos.'
       submitText={isSigningOut ? 'Cerrando sesión…' : 'Cerrar sesión'}
       isLoading={isSigningOut}
     />

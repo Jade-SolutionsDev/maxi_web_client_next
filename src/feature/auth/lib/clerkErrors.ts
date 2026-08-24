@@ -19,23 +19,23 @@ const CLERK_ERROR_MESSAGES: Record<string, string> = {
   // Registro
   form_identifier_exists: 'Ya existe una cuenta con ese correo.',
   form_password_not_strong_enough:
-    'La contraseña no es lo suficientemente segura. Agregá más palabras poco comunes.',
+    'La contraseña no es lo suficientemente segura. Agrega más palabras poco comunes.',
   form_password_pwned:
     'Esta contraseña apareció en una filtración de datos. Elige otra.',
   form_password_length_too_short: 'La contraseña es demasiado corta.',
   // Recuperación de contraseña
   form_code_incorrect: 'El código es incorrecto.',
-  verification_expired: 'El código expiró. Pedí uno nuevo.',
-  verification_failed: 'No pudimos verificar el código. Intentá de nuevo.',
+  verification_expired: 'El código expiró. Pide uno nuevo.',
+  verification_failed: 'No pudimos verificar el código. Inténtalo de nuevo.',
   // Comunes
   form_param_format_invalid: 'El formato ingresado no es válido.',
   form_param_nil: 'Este campo es obligatorio.',
-  session_exists: 'Ya tenés una sesión activa.',
+  session_exists: 'Ya tienes una sesión activa.',
   too_many_requests:
-    'Demasiados intentos. Esperá un momento e intentá de nuevo.',
+    'Demasiados intentos. Espera un momento e inténtalo de nuevo.',
 };
 
-const FALLBACK_MESSAGE = 'Ocurrió un error. Intentá de nuevo.';
+const FALLBACK_MESSAGE = 'Ocurrió un error. Inténtalo de nuevo.';
 
 const extractFirstError = (
   error: TranslatableClerkError,

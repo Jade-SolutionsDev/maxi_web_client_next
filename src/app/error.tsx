@@ -23,7 +23,7 @@ export default function HomeError({
       >
         <h1 className='text-2xl font-bold text-heading'>Algo salió mal</h1>
         <p className='text-muted'>
-          No pudimos cargar la página. Intentá de nuevo.
+          No pudimos cargar la página. Inténtalo de nuevo.
         </p>
         <Button type='button' size='lg' onClick={() => unstable_retry()}>
           Reintentar

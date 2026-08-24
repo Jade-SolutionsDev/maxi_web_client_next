@@ -52,13 +52,13 @@ export const RegisterForm = () => {
   if (emailSent) {
     return (
       <div className='rounded-xl bg-surface p-6 text-center'>
-        <h2 className='text-lg font-bold text-heading'>Revisá tu correo</h2>
+        <h2 className='text-lg font-bold text-heading'>Revisa tu correo</h2>
         <p className='mt-2 text-sm text-muted'>
           Te enviamos un enlace a{' '}
           <span className='font-semibold text-heading'>
             {form.getValues('email')}
           </span>
-          . Hacé clic en él para confirmar tu cuenta.
+          . Haz clic en él para confirmar tu cuenta.
         </p>
         <p className='mt-4 text-sm text-muted'>¿No te llegó?</p>
         <Button

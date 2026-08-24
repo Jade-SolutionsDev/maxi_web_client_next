@@ -48,7 +48,7 @@ export const CategoriesDirectoryView = ({
         <EmptyState
           className='my-12'
           title='No encontramos esa categoría'
-          description='Probá con otra palabra o mirá el catálogo completo.'
+          description='Prueba con otra palabra o mira el catálogo completo.'
           action={{ href: CATALOG_PATH, label: 'Ver el catálogo' }}
         />
       ) : (
