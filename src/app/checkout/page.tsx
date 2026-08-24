@@ -5,8 +5,9 @@ import { Suspense } from 'react';
 import { Container } from '@/app/components/layout/Container';
 import { PageHero } from '@/app/components/ui/page-hero';
 import { getCart } from '@/feature/cart/service/cart.service';
+import type { Cart } from '@/feature/cart/type/cart.interface';
 import { fetchPaymentMethods } from '@/feature/order/action/order.action';
-import { CheckoutForm } from '@/feature/order/components/CheckoutForm';
+import { CheckoutFormBoundary } from '@/feature/order/components/CheckoutFormBoundary';
 import { CheckoutSummary } from '@/feature/order/components/CheckoutSummary';
 import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { getLocationCatalog } from '@/shared/location/service/location.service';
@@ -15,6 +16,12 @@ export const metadata: Metadata = {
   title: 'Finalizar compra | Maxi Habana',
   robots: { index: false },
 };
+
+const cartKey = (cart: Cart) =>
+  cart.lines
+    .map((line) => `${line.productId}:${line.quantity}`)
+    .sort()
+    .join('|');
 
 const resolveMunicipalityName = async (): Promise<string | null> => {
   const municipalityId = await readMunicipalityId();
@@ -55,9 +62,10 @@ async function CheckoutContent() {
         >
           Datos de entrega
         </h2>
-        <CheckoutForm
+        <CheckoutFormBoundary
           municipalityName={municipalityName}
           paymentMethods={paymentMethods}
+          cartKey={cartKey(cart)}
         />
       </section>
 

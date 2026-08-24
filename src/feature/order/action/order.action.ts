@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { toOrderFailure } from '../lib/order-error';
 import { CheckoutInputSchema } from '../schema/checkout.schema';
@@ -29,6 +30,9 @@ export const checkoutAction = async (input: unknown): Promise<OrderResult> => {
       },
       customerNotes: parsed.data.notas || undefined,
     });
+
+    revalidatePath('/checkout');
+    revalidatePath('/pedidos');
 
     return { order };
   } catch (error) {

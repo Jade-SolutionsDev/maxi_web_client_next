@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { Form } from '@/app/components/form/Form';
 import { FormInput } from '@/app/components/form/FormInput';
@@ -31,6 +31,10 @@ export const CheckoutForm = ({
   const router = useRouter();
   const { refreshIfStale } = useCartActions();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Navigation owns the busy state once the order exists, so nothing can latch:
+  // React clears isNavigating when the transition ends.
+  const [isNavigating, startNavigation] = useTransition();
+  const busy = isSubmitting || isNavigating;
 
   const form = useForm<CheckoutInput>({
     resolver: zodResolver(CheckoutInputSchema),
@@ -43,26 +47,14 @@ export const CheckoutForm = ({
   });
   const paymentMethod = form.watch('paymentMethod') ?? '';
 
-  useEffect(() => {
-    const handlePageShow = (event: PageTransitionEvent) => {
-      if (!event.persisted) return;
-
-      setIsSubmitting(false);
-      router.refresh();
-    };
-
-    window.addEventListener('pageshow', handlePageShow);
-
-    return () => window.removeEventListener('pageshow', handlePageShow);
-  }, [router]);
-
   const handleSubmit = async (values: CheckoutInput) => {
     setIsSubmitting(true);
     const result = await checkoutAction(values);
 
     if (result.order) {
       refreshIfStale(0);
-      router.push(`/pedidos/${result.order.id}`);
+      startNavigation(() => router.push(`/pedidos/${result.order.id}`));
+      setIsSubmitting(false);
       return;
     }
 
@@ -104,15 +96,10 @@ export const CheckoutForm = ({
         methods={paymentMethods}
         value={paymentMethod}
         onChange={(code) => form.setValue('paymentMethod', code)}
-        disabled={isSubmitting}
+        disabled={busy}
       />
 
-      <Button
-        type='submit'
-        size='lg'
-        loading={isSubmitting}
-        className='w-full gap-2'
-      >
+      <Button type='submit' size='lg' loading={busy} className='w-full gap-2'>
         Confirmar pedido
       </Button>
 
