@@ -10,7 +10,7 @@ const buildDescription = ({ name, description }: Product) => {
 
   return own
     ? truncate(own, DESCRIPTION_MAX)
-    : `Comprá ${name} online en MaxiHabana con entrega a domicilio.`;
+    : `Compra ${name} online en MaxiHabana con entrega a domicilio.`;
 };
 
 export const buildProductMetadata = (product: Product): Metadata => {
