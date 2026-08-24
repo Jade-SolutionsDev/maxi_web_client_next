@@ -1,5 +1,6 @@
 'use client';
 
+import { MapPinOff } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { FormSelect } from '@/app/components/form/FormSelect';
 import type { LocationCatalog } from '@/shared/location/type/location.interface';
@@ -31,6 +32,27 @@ export const AddressMunicipalityFields = ({
     value: municipality.id,
     label: municipality.name,
   }));
+
+  /**
+   * The API only lists provinces an active storage can deliver to, so an empty
+   * catalog is a real state, not a bug: it means nowhere is being served right
+   * now. Saying so beats two silent, empty dropdowns the customer cannot use
+   * and cannot understand.
+   */
+  if (catalog.provinces.length === 0) {
+    return (
+      <div className='flex items-start gap-3 rounded-lg border border-heading/10 bg-heading/[0.03] p-3'>
+        <MapPinOff
+          aria-hidden='true'
+          className='mt-0.5 size-4 shrink-0 text-heading/50'
+        />
+        <p className='text-heading/70 text-sm'>
+          Ahora mismo no hay zonas con entrega disponible, así que no puedes
+          guardar una dirección todavía. Inténtalo más tarde o escríbenos.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className='grid gap-4 sm:grid-cols-2'>

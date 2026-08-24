@@ -70,6 +70,10 @@ export const AddressFormDialog = ({
   'use no memo';
 
   const isEditing = Boolean(address);
+  // Sin zonas con entrega no hay municipio que elegir, y el municipio es
+  // obligatorio: dejar el botón activo solo llevaría a un error de validación
+  // sobre un campo que ni siquiera está en pantalla.
+  const sinZonas = catalog.provinces.length === 0;
   const [isOpen, setIsOpen] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -191,7 +195,12 @@ export const AddressFormDialog = ({
               Cancelar
             </Button>
 
-            <Button type='submit' size='sm' loading={isPending}>
+            <Button
+              type='submit'
+              size='sm'
+              loading={isPending}
+              disabled={sinZonas}
+            >
               {isEditing ? 'Guardar cambios' : 'Guardar dirección'}
             </Button>
           </DialogFooter>
