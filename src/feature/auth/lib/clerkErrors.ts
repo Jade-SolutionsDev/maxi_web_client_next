@@ -30,6 +30,10 @@ const CLERK_ERROR_MESSAGES: Record<string, string> = {
   // Comunes
   form_param_format_invalid: 'El formato ingresado no es válido.',
   form_param_nil: 'Este campo es obligatorio.',
+  // Clerk verificó las credenciales pero pidió un paso más (segundo
+  // factor, verificación pendiente) que la tienda todavía no ofrece.
+  sign_in_not_complete:
+    'No pudimos completar el inicio de sesión. Vuelve a intentarlo y, si sigue igual, contáctanos.',
   session_exists: 'Ya tienes una sesión activa.',
   too_many_requests:
     'Demasiados intentos. Espera un momento e inténtalo de nuevo.',
