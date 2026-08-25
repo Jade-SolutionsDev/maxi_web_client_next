@@ -48,3 +48,8 @@ bun.lock
 .agents/
 .claude/
 .atl/
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/

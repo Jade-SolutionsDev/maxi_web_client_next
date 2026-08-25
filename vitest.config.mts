@@ -7,6 +7,9 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   test: {
+    // Los .spec.ts de e2e/ son de Playwright: vitest no debe tocarlos.
+    exclude: ['e2e/**', 'node_modules/**', 'dist/**', '.next/**'],
+
     environment: 'jsdom',
   },
 });
