@@ -17,7 +17,10 @@ Given('que el cliente no tiene ninguna dirección guardada', async () => {
 When(
   'guarda una dirección llamada {string} en la calle {string}',
   async ({ page }, nombre: string, calle: string) => {
-    await page.getByRole('button', { name: /añadir dirección/i }).first().click();
+    await page
+      .getByRole('button', { name: /añadir dirección/i })
+      .first()
+      .click();
 
     const dialogo = page
       .locator('[role=dialog]')
@@ -65,25 +68,39 @@ When('marca {string} como predeterminada', async ({ page }, nombre: string) => {
   await tarjeta(page, nombre)
     .getByRole('button', { name: /predeterminada/i })
     .click();
-  await expect(
-    tarjeta(page, nombre).getByText(/^Predeterminada$/),
-  ).toBeVisible({ timeout: 15_000 });
+  await expect(tarjeta(page, nombre).getByText(/^Predeterminada$/)).toBeVisible(
+    { timeout: 15_000 },
+  );
 });
 
-When('pulsa borrar en la dirección {string}', async ({ page }, nombre: string) => {
-  await tarjeta(page, nombre).getByRole('button', { name: /borrar/i }).click();
-});
+When(
+  'pulsa borrar en la dirección {string}',
+  async ({ page }, nombre: string) => {
+    await tarjeta(page, nombre)
+      .getByRole('button', { name: /borrar/i })
+      .click();
+  },
+);
 
 When('borra la dirección {string}', async ({ page }, nombre: string) => {
-  await tarjeta(page, nombre).getByRole('button', { name: /borrar/i }).click();
-  const confirmacion = page.locator('[role=dialog]').filter({ hasText: /borrar dirección/i });
+  await tarjeta(page, nombre)
+    .getByRole('button', { name: /borrar/i })
+    .click();
+  const confirmacion = page
+    .locator('[role=dialog]')
+    .filter({ hasText: /borrar dirección/i });
   await confirmacion.getByRole('button', { name: /^borrar$/i }).click();
   await expect(tarjeta(page, nombre)).toHaveCount(0, { timeout: 15_000 });
 });
 
-Then('se le dice que todavía no tiene direcciones guardadas', async ({ page }) => {
-  await expect(page.getByText(/todavía no tienes direcciones guardadas/i)).toBeVisible();
-});
+Then(
+  'se le dice que todavía no tiene direcciones guardadas',
+  async ({ page }) => {
+    await expect(
+      page.getByText(/todavía no tienes direcciones guardadas/i),
+    ).toBeVisible();
+  },
+);
 
 Then('ve la dirección {string}', async ({ page }, nombre: string) => {
   await expect(tarjeta(page, nombre).first()).toBeVisible();
@@ -99,20 +116,26 @@ Then('ve la calle {string}', async ({ page }, calle: string) => {
 
 Then('ve su municipio y provincia', async ({ page }) => {
   // La API devuelve ambos resueltos: la tarjeta los imprime separados por coma.
-  await expect(page.getByText(/,\s*(La Habana|Artemisa)/).first()).toBeVisible();
+  await expect(
+    page.getByText(/,\s*(La Habana|Artemisa)/).first(),
+  ).toBeVisible();
 });
 
 Then(
   'la dirección {string} está marcada como predeterminada',
   async ({ page }, nombre: string) => {
-    await expect(tarjeta(page, nombre).getByText(/^Predeterminada$/)).toBeVisible();
+    await expect(
+      tarjeta(page, nombre).getByText(/^Predeterminada$/),
+    ).toBeVisible();
   },
 );
 
 Then(
   'la dirección {string} no está marcada como predeterminada',
   async ({ page }, nombre: string) => {
-    await expect(tarjeta(page, nombre).getByText(/^Predeterminada$/)).toHaveCount(0);
+    await expect(
+      tarjeta(page, nombre).getByText(/^Predeterminada$/),
+    ).toHaveCount(0);
   },
 );
 

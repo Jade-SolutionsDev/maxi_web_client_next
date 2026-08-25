@@ -36,11 +36,16 @@ When('abre su historial de pedidos', async ({ page }) => {
 });
 
 When('pulsa cancelar el pedido', async ({ page }) => {
-  await page.getByRole('button', { name: /cancelar pedido/i }).first().click();
+  await page
+    .getByRole('button', { name: /cancelar pedido/i })
+    .first()
+    .click();
 });
 
 When('confirma la cancelación', async ({ page }) => {
-  const dialogo = page.locator('[role=dialog]').filter({ hasText: /cancelar este pedido/i });
+  const dialogo = page
+    .locator('[role=dialog]')
+    .filter({ hasText: /cancelar este pedido/i });
   await dialogo.getByRole('button', { name: /cancelar pedido/i }).click();
   await expect(dialogo).toBeHidden({ timeout: 15_000 });
 });
