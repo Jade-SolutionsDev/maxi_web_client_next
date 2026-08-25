@@ -14,6 +14,7 @@ type Estado = {
   productos: Map<string, { slug: string; nombreReal: string }>;
   respuestaApi?: { items: Array<Record<string, unknown>> };
   ultimoEstadoHttp?: number;
+  avisoDeAñadido?: boolean;
 };
 
 let estado: Estado;
@@ -24,7 +25,9 @@ Before(() => {
 
 After(() => {
   // Cada escenario se lleva lo que sembro.
-  sql(`DELETE FROM inventory WHERE product_id IN (SELECT id FROM products WHERE sku LIKE 'E2E-${estado.sufijo}%')`);
+  sql(
+    `DELETE FROM inventory WHERE product_id IN (SELECT id FROM products WHERE sku LIKE 'E2E-${estado.sufijo}%')`,
+  );
   sql(`DELETE FROM products WHERE sku LIKE 'E2E-${estado.sufijo}%'`);
   sql(`DELETE FROM categories WHERE slug LIKE '%-e2e-${estado.sufijo}'`);
 });
@@ -51,19 +54,24 @@ Given(
   async ({}, nombre: string, unidades: number, rebaja: number) => {
     const { id, slug, nombreReal } = sembrarProducto(nombre, rebaja);
     const almacen = sql(
-      "SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1",
+      'SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1',
     );
-    sql(`INSERT INTO inventory (location_id, product_id, quantity) VALUES ('${almacen}', '${id}', ${unidades})`);
+    sql(
+      `INSERT INTO inventory (location_id, product_id, quantity) VALUES ('${almacen}', '${id}', ${unidades})`,
+    );
     estado.productos.set(nombre, { slug, nombreReal });
     await invalidarCatalogo();
   },
 );
 
-Given('que existe un producto {string} sin existencias', async ({}, nombre: string) => {
-  const { slug, nombreReal } = sembrarProducto(nombre, 0);
-  estado.productos.set(nombre, { slug, nombreReal });
-  await invalidarCatalogo();
-});
+Given(
+  'que existe un producto {string} sin existencias',
+  async ({}, nombre: string) => {
+    const { slug, nombreReal } = sembrarProducto(nombre, 0);
+    estado.productos.set(nombre, { slug, nombreReal });
+    await invalidarCatalogo();
+  },
+);
 
 function sembrarProducto(nombre: string, rebaja: number) {
   const s = estado.sufijo;
@@ -104,11 +112,14 @@ When('pulsa sobre el producto {string}', async ({ page }, nombre: string) => {
   await page.getByText(producto!.nombreReal).first().click();
 });
 
-When('el cliente busca {string} en el catálogo', async ({ page }, termino: string) => {
-  const producto = estado.productos.get(termino);
-  const texto = producto ? producto.nombreReal : termino;
-  await page.goto(`/catalog?q=${encodeURIComponent(texto)}`);
-});
+When(
+  'el cliente busca {string} en el catálogo',
+  async ({ page }, termino: string) => {
+    const producto = estado.productos.get(termino);
+    const texto = producto ? producto.nombreReal : termino;
+    await page.goto(`/catalog?q=${encodeURIComponent(texto)}`);
+  },
+);
 
 When('se consultan los productos públicos de la API', async ({ request }) => {
   const res = await request.get(`${API}/api/public/products`);
@@ -163,13 +174,20 @@ Then(
   },
 );
 
-Then('la página muestra el título {string}', async ({ page }, titulo: string) => {
-  await expect(page.getByRole('heading', { name: titulo, level: 1 })).toBeVisible();
-});
+Then(
+  'la página muestra el título {string}',
+  async ({ page }, titulo: string) => {
+    await expect(
+      page.getByRole('heading', { name: titulo, level: 1 }),
+    ).toBeVisible();
+  },
+);
 
 Then('acaba en la pantalla de acceso', async ({ page }) => {
   await expect(page).toHaveURL(/\/login/);
-  await expect(page.getByRole('heading', { name: 'Iniciar sesión' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Iniciar sesión' }),
+  ).toBeVisible();
 });
 
 Then('la respuesta es un 404', async ({ page }) => {
@@ -180,8 +198,12 @@ Then('la respuesta es un 404', async ({ page }) => {
 Then(
   'la portada muestra las secciones de destacados, ofertas y recientes',
   async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Productos destacados' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'En oferta' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Productos destacados' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'En oferta' }),
+    ).toBeVisible();
     await expect(
       page.getByRole('heading', { name: 'Nuestros productos más recientes' }),
     ).toBeVisible();
@@ -198,4 +220,123 @@ Then('no se le pide que elija su zona', async ({ page }) => {
 
 Then('la cabecera muestra su zona', async ({ page }) => {
   await expect(page.getByText('Disponible en:')).toBeVisible();
+});
+
+// ---------------------------------------------------------------- El carrito
+
+When('añade el primer producto al carrito', async ({ page }) => {
+  // Cuantas unidades hay antes, para esperar a que suban de verdad.
+  const antes = await unidadesEnCarrito(page);
+
+  const boton = page.getByRole('button', { name: /^a[ñn]adir/i }).first();
+  await boton.scrollIntoViewIfNeeded();
+  await boton.hover();
+  await boton.click();
+
+  // El aviso se desvanece solo, asi que se anota aqui, en el instante en que
+  // aparece. Comprobarlo mas tarde seria una carrera perdida.
+  // `isVisible()` no espera: devuelve el estado de ese instante. Hay que
+  // esperar de verdad a que el aviso aparezca.
+  estado.avisoDeAñadido = await page
+    .getByText(/producto añadido al carrito/i)
+    .first()
+    .waitFor({ state: 'visible', timeout: 8_000 })
+    .then(() => true)
+    .catch(() => false);
+
+  /**
+   * No se espera al aviso: es un toast que se desvanece, y usarlo para
+   * sincronizar hace que la prueba falle segun lo rapida que vaya la maquina.
+   * Se espera al estado guardado, que es lo que de verdad importa.
+   */
+  await expect
+    .poll(() => unidadesEnCarrito(page), { timeout: 10_000 })
+    .toBeGreaterThan(antes);
+});
+
+/** Unidades guardadas hoy en el carrito de invitado (localStorage). */
+async function unidadesEnCarrito(page: import('@playwright/test').Page) {
+  return page.evaluate(() => {
+    try {
+      const crudo = localStorage.getItem('cart-storage');
+      if (!crudo) return 0;
+      const datos = JSON.parse(crudo);
+      const lineas =
+        datos?.state?.lines ?? datos?.state?.items ?? datos?.lines ?? [];
+      return lineas.reduce(
+        (suma: number, l: { quantity?: number }) => suma + (l.quantity ?? 0),
+        0,
+      );
+    } catch {
+      return 0;
+    }
+  });
+}
+
+When('abre el carrito', async ({ page }) => {
+  await page
+    .getByRole('button', { name: /carrito/i })
+    .first()
+    .click();
+  await expect(page.getByText('Mi carrito')).toBeVisible();
+});
+
+When('recarga la página', async ({ page }) => {
+  await page.reload();
+});
+
+When('vacía el carrito', async ({ page }) => {
+  await page.getByRole('button', { name: /vaciar carrito/i }).click();
+  // Puede pedir confirmacion; si aparece, se confirma.
+  const confirmar = page
+    .getByRole('button', { name: /^(vaciar|confirmar|sí)/i })
+    .last();
+  if (await confirmar.count()) await confirmar.click();
+});
+
+When('pulsa proceder al pago', async ({ page }) => {
+  await page.getByRole('button', { name: /proceder al pago/i }).click();
+});
+
+Then('se le confirma que el producto se añadió', async () => {
+  expect(
+    estado.avisoDeAñadido,
+    'no apareció el aviso de producto añadido',
+  ).toBe(true);
+});
+
+Then(
+  'el carrito contiene {int} artículo(s)',
+  async ({ page }, cantidad: number) => {
+    await page
+      .getByRole('button', { name: /carrito/i })
+      .first()
+      .click();
+    await expect(
+      page.getByText(new RegExp(`${cantidad}\\s+art[íi]culo`, 'i')).first(),
+    ).toBeVisible();
+  },
+);
+
+Then(
+  'el carrito muestra el producto {string}',
+  async ({ page }, nombre: string) => {
+    const producto = estado.productos.get(nombre);
+    await expect(page.getByText(producto!.nombreReal).first()).toBeVisible();
+  },
+);
+
+Then(
+  'el carrito muestra un total de {string}',
+  async ({ page }, total: string) => {
+    await expect(page.getByText(total).first()).toBeVisible();
+  },
+);
+
+Then('el carrito queda vacío', async ({ page }) => {
+  await expect(
+    page
+      .getByText(/carrito est[áa] vac[íi]o|no hay productos|agrega productos/i)
+      .first(),
+  ).toBeVisible();
 });

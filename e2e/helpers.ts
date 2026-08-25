@@ -10,16 +10,29 @@ const BASE_DATOS = 'maxihabana';
 export function sql(consulta: string): string {
   const salida = execFileSync(
     'docker',
-    ['exec', '-i', CONTENEDOR, 'psql', '-U', 'maxihabana', '-d', BASE_DATOS, '-qtAc', consulta],
+    [
+      'exec',
+      '-i',
+      CONTENEDOR,
+      'psql',
+      '-U',
+      'maxihabana',
+      '-d',
+      BASE_DATOS,
+      '-qtAc',
+      consulta,
+    ],
     { encoding: 'utf8' },
   );
 
   // Un INSERT ... RETURNING devuelve el valor y ademas la linea "INSERT 0 1".
   // Nos quedamos con la primera linea util.
-  return salida
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l && !/^(INSERT|UPDATE|DELETE|SELECT) \d/.test(l))[0] ?? '';
+  return (
+    salida
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l && !/^(INSERT|UPDATE|DELETE|SELECT) \d/.test(l))[0] ?? ''
+  );
 }
 
 /** Invalida el cache del catalogo de la tienda, que dura un dia. */
