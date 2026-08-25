@@ -31,7 +31,43 @@ const methods = [
   },
 ];
 
-const address = () => screen.getByLabelText(/Dirección de entrega/);
+const offer = {
+  deliveryOptions: [
+    {
+      id: '11111111-1111-4111-8111-111111111111',
+      label: 'Mensajería',
+      description: null,
+      fee: 5,
+    },
+  ],
+  pickupPoints: [],
+  pickupEnabled: false,
+  unavailableMessage: null,
+};
+
+const addresses: never[] = [];
+
+const catalog = {
+  provinces: [
+    {
+      id: '66666666-6666-4666-8666-666666666666',
+      name: 'La Habana',
+      code: '03',
+    },
+  ],
+  municipalitiesByProvince: {
+    '66666666-6666-4666-8666-666666666666': [
+      {
+        id: '55555555-5555-4555-8555-555555555555',
+        provinceId: '66666666-6666-4666-8666-666666666666',
+        name: 'Plaza',
+        code: '0301',
+      },
+    ],
+  },
+};
+
+const address = () => screen.getByLabelText(/Calle y número/);
 
 describe('CheckoutFormBoundary', () => {
   beforeEach(() => {
@@ -45,8 +81,10 @@ describe('CheckoutFormBoundary', () => {
   it('starts a clean form when the cart changed', async () => {
     const { rerender } = render(
       <CheckoutFormBoundary
-        municipalityName={null}
         paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
         cartKey='prod-1:1'
       />,
     );
@@ -56,8 +94,10 @@ describe('CheckoutFormBoundary', () => {
 
     rerender(
       <CheckoutFormBoundary
-        municipalityName={null}
         paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
         cartKey='prod-2:3'
       />,
     );
@@ -68,8 +108,10 @@ describe('CheckoutFormBoundary', () => {
   it('keeps what the customer typed while the cart is the same', async () => {
     const { rerender } = render(
       <CheckoutFormBoundary
-        municipalityName={null}
         paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
         cartKey='prod-1:1'
       />,
     );
@@ -78,8 +120,10 @@ describe('CheckoutFormBoundary', () => {
 
     rerender(
       <CheckoutFormBoundary
-        municipalityName='Báguanos'
         paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
         cartKey='prod-1:1'
       />,
     );

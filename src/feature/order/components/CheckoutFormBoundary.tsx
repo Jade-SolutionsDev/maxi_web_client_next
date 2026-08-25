@@ -1,18 +1,18 @@
 'use client';
 
+import type { Address } from '@/feature/address/type/address.interface';
+import type { LocationCatalog } from '@/shared/location/type/location.interface';
+import type { FulfillmentOffer } from '../type/fulfillment.type';
 import type { PaymentMethod } from '../type/order.type';
 import { CheckoutForm } from './CheckoutForm';
 
 interface CheckoutFormBoundaryProps {
-  municipalityName: string | null;
   paymentMethods: PaymentMethod[];
-  /**
-   * Identity of the cart being checked out. Next keeps the client subtree alive
-   * across navigations, so returning to /checkout with a different cart would
-   * otherwise reuse the form instance left behind by the previous order —
-   * old address, old selection. A different cart is a different form.
-   */
+  offer: FulfillmentOffer;
+  addresses: Address[];
+  catalog: LocationCatalog;
   cartKey: string;
+  onDeliveryFeeChange?: (fee: number) => void;
 }
 
 export const CheckoutFormBoundary = ({

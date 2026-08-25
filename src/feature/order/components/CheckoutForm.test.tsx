@@ -24,6 +24,60 @@ vi.mock('../feedback/order.notify', () => ({
   notifyCheckoutFailure: vi.fn(),
 }));
 
+const offer = {
+  deliveryOptions: [
+    {
+      id: '11111111-1111-4111-8111-111111111111',
+      label: 'Mensajería',
+      description: null,
+      fee: 5,
+    },
+  ],
+  pickupPoints: [
+    {
+      id: '22222222-2222-4222-8222-222222222222',
+      locationId: '33333333-3333-4333-8333-333333333333',
+      locationName: 'Almacén Centro',
+      label: 'Mostrador',
+      address: 'Calle 1 #2',
+    },
+  ],
+  pickupEnabled: true,
+  unavailableMessage: null,
+};
+
+const addresses = [
+  {
+    id: '44444444-4444-4444-8444-444444444444',
+    street: 'Calle 23 #456',
+    municipalityId: '55555555-5555-4555-8555-555555555555',
+    municipalityName: 'Plaza',
+    provinceId: '66666666-6666-4666-8666-666666666666',
+    provinceName: 'La Habana',
+    isDefault: true,
+  },
+];
+
+const catalog = {
+  provinces: [
+    {
+      id: '66666666-6666-4666-8666-666666666666',
+      name: 'La Habana',
+      code: '03',
+    },
+  ],
+  municipalitiesByProvince: {
+    '66666666-6666-4666-8666-666666666666': [
+      {
+        id: '55555555-5555-4555-8555-555555555555',
+        provinceId: '66666666-6666-4666-8666-666666666666',
+        name: 'Plaza',
+        code: '0301',
+      },
+    ],
+  },
+};
+
 const methods = [
   {
     code: 'tropipay',
@@ -43,7 +97,6 @@ const methods = [
 
 const submit = async () => {
   const user = userEvent.setup();
-  await user.type(screen.getByLabelText(/Dirección de entrega/), 'Calle 23');
   await user.click(screen.getByRole('button', { name: /Confirmar pedido/ }));
 };
 
@@ -61,7 +114,12 @@ describe('CheckoutForm', () => {
 
   it('navigates to the order once the checkout succeeds', async () => {
     render(
-      <CheckoutForm municipalityName='Báguanos' paymentMethods={methods} />,
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+      />,
     );
 
     await submit();
@@ -76,7 +134,14 @@ describe('CheckoutForm', () => {
         release = resolve;
       }),
     );
-    render(<CheckoutForm municipalityName={null} paymentMethods={methods} />);
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+      />,
+    );
 
     await submit();
 
@@ -89,7 +154,14 @@ describe('CheckoutForm', () => {
   });
 
   it('does not leave the button busy once navigation is done', async () => {
-    render(<CheckoutForm municipalityName={null} paymentMethods={methods} />);
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+      />,
+    );
 
     await submit();
     await waitFor(() => expect(push).toHaveBeenCalled());
@@ -108,7 +180,14 @@ describe('CheckoutForm', () => {
         release = resolve;
       }),
     );
-    render(<CheckoutForm municipalityName={null} paymentMethods={methods} />);
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+      />,
+    );
 
     await submit();
     const button = screen.getByRole('button', { name: /Confirmar pedido/ });
@@ -120,5 +199,86 @@ describe('CheckoutForm', () => {
     await act(async () => {
       release({ order: { id: 'order-1' } });
     });
+  });
+
+  it('sends the chosen pickup point instead of an address', async () => {
+    const user = userEvent.setup();
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+      />,
+    );
+
+    await user.click(screen.getByText(/Recoger en tienda/));
+    await user.click(screen.getByRole('button', { name: /Confirmar pedido/ }));
+
+    await waitFor(() =>
+      expect(checkoutAction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fulfillmentType: 'pickup',
+          pickupAddressId: offer.pickupPoints[0].id,
+        }),
+      ),
+    );
+  });
+
+  it('sends the preselected default address for a delivery', async () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+      />,
+    );
+
+    await submit();
+
+    await waitFor(() =>
+      expect(checkoutAction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fulfillmentType: 'delivery',
+          addressId: addresses[0].id,
+        }),
+      ),
+    );
+  });
+
+  it('offers no choice and blocks when the shop cannot fulfil anything', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={{
+          deliveryOptions: [],
+          pickupPoints: [],
+          pickupEnabled: false,
+          unavailableMessage: 'Escribinos y coordinamos tu compra.',
+        }}
+        addresses={addresses}
+        catalog={catalog}
+      />,
+    );
+
+    expect(screen.getByText(/Escribinos y coordinamos/)).toBeTruthy();
+    expect(
+      screen.queryByRole('button', { name: /Confirmar pedido/ }),
+    ).toBeNull();
+  });
+
+  it('hides the method picker when only one way is possible', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={{ ...offer, deliveryOptions: [] }}
+        addresses={addresses}
+        catalog={catalog}
+      />,
+    );
+
+    expect(screen.queryByText(/¿Cómo querés recibirlo\?/)).toBeNull();
+    expect(screen.getByText(/¿Dónde lo recogés\?/)).toBeTruthy();
   });
 });
