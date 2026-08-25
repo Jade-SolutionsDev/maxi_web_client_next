@@ -29,7 +29,7 @@ export const CheckoutForm = ({
   paymentMethods,
 }: CheckoutFormProps) => {
   const router = useRouter();
-  const { refreshIfStale } = useCartActions();
+  const { markCheckedOut } = useCartActions();
   const [isSubmitting, setIsSubmitting] = useState(false);
   // Navigation owns the busy state once the order exists, so nothing can latch:
   // React clears isNavigating when the transition ends.
@@ -52,7 +52,7 @@ export const CheckoutForm = ({
     const result = await checkoutAction(values);
 
     if (result.order) {
-      refreshIfStale(0);
+      markCheckedOut();
       startNavigation(() => router.push(`/pedidos/${result.order.id}`));
       setIsSubmitting(false);
       return;
