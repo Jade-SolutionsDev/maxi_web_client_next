@@ -4,6 +4,9 @@ import { API, invalidarCatalogo, municipioConCobertura, sql } from '../helpers';
 
 const { Given, When, Then, Before, After } = createBdd();
 
+/** El cliente con el que se inicia sesion en las pruebas con sesion. */
+const CORREO_CLIENTE = 'qa.direcciones@maxihabana.com';
+
 /**
  * Estado compartido entre los pasos de un escenario. Es seguro tenerlo en el
  * modulo porque la suite corre en serie (`workers: 1`): los escenarios no se
@@ -251,6 +254,7 @@ Then('la cabecera muestra su zona', async ({ page }) => {
 When('añade el primer producto al carrito', async ({ page }) => {
   // Cuantas unidades hay antes, para esperar a que suban de verdad.
   const antes = await unidadesEnCarrito(page);
+  const lineasAntes = await lineasEnCabecera(page);
 
   const boton = page.getByRole('button', { name: /^a[ñn]adir/i }).first();
   // El catalogo puede tardar en pintar sus tarjetas; sin esta espera el aviso
@@ -261,9 +265,16 @@ When('añade el primer producto al carrito', async ({ page }) => {
   /**
    * El carrito hidrata despues de pintar la pagina, y el anunciador toma el
    * primer estado que ve como "el de partida": si se pulsa antes de eso, el
-   * aviso de producto añadido no llega a emitirse.
+   * aviso de producto añadido no llega a emitirse (MxH-0089). La senal de que
+   * ya hidrato es su propio almacen: zustand lo escribe al rehidratarse.
    */
-  await page.waitForTimeout(600);
+  await page
+    .waitForFunction(() => localStorage.getItem('cart-storage') !== null, null, {
+      timeout: 10_000,
+    })
+    .catch(() => {
+      // Con sesion el carrito vive en el servidor y esa clave no aparece.
+    });
 
   await boton.click();
 
@@ -283,10 +294,29 @@ When('añade el primer producto al carrito', async ({ page }) => {
    * sincronizar hace que la prueba falle segun lo rapida que vaya la maquina.
    * Se espera al estado guardado, que es lo que de verdad importa.
    */
+  /**
+   * Dos senales, porque el carrito vive en dos sitios: en `localStorage` si no
+   * hay sesion, y en el servidor si la hay. La cabecera cuenta lineas, asi que
+   * anadir dos veces el mismo producto solo se nota en las unidades.
+   */
   await expect
-    .poll(() => unidadesEnCarrito(page), { timeout: 10_000 })
-    .toBeGreaterThan(antes);
+    .poll(
+      async () =>
+        (await unidadesEnCarrito(page)) > antes ||
+        (await lineasEnCabecera(page)) > lineasAntes,
+      { timeout: 15_000 },
+    )
+    .toBe(true);
 });
+
+/** Lineas que declara la cabecera, con sesion o sin ella. */
+async function lineasEnCabecera(page: import('@playwright/test').Page) {
+  const etiqueta = await page
+    .getByRole('button', { name: /carrito de compra/i })
+    .first()
+    .getAttribute('aria-label');
+  return Number(etiqueta?.match(/(\d+)/)?.[1] ?? 0);
+}
 
 /** Unidades guardadas hoy en el carrito de invitado (localStorage). */
 async function unidadesEnCarrito(page: import('@playwright/test').Page) {
@@ -329,8 +359,29 @@ When('vacía el carrito', async ({ page }) => {
 });
 
 When('pulsa proceder al pago', async ({ page }) => {
+  await esperarCarritoEnServidor();
   await page.getByRole('button', { name: /proceder al pago/i }).click();
 });
+
+/**
+ * El carrito de quien tiene cuenta se guarda en el servidor, y el checkout lo
+ * lee de ahi. Sin sesion no hay nada que esperar, asi que esto no falla: se
+ * rinde en silencio y deja que el escenario siga.
+ */
+async function esperarCarritoEnServidor() {
+  const desde = Date.now();
+  while (Date.now() - desde < 8_000) {
+    const filas = Number(
+      sql(
+        `SELECT count(*) FROM cart_items WHERE client_id IN (SELECT id FROM clients WHERE email = '${CORREO_CLIENTE}')`,
+      ),
+    );
+    if (filas > 0) {
+      return;
+    }
+    await new Promise((r) => setTimeout(r, 250));
+  }
+}
 
 Then('se le confirma que el producto se añadió', async () => {
   expect(
