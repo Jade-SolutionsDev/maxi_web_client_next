@@ -21,7 +21,7 @@ export const CopyButton = ({ value, label, className }: CopyButtonProps) => {
       setTimeout(() => setCopied(false), 2000);
     } catch {
       notify.error('No pudimos copiar', {
-        description: 'Copiá el valor manualmente.',
+        description: 'Copia el valor manualmente.',
       });
     }
   };

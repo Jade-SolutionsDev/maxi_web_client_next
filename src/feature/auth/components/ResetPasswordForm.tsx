@@ -120,8 +120,8 @@ const NewPasswordStep = ({
 
       <p className='text-sm text-muted'>
         Te enviamos un código a{' '}
-        <span className='font-semibold text-heading'>{email}</span>. Ingresalo y
-        Elige tu nueva contraseña.
+        <span className='font-semibold text-heading'>{email}</span>. Ingrésalo y
+        elige tu nueva contraseña.
       </p>
 
       <FormInput

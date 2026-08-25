@@ -7,14 +7,14 @@ export const RegisterSchema = z
       .trim()
       .min(1, { message: 'Nombre requerido' })
       .max(24, { message: 'Máximo 24 caracteres' }),
-    email: z.email({ message: 'Correo no valido' }),
+    email: z.email({ message: 'Correo no válido' }),
     password: z
       .string()
       .min(8, { message: 'Mínimo 8 caracteres' })
       .max(24, { message: 'Máximo 24 caracteres' }),
     confirmPassword: z
       .string()
-      .nonempty({ message: 'Confirmá tu contraseña' })
+      .nonempty({ message: 'Confirma tu contraseña' })
       .max(24, { message: 'Máximo 24 caracteres' }),
   })
   .refine((data) => data.password === data.confirmPassword, {
