@@ -31,5 +31,32 @@ export default defineConfig({
     trace: 'retain-on-failure',
     actionTimeout: 15_000,
   },
-  projects: [{ name: 'chrome', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    // Inicia sesion una vez y deja la sesion en disco.
+    {
+      name: 'acceso',
+      testDir: './e2e/setup',
+      testMatch: /.*\.setup\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // Escenarios de visitante: sin sesion, porque varios comprueban justo que
+    // sin ella no se puede entrar a la cuenta.
+    {
+      name: 'invitado',
+      testDir,
+      grepInvert: /@sesion/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // Escenarios marcados con @sesion: reutilizan la sesion guardada.
+    {
+      name: 'cliente',
+      testDir,
+      grep: /@sesion/,
+      dependencies: ['acceso'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'e2e/.auth/cliente.json',
+      },
+    },
+  ],
 });

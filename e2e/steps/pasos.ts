@@ -258,6 +258,13 @@ When('añade el primer producto al carrito', async ({ page }) => {
   await boton.waitFor({ state: 'visible', timeout: 15_000 });
   await boton.scrollIntoViewIfNeeded();
   await boton.hover();
+  /**
+   * El carrito hidrata despues de pintar la pagina, y el anunciador toma el
+   * primer estado que ve como "el de partida": si se pulsa antes de eso, el
+   * aviso de producto añadido no llega a emitirse.
+   */
+  await page.waitForTimeout(600);
+
   await boton.click();
 
   // El aviso se desvanece solo, asi que se anota aqui, en el instante en que
