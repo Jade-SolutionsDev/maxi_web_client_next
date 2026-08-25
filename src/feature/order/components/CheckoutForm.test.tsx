@@ -16,8 +16,9 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push, refresh }),
 }));
 
+const markCheckedOut = vi.fn();
 vi.mock('@/feature/cart/hook/useCart', () => ({
-  useCartActions: () => ({ refreshIfStale: vi.fn() }),
+  useCartActions: () => ({ markCheckedOut: () => markCheckedOut() }),
 }));
 
 vi.mock('../feedback/order.notify', () => ({
@@ -52,11 +53,23 @@ describe('CheckoutForm', () => {
     checkoutAction.mockReset();
     push.mockReset();
     refresh.mockReset();
+    markCheckedOut.mockReset();
     checkoutAction.mockResolvedValue({ order: { id: 'order-1' } });
   });
 
   afterEach(() => {
     cleanup();
+  });
+
+  it('tells the cart it was emptied instead of re-reading it', async () => {
+    // Re-reading is a server action, and a server action re-renders the page
+    // it fires from: `/checkout` would redirect to the catalogue and beat the
+    // navigation to the new order.
+    render(<CheckoutForm municipalityName={null} paymentMethods={methods} />);
+
+    await submit();
+
+    await waitFor(() => expect(markCheckedOut).toHaveBeenCalled());
   });
 
   it('navigates to the order once the checkout succeeds', async () => {

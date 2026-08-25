@@ -1,7 +1,7 @@
 import z from 'zod';
 
 export const ResetRequestSchema = z.object({
-  email: z.email({ message: 'Correo no valido' }),
+  email: z.email({ message: 'Correo no válido' }),
 });
 
 export type ResetRequestSchemaType = z.infer<typeof ResetRequestSchema>;
@@ -19,7 +19,7 @@ export const ResetPasswordSchema = z
       .max(24, { message: 'Máximo 24 caracteres' }),
     confirmPassword: z
       .string()
-      .nonempty({ message: 'Confirmá tu contraseña' })
+      .nonempty({ message: 'Confirma tu contraseña' })
       .max(24, { message: 'Máximo 24 caracteres' }),
   })
   .refine((data) => data.password === data.confirmPassword, {
