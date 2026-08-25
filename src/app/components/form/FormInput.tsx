@@ -29,8 +29,15 @@ export const FormInput = ({
       required={required}
       className={className}
     >
-      {({ id, invalid }) => (
-        <Input id={id} aria-invalid={invalid} {...register(name)} {...props} />
+      {({ id, invalid, describedBy }) => (
+        <Input
+          id={id}
+          aria-invalid={invalid}
+          aria-describedby={describedBy}
+          aria-required={required || undefined}
+          {...register(name)}
+          {...props}
+        />
       )}
     </FormField>
   );

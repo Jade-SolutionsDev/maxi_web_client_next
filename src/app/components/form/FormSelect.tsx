@@ -59,7 +59,7 @@ export const FormSelect = ({
       required={required}
       className={className}
     >
-      {({ id, invalid }) => (
+      {({ id, invalid, describedBy }) => (
         <Controller
           control={control}
           name={name}
@@ -85,6 +85,7 @@ export const FormSelect = ({
                   ref={field.ref}
                   size={size}
                   aria-invalid={invalid}
+                  aria-describedby={describedBy}
                   onBlur={field.onBlur}
                   className={cn('w-full', triggerClassName)}
                 >

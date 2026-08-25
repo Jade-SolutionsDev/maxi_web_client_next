@@ -32,12 +32,14 @@ export const FormPassword = ({
       required={required}
       className={className}
     >
-      {({ id, invalid }) => (
+      {({ id, invalid, describedBy }) => (
         <div className='relative'>
           <Input
             id={id}
             type={visible ? 'text' : 'password'}
             aria-invalid={invalid}
+            aria-describedby={describedBy}
+            aria-required={required || undefined}
             className='pr-11'
             {...register(name)}
             {...props}

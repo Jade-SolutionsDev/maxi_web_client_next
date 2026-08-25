@@ -8,6 +8,7 @@ import { Label } from '../ui/label';
 type FieldRenderProps = {
   id: string;
   invalid: boolean;
+  describedBy?: string;
 };
 
 interface FormFieldProps {
@@ -35,22 +36,32 @@ export const FormField = ({
 
   const { formState, getFieldState } = useFormContext();
   const { error } = getFieldState(name, formState);
+  const errorId = `${name}-error`;
 
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       {label && (
-        <Label
-          htmlFor={name}
-          className='text-sm flex gap-2 font-medium text-heading'
-        >
+        <Label htmlFor={name} className='gap-1 text-sm font-medium text-heading'>
           {label}
-          {required && <span className='text-red-500 mb-2'>*</span>}
+          {required && (
+            <span aria-hidden='true' className='text-destructive'>
+              *
+            </span>
+          )}
         </Label>
       )}
 
-      {children({ id: name, invalid: !!error })}
+      {children({
+        id: name,
+        invalid: !!error,
+        describedBy: error ? errorId : undefined,
+      })}
 
-      {error && <p className='text-sm text-red-500'>{error.message}</p>}
+      {error && (
+        <p id={errorId} className='text-sm text-destructive'>
+          {error.message}
+        </p>
+      )}
     </div>
   );
 };
