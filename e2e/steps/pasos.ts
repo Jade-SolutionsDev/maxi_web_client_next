@@ -1,6 +1,17 @@
 import { expect } from '@playwright/test';
 import { createBdd } from 'playwright-bdd';
-import { API, invalidarCatalogo, municipioConCobertura, sql } from '../helpers';
+import {
+  API,
+  invalidarCatalogo,
+  municipioConCobertura,
+  nuevoSufijo,
+  olvidarProductos,
+  productoSembrado,
+  quizaSembrado,
+  registrarProducto,
+  sembrarProducto,
+  sql,
+} from '../helpers';
 
 const { Given, When, Then, Before, After } = createBdd();
 
@@ -33,7 +44,8 @@ type Estado = {
 let estado: Estado;
 
 Before(() => {
-  estado = { sufijo: Date.now().toString().slice(-8), productos: new Map() };
+  olvidarProductos();
+  estado = { sufijo: nuevoSufijo(), productos: new Map() };
 });
 
 After(async () => {
@@ -80,7 +92,7 @@ Given(
     sql(
       `INSERT INTO inventory (location_id, product_id, quantity) VALUES ('${almacen}', '${sembrado.id}', ${unidades})`,
     );
-    estado.productos.set(nombre, sembrado);
+    registrarProducto(nombre, sembrado);
     await invalidarCatalogo();
   },
 );
@@ -88,40 +100,10 @@ Given(
 Given(
   'que existe un producto {string} sin existencias',
   async ({}, nombre: string) => {
-    estado.productos.set(nombre, sembrarProducto(nombre, 0));
+    registrarProducto(nombre, sembrarProducto(nombre, 0));
     await invalidarCatalogo();
   },
 );
-
-function sembrarProducto(nombre: string, rebaja: number) {
-  const s = estado.sufijo;
-  const base = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  let categoria = sql(`SELECT id FROM categories WHERE slug = 'cat-e2e-${s}'`);
-  if (!categoria) {
-    const departamento = sql(`
-      INSERT INTO categories (name, slug, parent_id, image_desktop_url, image_mobile_url)
-      VALUES ('Dep E2E ${s}', 'dep-e2e-${s}', NULL, 'https://placehold.co/600x400.png', 'https://placehold.co/600x400.png')
-      RETURNING id`);
-    categoria = sql(`
-      INSERT INTO categories (name, slug, parent_id, image_desktop_url, image_mobile_url)
-      VALUES ('Cat E2E ${s}', 'cat-e2e-${s}', '${departamento}', 'https://placehold.co/600x400.png', 'https://placehold.co/600x400.png')
-      RETURNING id`);
-  }
-  const nombreReal = `${nombre} E2E ${s}`;
-  const slug = `${base}-e2e-${s}`;
-  const id = sql(`
-    INSERT INTO products (category_id, sku, name, slug, measure_unit, base_price, discount, image_url)
-    VALUES ('${categoria}', 'E2E-${s}-${base}', '${nombreReal}', '${slug}', 'unidad', 100, ${rebaja}, 'https://placehold.co/600x400.png')
-    RETURNING id`);
-  return {
-    id,
-    slug,
-    nombreReal,
-    categoriaSlug: `cat-e2e-${s}`,
-    categoriaNombre: `Cat E2E ${s}`,
-    departamentoNombre: `Dep E2E ${s}`,
-  };
-}
 
 // ------------------------------------------------------------------- Acciones
 
@@ -135,15 +117,16 @@ When('el cliente abre {string}', async ({ page }, ruta: string) => {
 });
 
 When('pulsa sobre el producto {string}', async ({ page }, nombre: string) => {
-  const producto = estado.productos.get(nombre);
+  const producto = productoSembrado(nombre);
   await page.getByText(producto!.nombreReal).first().click();
 });
 
 When(
   'el cliente busca {string} en el catálogo',
   async ({ page }, termino: string) => {
-    const producto = estado.productos.get(termino);
-    const texto = producto ? producto.nombreReal : termino;
+    // El termino puede no ser un producto: hay un escenario que busca algo
+    // que no existe justo para ver que la pagina lo dice.
+    const texto = quizaSembrado(termino)?.nombreReal ?? termino;
     await page.goto(`/catalog?q=${encodeURIComponent(texto)}`);
   },
 );
@@ -157,12 +140,12 @@ When('se consultan los productos públicos de la API', async ({ request }) => {
 // ---------------------------------------------------------- Comprobaciones
 
 Then('ve el producto {string}', async ({ page }, nombre: string) => {
-  const producto = estado.productos.get(nombre);
+  const producto = productoSembrado(nombre);
   await expect(page.getByText(producto!.nombreReal).first()).toBeVisible();
 });
 
 Then('no ve el producto {string}', async ({ page }, nombre: string) => {
-  const producto = estado.productos.get(nombre);
+  const producto = productoSembrado(nombre);
   await expect(page.getByText(producto!.nombreReal)).toHaveCount(0);
 });
 
@@ -176,13 +159,13 @@ Then('la página sigue funcionando', async ({ page }) => {
 });
 
 Then('la respuesta incluye {string}', async ({}, nombre: string) => {
-  const producto = estado.productos.get(nombre);
+  const producto = productoSembrado(nombre);
   const nombres = estado.respuestaApi!.items.map((p) => p.name);
   expect(nombres).toContain(producto!.nombreReal);
 });
 
 Then('la respuesta no incluye {string}', async ({}, nombre: string) => {
-  const producto = estado.productos.get(nombre);
+  const producto = productoSembrado(nombre);
   const nombres = estado.respuestaApi!.items.map((p) => p.name);
   expect(nombres).not.toContain(producto!.nombreReal);
 });
@@ -190,7 +173,7 @@ Then('la respuesta no incluye {string}', async ({}, nombre: string) => {
 Then(
   '{string} tiene precio base {int}, rebaja {int} y precio final {int}',
   async ({}, nombre: string, base: number, rebaja: number, final: number) => {
-    const producto = estado.productos.get(nombre);
+    const producto = productoSembrado(nombre);
     const item = estado.respuestaApi!.items.find(
       (p) => p.name === producto!.nombreReal,
     );
@@ -269,9 +252,13 @@ When('añade el primer producto al carrito', async ({ page }) => {
    * ya hidrato es su propio almacen: zustand lo escribe al rehidratarse.
    */
   await page
-    .waitForFunction(() => localStorage.getItem('cart-storage') !== null, null, {
-      timeout: 10_000,
-    })
+    .waitForFunction(
+      () => localStorage.getItem('cart-storage') !== null,
+      null,
+      {
+        timeout: 10_000,
+      },
+    )
     .catch(() => {
       // Con sesion el carrito vive en el servidor y esa clave no aparece.
     });
@@ -406,7 +393,7 @@ Then(
 Then(
   'el carrito muestra el producto {string}',
   async ({ page }, nombre: string) => {
-    const producto = estado.productos.get(nombre);
+    const producto = productoSembrado(nombre);
     await expect(page.getByText(producto!.nombreReal).first()).toBeVisible();
   },
 );
@@ -431,7 +418,7 @@ Then('el carrito queda vacío', async ({ page }) => {
 When(
   'el cliente abre el catálogo filtrando por la categoría de {string}',
   async ({ page }, nombre: string) => {
-    const producto = estado.productos.get(nombre);
+    const producto = productoSembrado(nombre);
     await page.goto(`/catalog?categorySlug=${producto!.categoriaSlug}`);
   },
 );
@@ -439,7 +426,7 @@ When(
 Then(
   've el departamento del producto {string}',
   async ({ page }, nombre: string) => {
-    const producto = estado.productos.get(nombre);
+    const producto = productoSembrado(nombre);
     await expect(
       page.getByText(producto!.departamentoNombre).first(),
     ).toBeVisible();
@@ -449,7 +436,7 @@ Then(
 Then(
   've la categoría del producto {string}',
   async ({ page }, nombre: string) => {
-    const producto = estado.productos.get(nombre);
+    const producto = productoSembrado(nombre);
     await expect(
       page.getByText(producto!.categoriaNombre).first(),
     ).toBeVisible();
