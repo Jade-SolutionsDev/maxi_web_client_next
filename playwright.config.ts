@@ -16,6 +16,7 @@ const testDir = defineBddConfig({
 
 export default defineConfig({
   testDir,
+  globalSetup: './e2e/setup/global.ts',
   fullyParallel: false, // comparten base de datos: se pisarian
   workers: 1,
   retries: 0,
