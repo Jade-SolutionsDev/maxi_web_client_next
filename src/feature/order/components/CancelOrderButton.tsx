@@ -18,7 +18,7 @@ export const CancelOrderButton = ({ orderId }: { orderId: string }) => {
 
   const handleConfirm = async () => {
     setIsLoading(true);
-    const result = await cancelOrderAction(orderId);
+    const result = await cancelOrderAction({ orderId });
     setIsLoading(false);
     setIsOpen(false);
 

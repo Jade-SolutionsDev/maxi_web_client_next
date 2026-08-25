@@ -1,6 +1,6 @@
 import { getImageProps } from 'next/image';
 import type { BannerSlide } from '@/shared/cms/type/cms.interface';
-import { bannerFrameClass as frame } from './hero-banner.styles';
+import { bannerSizes, bannerFrameClass as frame } from './hero-banner.styles';
 
 type BannerPictureProps = {
   slide: BannerSlide;
@@ -11,7 +11,7 @@ type BannerPictureProps = {
 function BannerPicture({ slide, eager }: BannerPictureProps) {
   const common = {
     alt: slide.alt,
-    sizes: '100vw',
+    sizes: bannerSizes,
     loading: eager ? ('eager' as const) : ('lazy' as const),
     fetchPriority: eager ? ('high' as const) : ('auto' as const),
   };
@@ -28,7 +28,11 @@ function BannerPicture({ slide, eager }: BannerPictureProps) {
 
   return (
     <picture className={frame}>
-      <source media='(min-width: 1024px)' srcSet={desktop} sizes='100vw' />
+      <source
+        media='(min-width: 1024px)'
+        srcSet={desktop}
+        sizes={bannerSizes}
+      />
       <source media='(min-width: 768px)' srcSet={tablet} sizes='100vw' />
       <img
         {...img}

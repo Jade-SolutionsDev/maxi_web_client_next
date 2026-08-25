@@ -16,7 +16,6 @@ async function CategoriesSection() {
   return (
     <Section
       title='Categorías'
-      size='full'
       action={{ href: '/categorias', label: 'Ver todas →' }}
     >
       {categories.length === 0 ? (
@@ -31,7 +30,7 @@ async function CategoriesSection() {
             {categories.map((category) => (
               <CarouselItem
                 key={category.id}
-                className='basis-1/2 pl-4 sm:basis-1/3 md:basis-1/4 lg:basis-1/5'
+                className='basis-1/2 pl-4 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/7'
               >
                 <Link
                   href={categoryHref(category.slug)}

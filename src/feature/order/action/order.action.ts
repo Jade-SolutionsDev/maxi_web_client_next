@@ -4,6 +4,10 @@ import { revalidatePath } from 'next/cache';
 import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { toOrderFailure } from '../lib/order-error';
 import { CheckoutInputSchema } from '../schema/checkout.schema';
+import {
+  OrderIdInputSchema,
+  StartPaymentInputSchema,
+} from '../schema/order-action.schema';
 import * as orders from '../service/order.service';
 import type {
   OrderListResult,
@@ -50,40 +54,60 @@ export const fetchOrders = async (page: number): Promise<OrderListResult> => {
   }
 };
 
-export const fetchOrder = async (orderId: string): Promise<OrderResult> => {
+export const fetchOrder = async (input: unknown): Promise<OrderResult> => {
+  const parsed = OrderIdInputSchema.safeParse(input);
+
+  if (!parsed.success) return { failure: { kind: 'unknown' } };
+
   try {
-    return { order: await orders.getOrder(orderId) };
+    return { order: await orders.getOrder(parsed.data.orderId) };
   } catch (error) {
     return { failure: toOrderFailure(error) };
   }
 };
 
 export const cancelOrderAction = async (
-  orderId: string,
+  input: unknown,
 ): Promise<OrderResult> => {
+  const parsed = OrderIdInputSchema.safeParse(input);
+
+  if (!parsed.success) return { failure: { kind: 'unknown' } };
+
   try {
-    return { order: await orders.cancelOrder(orderId) };
+    return { order: await orders.cancelOrder(parsed.data.orderId) };
   } catch (error) {
     return { failure: toOrderFailure(error) };
   }
 };
 
 export const fetchPaymentStatus = async (
-  orderId: string,
+  input: unknown,
 ): Promise<PaymentResult> => {
+  const parsed = OrderIdInputSchema.safeParse(input);
+
+  if (!parsed.success) return { failure: { kind: 'unknown' } };
+
   try {
-    return { payment: await orders.getPayment(orderId) };
+    return { payment: await orders.getPayment(parsed.data.orderId) };
   } catch (error) {
     return { failure: toOrderFailure(error) };
   }
 };
 
 export const startPaymentAttempt = async (
-  orderId: string,
-  method?: string,
+  input: unknown,
 ): Promise<PaymentResult> => {
+  const parsed = StartPaymentInputSchema.safeParse(input);
+
+  if (!parsed.success) return { failure: { kind: 'unknown' } };
+
   try {
-    return { payment: await orders.startPayment(orderId, method) };
+    return {
+      payment: await orders.startPayment(
+        parsed.data.orderId,
+        parsed.data.method,
+      ),
+    };
   } catch (error) {
     return { failure: toOrderFailure(error) };
   }

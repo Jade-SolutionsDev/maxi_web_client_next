@@ -110,7 +110,7 @@ export const PaymentPanel = ({
   );
 
   const refresh = useCallback(async () => {
-    const result = await fetchPaymentStatus(order.id);
+    const result = await fetchPaymentStatus({ orderId: order.id });
 
     if (result.payment) {
       applyCharge(result.payment);
@@ -153,7 +153,10 @@ export const PaymentPanel = ({
   const handleStart = async () => {
     setIsStarting(true);
     setExpiredLocally(false);
-    const result = await startPaymentAttempt(order.id, method || undefined);
+    const result = await startPaymentAttempt({
+      orderId: order.id,
+      method: method || undefined,
+    });
     setIsStarting(false);
 
     if (result.payment) {

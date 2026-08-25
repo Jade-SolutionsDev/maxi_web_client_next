@@ -21,7 +21,6 @@ async function RecientProductSection() {
   return (
     <Section
       title='Nuestros productos más recientes'
-      size={'full'}
       action={{ href: '/catalog', label: 'Ver todos →' }}
     >
       {recentProducts.length === 0 ? (
@@ -40,11 +39,11 @@ async function RecientProductSection() {
             {recentProducts.map((product) => (
               <CarouselItem
                 key={product.id}
-                className='pl-4 basis-1/2 md:basis-1/3 lg:basis-1/5'
+                className='pl-4 basis-1/2 md:basis-1/3 lg:basis-1/5 xl:basis-1/6'
               >
                 <ProductCard
                   product={product}
-                  imageSizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
+                  imageSizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 20vw, 17rem'
                 />
               </CarouselItem>
             ))}

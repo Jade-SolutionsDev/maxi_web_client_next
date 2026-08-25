@@ -1,20 +1,19 @@
 import { Section } from '@/app/components/layout/Section';
 import { Skeleton } from '@/app/components/ui/skeleton';
 
-const PLACEHOLDERS = ['a', 'b', 'c', 'd', 'e'];
+const PLACEHOLDERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 
 function CategoriesSectionSkeleton() {
   return (
     <Section
       title='Categorías'
-      size='full'
       action={{ href: '/categorias', label: 'Ver todas →' }}
     >
       <ul className='flex gap-4 overflow-hidden'>
         {PLACEHOLDERS.map((id) => (
           <li
             key={id}
-            className='flex shrink-0 basis-1/2 flex-col items-center gap-2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5'
+            className='flex shrink-0 basis-1/2 flex-col items-center gap-2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/7'
           >
             <Skeleton className='aspect-square w-full max-w-24 rounded-full sm:max-w-32 md:max-w-40 lg:max-w-50' />
             <Skeleton className='h-4 w-2/3 sm:h-5' />

@@ -33,7 +33,7 @@ export const columns: FooterColumn[] = [
     label: 'Servicio al cliente',
     links: [
       { label: 'Contáctenos', href: '/contacto' },
-      { label: 'Métodos de Pago', href: '#' },
+      { label: 'Métodos de Pago', href: '/paginas/metodos-de-pago' },
     ],
   },
   {

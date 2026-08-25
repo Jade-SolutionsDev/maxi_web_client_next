@@ -16,6 +16,10 @@ const TableScroller = ({ children }: { children?: ReactNode }) => (
   </div>
 );
 
+const DemotedHeading = ({ children }: { children?: ReactNode }) => (
+  <h2>{children}</h2>
+);
+
 const measure = 'mx-auto w-full max-w-[68ch]';
 
 const rhythm = cn(
@@ -76,7 +80,7 @@ export const Markdown = ({ content, className }: MarkdownProps) => (
   >
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
-      components={{ table: TableScroller }}
+      components={{ table: TableScroller, h1: DemotedHeading }}
     >
       {content}
     </ReactMarkdown>

@@ -23,9 +23,12 @@ export const getProvinces = async (): Promise<Province[]> => {
   'use cache';
   cacheLife('days');
 
-  const { data } = await api<ApiResponse<ProvinceResponse[]>>('/provinces');
-
-  return data.map(toProvince);
+  try {
+    const { data } = await api<ApiResponse<ProvinceResponse[]>>('/provinces');
+    return data.map(toProvince);
+  } catch {
+    return [];
+  }
 };
 
 /** `provinceId` is part of the cache key, so each province gets its own entry. */
@@ -35,11 +38,14 @@ export const getMunicipalities = async (
   'use cache';
   cacheLife('days');
 
-  const { data } = await api<ApiResponse<MunicipalityResponse[]>>(
-    `/provinces/${encodeURIComponent(provinceId)}/municipalities`,
-  );
-
-  return data.map(toMunicipality);
+  try {
+    const { data } = await api<ApiResponse<MunicipalityResponse[]>>(
+      `/provinces/${encodeURIComponent(provinceId)}/municipalities`,
+    );
+    return data.map(toMunicipality);
+  } catch {
+    return [];
+  }
 };
 
 export const getLocationCatalog = async (): Promise<LocationCatalog> => {

@@ -81,8 +81,15 @@ export const useCartStore = create<CartState>()((set, get) => {
     set({ cart });
   };
 
-  const setServerCart = (cart: Cart) =>
+  let cartSyncToken = 0;
+
+  const nextCartSyncToken = () => ++cartSyncToken;
+
+  const setServerCart = (token: number, cart: Cart) => {
+    if (token !== cartSyncToken) return;
+
     set({ cart, status: 'ready', lastSyncedAt: Date.now() });
+  };
 
   const cancelAllDebounces = () => {
     for (const productId of debouncers.keys()) cancelDebounce(productId);
@@ -119,10 +126,11 @@ export const useCartStore = create<CartState>()((set, get) => {
     });
 
   const reconcile = async () => {
+    const token = nextCartSyncToken();
     const result = await enqueue(fetchCart);
 
     if (result.cart) {
-      setServerCart(result.cart);
+      setServerCart(token, result.cart);
       return;
     }
 
@@ -139,12 +147,13 @@ export const useCartStore = create<CartState>()((set, get) => {
     call: () => Promise<CartResult>,
   ) => {
     markPending(productId);
+    const token = nextCartSyncToken();
 
     try {
       const result = await enqueue(call);
 
       if (result.cart) {
-        setServerCart(result.cart);
+        setServerCart(token, result.cart);
         return;
       }
 
@@ -315,11 +324,12 @@ export const useCartStore = create<CartState>()((set, get) => {
 
       loadAccountCart: async () => {
         set({ mode: 'account', status: 'loading' });
+        const token = nextCartSyncToken();
 
         const result = await enqueue(fetchCart);
 
         if (result.cart) {
-          setServerCart(result.cart);
+          setServerCart(token, result.cart);
           return;
         }
 
@@ -340,6 +350,7 @@ export const useCartStore = create<CartState>()((set, get) => {
         }
 
         set({ mode: 'account', status: 'loading' });
+        const token = nextCartSyncToken();
 
         const result = await enqueue(() =>
           mergeGuestCart(
@@ -365,7 +376,7 @@ export const useCartStore = create<CartState>()((set, get) => {
         // Only once the server has taken the lines: clearing earlier turns a
         // failed merge into a cart the customer cannot get back.
         clearGuestLines();
-        setServerCart(result.cart);
+        setServerCart(token, result.cart);
         notifyMergeReport(result.report);
       },
 

@@ -182,6 +182,26 @@ body {
       display: inline-flex;
     }
   }
+
+  @media (width >= 96rem) {
+    .category-grid-collapsed > li:nth-child(n + 13) {
+      display: block;
+    }
+
+    .category-grid-collapsed > li:nth-child(n + 17) {
+      display: none;
+    }
+
+    .category-band:has(.category-grid > li:nth-child(n + 13))
+      .category-band-toggle {
+      display: none;
+    }
+
+    .category-band:has(.category-grid > li:nth-child(n + 17))
+      .category-band-toggle {
+      display: inline-flex;
+    }
+  }
 }
 
 @keyframes status-in {

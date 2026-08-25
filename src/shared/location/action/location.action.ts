@@ -10,6 +10,8 @@ interface SaveLocationResult {
   error?: string;
 }
 
+const GENERIC_ERROR = 'No pudimos guardar tu ubicación. Inténtalo de nuevo.';
+
 export const saveLocation = async (
   input: unknown,
 ): Promise<SaveLocationResult> => {
@@ -19,16 +21,20 @@ export const saveLocation = async (
     return { error: 'Elige un municipio' };
   }
 
-  const catalog = await getLocationCatalog();
-  const selection = findSelection(catalog, parsed.data.municipalityId);
+  try {
+    const catalog = await getLocationCatalog();
+    const selection = findSelection(catalog, parsed.data.municipalityId);
 
-  if (!selection) {
-    return { error: 'Esa ubicación no está disponible' };
+    if (!selection) {
+      return { error: 'Esa ubicación no está disponible' };
+    }
+
+    await writeMunicipalityId(selection.municipalityId);
+
+    revalidatePath('/', 'layout');
+
+    return {};
+  } catch {
+    return { error: GENERIC_ERROR };
   }
-
-  await writeMunicipalityId(selection.municipalityId);
-
-  revalidatePath('/', 'layout');
-
-  return {};
 };

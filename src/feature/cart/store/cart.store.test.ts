@@ -294,6 +294,70 @@ describe('refreshIfStale', () => {
   });
 });
 
+describe('concurrent mutations', () => {
+  beforeEach(() => {
+    useCartStore.setState({
+      mode: 'account',
+      status: 'ready',
+      cart: { lines: [], totalItems: 0, subtotal: 0 },
+    });
+  });
+
+  it('keeps both optimistic lines when an earlier add resolves after a later one was queued', async () => {
+    const productB: Product = {
+      id: 'juice',
+      slug: 'juice-1l',
+      name: 'Juice 1L',
+      price: 8,
+      measureUnit: 'unidad',
+      available: 5,
+    };
+
+    let releaseFirst!: (value: CartResult) => void;
+    const firstCall = new Promise<CartResult>((resolve) => {
+      releaseFirst = resolve;
+    });
+
+    addCartLine.mockReturnValueOnce(firstCall);
+    addCartLine.mockReturnValueOnce(
+      Promise.resolve<CartResult>({
+        cart: {
+          lines: [
+            serverCart(1).lines[0],
+            {
+              productId: 'juice',
+              slug: 'juice-1l',
+              name: 'Juice 1L',
+              measureUnit: 'unidad',
+              quantity: 1,
+              unitPrice: 8,
+              lineTotal: 8,
+              available: 5,
+              isAvailable: true,
+            },
+          ],
+          totalItems: 2,
+          subtotal: 18,
+        },
+      }),
+    );
+
+    const pendingA = actions().addToCart(product, 1);
+    const pendingB = actions().addToCart(productB, 1);
+    await flush();
+
+    releaseFirst({ cart: serverCart(1) });
+    await pendingA;
+    await pendingB;
+
+    expect(
+      state()
+        .cart.lines.map((line) => line.productId)
+        .sort(),
+    ).toEqual(['cola', 'juice']);
+  });
+});
+
 describe('adoptGuestCart', () => {
   it('merges the stored lines and only then clears them', async () => {
     await actions().addToCart(product, 2);

@@ -12,7 +12,7 @@ async function FeaturedProducts() {
   const municipalityId = await readMunicipalityId();
   const { items: products } = await getProducts({
     featured: true,
-    limit: 15,
+    limit: 24,
     municipalityId: municipalityId ?? undefined,
   });
 

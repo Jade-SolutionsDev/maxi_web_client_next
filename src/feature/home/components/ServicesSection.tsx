@@ -25,8 +25,11 @@ async function ServicesSection() {
   }));
 
   return (
-    <section aria-labelledby={titleId} className='mt-11'>
-      <Container className='bg-linear-135 from-sand to-sand-strong pb-12 pt-10 lg:pb-[60px] lg:pt-[54px]'>
+    <section
+      aria-labelledby={titleId}
+      className='mt-11 bg-linear-135 from-sand to-sand-strong pb-12 pt-10 lg:pb-[60px] lg:pt-[54px]'
+    >
+      <Container>
         <header className='mx-auto mb-10 max-w-3xl text-center lg:mb-14'>
           <h2
             id={titleId}
