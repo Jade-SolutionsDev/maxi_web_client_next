@@ -11,7 +11,17 @@ const { Given, When, Then, Before, After } = createBdd();
  */
 type Estado = {
   sufijo: string;
-  productos: Map<string, { slug: string; nombreReal: string }>;
+  productos: Map<
+    string,
+    {
+      slug: string;
+      nombreReal: string;
+      categoriaSlug: string;
+      categoriaNombre: string;
+      departamentoNombre: string;
+    }
+  >;
+  paginaCms?: { slug: string; titulo: string; contenido: string };
   respuestaApi?: { items: Array<Record<string, unknown>> };
   ultimoEstadoHttp?: number;
   avisoDeAñadido?: boolean;
@@ -23,13 +33,21 @@ Before(() => {
   estado = { sufijo: Date.now().toString().slice(-8), productos: new Map() };
 });
 
-After(() => {
+After(async () => {
   // Cada escenario se lleva lo que sembro.
   sql(
     `DELETE FROM inventory WHERE product_id IN (SELECT id FROM products WHERE sku LIKE 'E2E-${estado.sufijo}%')`,
   );
   sql(`DELETE FROM products WHERE sku LIKE 'E2E-${estado.sufijo}%'`);
   sql(`DELETE FROM categories WHERE slug LIKE '%-e2e-${estado.sufijo}'`);
+  sql(`DELETE FROM cms_pages WHERE slug = 'pagina-e2e-${estado.sufijo}'`);
+
+  /**
+   * Y se invalida el cache: la tienda guarda el catalogo un dia entero, asi que
+   * borrar de la base no basta. Sin esto, escenarios posteriores ven productos
+   * que ya no existen.
+   */
+  await invalidarCatalogo();
 });
 
 // ---------------------------------------------------------------- Antecedentes
@@ -52,14 +70,14 @@ Given('que el cliente no ha elegido zona', async ({ context }) => {
 Given(
   'que existe un producto {string} con {int} unidades y un {int}% de rebaja',
   async ({}, nombre: string, unidades: number, rebaja: number) => {
-    const { id, slug, nombreReal } = sembrarProducto(nombre, rebaja);
+    const sembrado = sembrarProducto(nombre, rebaja);
     const almacen = sql(
       'SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1',
     );
     sql(
-      `INSERT INTO inventory (location_id, product_id, quantity) VALUES ('${almacen}', '${id}', ${unidades})`,
+      `INSERT INTO inventory (location_id, product_id, quantity) VALUES ('${almacen}', '${sembrado.id}', ${unidades})`,
     );
-    estado.productos.set(nombre, { slug, nombreReal });
+    estado.productos.set(nombre, sembrado);
     await invalidarCatalogo();
   },
 );
@@ -67,8 +85,7 @@ Given(
 Given(
   'que existe un producto {string} sin existencias',
   async ({}, nombre: string) => {
-    const { slug, nombreReal } = sembrarProducto(nombre, 0);
-    estado.productos.set(nombre, { slug, nombreReal });
+    estado.productos.set(nombre, sembrarProducto(nombre, 0));
     await invalidarCatalogo();
   },
 );
@@ -93,7 +110,14 @@ function sembrarProducto(nombre: string, rebaja: number) {
     INSERT INTO products (category_id, sku, name, slug, measure_unit, base_price, discount, image_url)
     VALUES ('${categoria}', 'E2E-${s}-${base}', '${nombreReal}', '${slug}', 'unidad', 100, ${rebaja}, 'https://placehold.co/600x400.png')
     RETURNING id`);
-  return { id, slug, nombreReal };
+  return {
+    id,
+    slug,
+    nombreReal,
+    categoriaSlug: `cat-e2e-${s}`,
+    categoriaNombre: `Cat E2E ${s}`,
+    departamentoNombre: `Dep E2E ${s}`,
+  };
 }
 
 // ------------------------------------------------------------------- Acciones
@@ -229,6 +253,9 @@ When('añade el primer producto al carrito', async ({ page }) => {
   const antes = await unidadesEnCarrito(page);
 
   const boton = page.getByRole('button', { name: /^a[ñn]adir/i }).first();
+  // El catalogo puede tardar en pintar sus tarjetas; sin esta espera el aviso
+  // se pierde entre la carga y el clic.
+  await boton.waitFor({ state: 'visible', timeout: 15_000 });
   await boton.scrollIntoViewIfNeeded();
   await boton.hover();
   await boton.click();
@@ -339,4 +366,82 @@ Then('el carrito queda vacío', async ({ page }) => {
       .getByText(/carrito est[áa] vac[íi]o|no hay productos|agrega productos/i)
       .first(),
   ).toBeVisible();
+});
+
+// ------------------------------------------------- Categorias y contenido
+
+When(
+  'el cliente abre el catálogo filtrando por la categoría de {string}',
+  async ({ page }, nombre: string) => {
+    const producto = estado.productos.get(nombre);
+    await page.goto(`/catalog?categorySlug=${producto!.categoriaSlug}`);
+  },
+);
+
+Then(
+  've el departamento del producto {string}',
+  async ({ page }, nombre: string) => {
+    const producto = estado.productos.get(nombre);
+    await expect(
+      page.getByText(producto!.departamentoNombre).first(),
+    ).toBeVisible();
+  },
+);
+
+Then(
+  've la categoría del producto {string}',
+  async ({ page }, nombre: string) => {
+    const producto = estado.productos.get(nombre);
+    await expect(
+      page.getByText(producto!.categoriaNombre).first(),
+    ).toBeVisible();
+  },
+);
+
+Then('ve el correo de contacto', async ({ page }) => {
+  await expect(page.getByText(/@/).first()).toBeVisible();
+});
+
+Then('ve el teléfono de contacto', async ({ page }) => {
+  await expect(page.getByText(/\+53/).first()).toBeVisible();
+});
+
+Given(
+  'que existe una página publicada llamada {string}',
+  async ({}, titulo: string) => {
+    estado.paginaCms = sembrarPagina(titulo, true);
+    await invalidarCatalogo();
+  },
+);
+
+Given(
+  'que existe una página desactivada llamada {string}',
+  async ({}, titulo: string) => {
+    estado.paginaCms = sembrarPagina(titulo, false);
+    await invalidarCatalogo();
+  },
+);
+
+function sembrarPagina(titulo: string, activa: boolean) {
+  const slug = `pagina-e2e-${estado.sufijo}`;
+  const contenido = `Contenido de prueba ${estado.sufijo}`;
+  sql(`
+    INSERT INTO cms_pages (slug, title, content, is_active)
+    VALUES ('${slug}', '${titulo}', '${contenido}', ${activa})`);
+  return { slug, titulo, contenido };
+}
+
+When('el cliente abre esa página', async ({ page }) => {
+  const res = await page.goto(`/paginas/${estado.paginaCms!.slug}`);
+  estado.ultimoEstadoHttp = res?.status();
+});
+
+Then('ve su contenido', async ({ page }) => {
+  await expect(
+    page.getByText(estado.paginaCms!.contenido).first(),
+  ).toBeVisible();
+});
+
+Then('no ve su contenido', async ({ page }) => {
+  await expect(page.getByText(estado.paginaCms!.contenido)).toHaveCount(0);
 });
