@@ -8,6 +8,7 @@ import { HeroBanner } from '@/feature/home/components/HeroBanner';
 import { HeroBannerSkeleton } from '@/feature/home/components/HeroBannerSkeleton';
 import { ServicesSection } from '@/feature/home/components/ServicesSection';
 import { FeaturedProducts } from '@/feature/product/components/FeaturedProducts';
+import { OnSaleProducts } from '@/feature/product/components/OnSaleProducts';
 import { ProductsSkeleton } from '@/feature/product/components/ProductsSkeleton';
 import RecientProductSection from '@/feature/product/components/RecientProduct';
 
@@ -40,6 +41,12 @@ export default function Home() {
         </Suspense>
       </SectionBoundary>
 
+      <SectionBoundary label='los productos en oferta'>
+        <Suspense fallback={<ProductsSkeleton title='En oferta' />}>
+          <OnSaleProducts />
+        </Suspense>
+      </SectionBoundary>
+
       <SectionBoundary label='las categorías'>
         <Suspense fallback={<CategoriesSectionSkeleton />}>
           <CategoriesSection />
@@ -47,7 +54,11 @@ export default function Home() {
       </SectionBoundary>
 
       <SectionBoundary label='los productos recientes '>
-        <Suspense fallback={<ProductsSkeleton />}>
+        <Suspense
+          fallback={
+            <ProductsSkeleton title='Nuestros productos más recientes' />
+          }
+        >
           <RecientProductSection />
         </Suspense>
       </SectionBoundary>

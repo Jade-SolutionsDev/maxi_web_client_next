@@ -25,7 +25,7 @@ export const columns: FooterColumn[] = [
     label: 'Producto',
     links: [
       { label: 'Lo más destacado', href: '/catalog?featured=true' },
-      { label: 'En oferta', href: '#' },
+      { label: 'En oferta', href: '/catalog?onSale=true' },
     ],
   },
   {

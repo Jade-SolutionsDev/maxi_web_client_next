@@ -53,6 +53,14 @@ export const useProductFilter = ({
     onFilterApplied?.();
   };
 
+  const handleOnSaleProduct = (isOnSale: boolean) => {
+    setFilters((prev) => ({
+      onSale: prev.onSale === isOnSale ? null : isOnSale,
+      page: null,
+    }));
+    onFilterApplied?.();
+  };
+
   const handlePriceFilter = (minPrice: number, maxPrice: number) => {
     setFilters({ minPrice, maxPrice, page: null });
     onFilterApplied?.();
@@ -73,6 +81,7 @@ export const useProductFilter = ({
       category: null,
       department: null,
       featured: null,
+      onSale: null,
       maxPrice: null,
       minPrice: null,
       sortBy: null,
@@ -89,6 +98,7 @@ export const useProductFilter = ({
     filters.category,
     filters.department,
     filters.featured,
+    filters.onSale,
     hasPriceFilter || null,
   ].filter(Boolean).length;
 
@@ -101,6 +111,7 @@ export const useProductFilter = ({
     activeFilterCount,
     handleCategoryFilter,
     handleFeaturedProduct,
+    handleOnSaleProduct,
     handlePriceFilter,
     handleDepartmentFilter,
     handlePageSize,

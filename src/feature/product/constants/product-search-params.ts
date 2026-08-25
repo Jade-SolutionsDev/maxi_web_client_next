@@ -73,6 +73,7 @@ export const productSearchParams = {
   department: parseAsString,
   category: parseAsString,
   featured: parseAsBoolean,
+  onSale: parseAsBoolean,
   minPrice: parseAsInteger.withDefault(PRICE_MIN),
   maxPrice: parseAsInteger.withDefault(PRICE_MAX),
   sortBy: parseAsStringLiteral(SORT_BY_VALUES).withDefault(DEFAULT_SORT_BY),
@@ -88,6 +89,7 @@ export type CatalogSearchParams = {
   department?: string;
   category?: string;
   featured?: boolean;
+  onSale?: boolean;
   minPrice?: number;
   maxPrice?: number;
   sortBy?: ProductSortBy;
@@ -118,6 +120,7 @@ export const parseCatalogSearchParams = (
     department: parsed.department ?? undefined,
     category: parsed.category ?? undefined,
     featured: parsed.featured ?? undefined,
+    onSale: parsed.onSale ?? undefined,
     minPrice: lowerPrice > PRICE_MIN ? lowerPrice : undefined,
     maxPrice: upperPrice < PRICE_MAX ? upperPrice : undefined,
     sortBy: parsed.sortBy,

@@ -4,12 +4,15 @@ import { productGridClass } from './product-grid.styles';
 
 const PLACEHOLDERS = ['a', 'b', 'c', 'd', 'e'];
 
-function ProductsSkeleton() {
+type ProductsSkeletonProps = {
+  title?: string;
+};
+
+function ProductsSkeleton({
+  title = 'Productos destacados',
+}: ProductsSkeletonProps) {
   return (
-    <Section
-      title='Productos destacados'
-      action={{ href: '/catalog', label: 'Ver todos →' }}
-    >
+    <Section title={title} action={{ href: '/catalog', label: 'Ver todos →' }}>
       <ul className={productGridClass}>
         {PLACEHOLDERS.map((id) => (
           <li key={id} className='flex flex-col gap-2'>

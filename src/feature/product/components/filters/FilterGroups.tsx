@@ -7,11 +7,13 @@ import { PriceFilter } from './PriceFilter';
 import { TaxonomyFilterGroups } from './TaxonomyFilterGroups';
 
 /**
- * Pure filter controls (price, departments, categories, featured). Owns no
- * chrome — the surrounding card (desktop) or sheet (mobile) provides layout.
+ * Pure filter controls (price, departments, categories, featured, on sale).
+ * Owns no chrome — the surrounding card (desktop) or sheet (mobile) provides
+ * layout.
  */
 export const FilterGroups = () => {
-  const { filters, handleFeaturedProduct } = useCatalogFilterState();
+  const { filters, handleFeaturedProduct, handleOnSaleProduct } =
+    useCatalogFilterState();
 
   return (
     <div className='flex flex-col gap-6'>
@@ -24,15 +26,26 @@ export const FilterGroups = () => {
 
       <section>
         <h3 className='text-[16px] font-bold uppercase text-heading'>
-          En oferta
+          Promociones
         </h3>
-        <div className='mt-4 flex items-center gap-3'>
-          <Checkbox
-            id='featured'
-            checked={filters.featured === true}
-            onCheckedChange={() => handleFeaturedProduct(!filters.featured)}
-          />
-          <Label htmlFor='featured'>Productos destacados</Label>
+        <div className='mt-4 flex flex-col gap-3'>
+          <div className='flex items-center gap-3'>
+            <Checkbox
+              id='featured'
+              checked={filters.featured === true}
+              onCheckedChange={() => handleFeaturedProduct(!filters.featured)}
+            />
+            <Label htmlFor='featured'>Productos destacados</Label>
+          </div>
+
+          <div className='flex items-center gap-3'>
+            <Checkbox
+              id='onSale'
+              checked={filters.onSale === true}
+              onCheckedChange={() => handleOnSaleProduct(!filters.onSale)}
+            />
+            <Label htmlFor='onSale'>Productos en oferta</Label>
+          </div>
         </div>
       </section>
     </div>
