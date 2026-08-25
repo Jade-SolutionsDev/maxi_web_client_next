@@ -10,6 +10,7 @@ import { SafeImage } from '@/app/components/ui/safe-image';
 import { fetchPaymentMethods } from '@/feature/order/action/order.action';
 import { CancellationNotice } from '@/feature/order/components/CancellationNotice';
 import { CancelOrderButton } from '@/feature/order/components/CancelOrderButton';
+import { OrderDetailSkeleton } from '@/feature/order/components/OrderDetailSkeleton';
 import {
   OrderStatusPill,
   PaymentStatusPill,
@@ -206,7 +207,7 @@ export default function OrderDetailPage({
           { label: 'Detalle' },
         ]}
       />
-      <Suspense>
+      <Suspense fallback={<OrderDetailSkeleton />}>
         <OrderDetailContent params={params} />
       </Suspense>
     </main>

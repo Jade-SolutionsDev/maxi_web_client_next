@@ -8,6 +8,7 @@ import { Container } from '@/app/components/layout/Container';
 import { buttonVariants } from '@/app/components/ui/button';
 import { PageHero } from '@/app/components/ui/page-hero';
 import { OrderCard } from '@/feature/order/components/OrderCard';
+import { OrderListSkeleton } from '@/feature/order/components/OrderListSkeleton';
 import { getOrders } from '@/feature/order/service/order.service';
 
 export const metadata: Metadata = {
@@ -61,7 +62,7 @@ export default function OrdersPage() {
         title='Mis pedidos'
         breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Mis pedidos' }]}
       />
-      <Suspense>
+      <Suspense fallback={<OrderListSkeleton />}>
         <OrdersContent />
       </Suspense>
     </main>
