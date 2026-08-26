@@ -123,7 +123,7 @@ export const CheckoutForm = ({
       <FulfillmentUnavailable
         message={
           offer.unavailableMessage ??
-          'Por el momento no podemos procesar tu pedido. Escribinos y lo coordinamos.'
+          'Por el momento no podemos procesar tu pedido. Escríbenos y lo coordinamos.'
         }
       />
     );

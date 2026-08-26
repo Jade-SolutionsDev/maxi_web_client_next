@@ -85,7 +85,7 @@ export interface Order {
   deliveryFee: number;
   total: number;
   deliveryMunicipalityId: string | null;
-  deliveryAddress: Record<string, string> | null;
+  deliveryAddress: Record<string, string | null> | null;
   customerNotes: string | null;
   items?: OrderItem[];
   payment?: PaymentCharge;

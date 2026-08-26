@@ -288,7 +288,7 @@ export const PaymentPanel = ({
       {mode === 'instructions' && charge && (
         <div className='flex flex-col gap-4'>
           <p className='text-sm text-muted'>
-            Enviá{' '}
+            Envía{' '}
             <strong className='text-heading'>
               exactamente {charge.amount} {charge.token?.toUpperCase()}
             </strong>{' '}

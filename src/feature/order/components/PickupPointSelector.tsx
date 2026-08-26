@@ -19,7 +19,7 @@ export const PickupPointSelector = ({
 }: PickupPointSelectorProps) => (
   <fieldset className='flex flex-col gap-2' disabled={disabled}>
     <legend className='mb-2 text-sm font-medium text-heading'>
-      ¿Dónde lo recogés?
+      ¿Dónde lo recoges?
     </legend>
 
     {points.map((point) => {

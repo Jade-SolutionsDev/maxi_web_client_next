@@ -25,7 +25,7 @@ const methods = [
   {
     code: 'tropipay',
     label: 'Tarjeta (Tropipay)',
-    description: 'Pagá con tarjeta.',
+    description: 'Paga con tarjeta.',
     icon: 'CreditCard',
     kind: 'redirect' as const,
   },

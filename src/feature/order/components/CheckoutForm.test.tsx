@@ -90,7 +90,7 @@ const methods = [
   {
     code: 'tropipay',
     label: 'Tarjeta (Tropipay)',
-    description: 'Pagá con tarjeta.',
+    description: 'Paga con tarjeta.',
     icon: 'CreditCard',
     kind: 'redirect' as const,
   },
@@ -270,7 +270,7 @@ describe('CheckoutForm', () => {
           deliveryOptions: [],
           pickupPoints: [],
           pickupEnabled: false,
-          unavailableMessage: 'Escribinos y coordinamos tu compra.',
+          unavailableMessage: 'Escríbenos y coordinamos tu compra.',
         }}
         addresses={addresses}
         catalog={catalog}
@@ -278,7 +278,7 @@ describe('CheckoutForm', () => {
       />,
     );
 
-    expect(screen.getByText(/Escribinos y coordinamos/)).toBeTruthy();
+    expect(screen.getByText(/Escríbenos y coordinamos/)).toBeTruthy();
     expect(
       screen.queryByRole('button', { name: /Confirmar pedido/ }),
     ).toBeNull();
@@ -295,8 +295,8 @@ describe('CheckoutForm', () => {
       />,
     );
 
-    expect(screen.queryByText(/¿Cómo querés recibirlo\?/)).toBeNull();
-    expect(screen.getByText(/¿Dónde lo recogés\?/)).toBeTruthy();
+    expect(screen.queryByText(/¿Cómo quieres recibirlo\?/)).toBeNull();
+    expect(screen.getByText(/¿Dónde lo recoges\?/)).toBeTruthy();
   });
 
   // Nothing serves this zone by delivery: pickup is simply the only offer, so
@@ -312,7 +312,7 @@ describe('CheckoutForm', () => {
       />,
     );
 
-    expect(screen.getByText(/¿Dónde lo recogés\?/)).toBeTruthy();
+    expect(screen.getByText(/¿Dónde lo recoges\?/)).toBeTruthy();
     expect(screen.queryByText(/Dirección de entrega/)).toBeNull();
   });
 

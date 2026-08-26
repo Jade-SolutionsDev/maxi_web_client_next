@@ -14,7 +14,7 @@ export const RegisterSchema = z
       .max(24, { message: 'Máximo 24 caracteres' }),
     confirmPassword: z
       .string()
-      .nonempty({ message: 'Confirmá tu contraseña' })
+      .nonempty({ message: 'Confirma tu contraseña' })
       .max(24, { message: 'Máximo 24 caracteres' }),
   })
   .refine((data) => data.password === data.confirmPassword, {

@@ -41,7 +41,10 @@ export const FormField = ({
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       {label && (
-        <Label htmlFor={name} className='gap-1 text-sm font-medium text-heading'>
+        <Label
+          htmlFor={name}
+          className='gap-1 text-sm font-medium text-heading'
+        >
           {label}
           {required && (
             <span aria-hidden='true' className='text-destructive'>

@@ -24,7 +24,7 @@ export const CheckoutInputSchema = z
         ctx.addIssue({
           code: 'custom',
           path: ['pickupAddressId'],
-          message: 'Elegí dónde querés recoger tu pedido',
+          message: 'Elige dónde quieres recoger tu pedido',
         });
       }
       return;

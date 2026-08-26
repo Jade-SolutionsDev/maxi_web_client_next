@@ -19,7 +19,7 @@ export default async function ContactoPage() {
       <Container size='md' className='py-12'>
         <p className='mx-auto max-w-2xl text-center text-lg text-muted'>
           ¿Tienes dudas sobre un pedido o quieres trabajar con nosotros?
-          Escribinos o llamanos y te respondemos lo antes posible.
+          Escríbenos o llámanos y te respondemos lo antes posible.
         </p>
 
         <div className='mx-auto mt-10 grid max-w-2xl gap-6 sm:grid-cols-2'>

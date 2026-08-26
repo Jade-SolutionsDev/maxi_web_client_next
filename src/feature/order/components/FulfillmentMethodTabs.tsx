@@ -13,7 +13,7 @@ interface FulfillmentMethodTabsProps {
 
 const COPY: Record<FulfillmentType, { label: string; hint: string }> = {
   delivery: { label: 'Entrega a domicilio', hint: 'Te lo llevamos' },
-  pickup: { label: 'Recoger en tienda', hint: 'Lo buscás vos' },
+  pickup: { label: 'Recoger en tienda', hint: 'Lo buscas tú' },
 };
 
 const ICONS = { delivery: Truck, pickup: Store };
@@ -29,7 +29,7 @@ export const FulfillmentMethodTabs = ({
   return (
     <fieldset className='flex flex-col gap-2' disabled={disabled}>
       <legend className='mb-2 text-sm font-medium text-heading'>
-        ¿Cómo querés recibirlo?
+        ¿Cómo quieres recibirlo?
       </legend>
 
       <div className='grid grid-cols-1 gap-2 sm:grid-cols-2'>
