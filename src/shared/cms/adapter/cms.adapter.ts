@@ -1,3 +1,4 @@
+import { DEFAULT_SITE_SETTINGS } from '../constants/site-settings.constants';
 import type {
   BannerSlide,
   CmsBannerResponse,
@@ -6,6 +7,8 @@ import type {
   CmsServiceResponse,
   CmsStaffMemberResponse,
   ServiceItem,
+  SiteSettings,
+  SiteSettingsResponse,
   StaffMember,
 } from '../type/cms.interface';
 
@@ -31,6 +34,36 @@ export const toStaffMember = (member: CmsStaffMemberResponse): StaffMember => ({
   role: member.role.trim(),
   photo: member.photoUrl ?? undefined,
   resume: member.resume?.trim() || undefined,
+});
+
+export const toSiteSettings = (
+  settings: SiteSettingsResponse,
+): SiteSettings => ({
+  footer: {
+    blurb: settings.footer?.blurb?.trim() || DEFAULT_SITE_SETTINGS.footer.blurb,
+    copyright:
+      settings.footer?.copyright?.trim() ||
+      DEFAULT_SITE_SETTINGS.footer.copyright,
+    legalLinks:
+      settings.footer?.legalLinks ?? DEFAULT_SITE_SETTINGS.footer.legalLinks,
+  },
+  contact: {
+    email:
+      settings.contact?.email?.trim() || DEFAULT_SITE_SETTINGS.contact.email,
+    phone:
+      settings.contact?.phone?.trim() || DEFAULT_SITE_SETTINGS.contact.phone,
+    hours:
+      settings.contact?.hours?.trim() || DEFAULT_SITE_SETTINGS.contact.hours,
+  },
+  payments: { ...DEFAULT_SITE_SETTINGS.payments, ...settings.payments },
+  services: {
+    heading:
+      settings.services?.heading?.trim() ||
+      DEFAULT_SITE_SETTINGS.services.heading,
+    subheading:
+      settings.services?.subheading?.trim() ||
+      DEFAULT_SITE_SETTINGS.services.subheading,
+  },
 });
 
 export const toCmsPage = (page: CmsPageResponse): CmsPage => ({

@@ -64,7 +64,7 @@ export const useSignUp = () => {
             return;
           }
 
-          const url = decorateUrl('/');
+          const url = decorateUrl('/bienvenida');
           if (url.startsWith('http')) {
             window.location.href = url;
           } else {

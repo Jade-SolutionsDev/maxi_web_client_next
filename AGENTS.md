@@ -80,3 +80,9 @@ Contracts to preserve when touching these surfaces:
   S3 entry only covers legacy `/BANNER/**` paths.
 - API endpoints (all under `GET /public/cms/`): `settings`, `banners`,
   `services`, `staff`, `pages`, `pages/:slug`.
+- Contact form (`src/feature/contact/`) → motives come from
+  `getContactMotives()` (`GET /public/contact/motives`, cache tag
+  `nomenclators` — admin nomenclator edits revalidate it); submissions go
+  through `action/contact.action.ts`, which branches on the session (signed-in
+  senders post only motive+message via `apiAuth`; anonymous senders include
+  identity). Keep the hidden honeypot field (`website`) when restyling.

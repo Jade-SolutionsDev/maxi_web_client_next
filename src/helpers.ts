@@ -143,6 +143,9 @@ export const normalizeSearchText = (text: string): string =>
 export const toTelHref = (phone: string): string =>
   `tel:${phone.replace(/[^+\d]/g, '')}`;
 
+export const toWhatsAppHref = (phone: string): string =>
+  `https://wa.me/${phone.replace(/\D/g, '')}`;
+
 export const markdownToPlainText = (markdown: string): string =>
   markdown
     .replace(/```[\s\S]*?```/g, ' ')

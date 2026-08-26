@@ -7,6 +7,7 @@ const ALLOWED_TAGS = new Set([
   'location-catalog',
   'product-list',
   'cms',
+  'nomenclators',
 ]);
 
 export async function POST(request: Request) {

@@ -6,8 +6,10 @@ import {
   toBannerSlide,
   toCmsPage,
   toServiceItem,
+  toSiteSettings,
   toStaffMember,
 } from '../adapter/cms.adapter';
+import { DEFAULT_SITE_SETTINGS } from '../constants/site-settings.constants';
 import type {
   BannerSlide,
   CmsBannerResponse,
@@ -17,34 +19,9 @@ import type {
   CmsStaffMemberResponse,
   ServiceItem,
   SiteSettings,
+  SiteSettingsResponse,
   StaffMember,
 } from '../type/cms.interface';
-
-export const DEFAULT_SITE_SETTINGS: SiteSettings = {
-  footer: {
-    blurb:
-      'Del mercado a tu mesa, sin complicaciones. Productos frescos y de confianza, con entrega rápida en toda La Habana.',
-    copyright: '© 2026 Maxi. Todos los derechos reservados.',
-    legalLinks: [
-      { label: 'Política de privacidad', slug: 'politica-de-privacidad' },
-      { label: 'Términos y condiciones', slug: 'terminos-y-condiciones' },
-    ],
-  },
-  contact: {
-    email: 'comercialmaxihabana@gmail.com',
-    phone: '+53 5 432 6665',
-  },
-  payments: {
-    visa: true,
-    mastercard: true,
-    mibilletera: false,
-  },
-  services: {
-    heading: 'Nuestros servicios',
-    subheading:
-      'Cuidamos cada pedido para que tu familia en La Habana reciba lo que necesita, con la mejor calidad.',
-  },
-};
 
 export const getSiteSettings = async (): Promise<SiteSettings> => {
   'use cache';
@@ -52,10 +29,10 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
   cacheTag('cms');
 
   try {
-    const { data } = await api<ApiResponse<SiteSettings>>(
+    const { data } = await api<ApiResponse<SiteSettingsResponse>>(
       '/public/cms/settings',
     );
-    return data;
+    return toSiteSettings(data);
   } catch {
     return DEFAULT_SITE_SETTINGS;
   }
