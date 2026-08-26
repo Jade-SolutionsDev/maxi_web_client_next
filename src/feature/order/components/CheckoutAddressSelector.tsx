@@ -122,6 +122,13 @@ export const CheckoutAddressSelector = ({
         </span>
       </label>
 
+      {zone && (
+        <p className='text-xs text-muted'>
+          Solo mostramos direcciones en <strong>{zone.municipalityName}</strong>
+          , la zona que estás viendo. Para enviar a otra, cambiá la zona arriba.
+        </p>
+      )}
+
       {error && <p className='text-sm text-destructive'>{String(error)}</p>}
 
       {usingNew && (

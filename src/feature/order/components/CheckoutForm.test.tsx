@@ -342,6 +342,21 @@ describe('CheckoutForm', () => {
     expect(screen.queryByText(/Calle de otra provincia/)).toBeNull();
   });
 
+  it('explains why addresses elsewhere are missing', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.getByText(/Solo mostramos direcciones en/)).toBeTruthy();
+    expect(screen.getByText(zone.municipalityName)).toBeTruthy();
+  });
+
   it('pins a new address to the zone instead of asking for the municipality', async () => {
     render(
       <CheckoutForm
