@@ -54,7 +54,7 @@ After(async () => {
     `DELETE FROM inventory WHERE product_id IN (SELECT id FROM products WHERE sku LIKE 'E2E-${estado.sufijo}%')`,
   );
   sql(`DELETE FROM products WHERE sku LIKE 'E2E-${estado.sufijo}%'`);
-  sql(`DELETE FROM categories WHERE slug LIKE '%-e2e-${estado.sufijo}'`);
+  sql(`DELETE FROM categories WHERE slug LIKE '%-e2e-${estado.sufijo}%'`);
   sql(`DELETE FROM cms_pages WHERE slug = 'pagina-e2e-${estado.sufijo}'`);
 
   /**

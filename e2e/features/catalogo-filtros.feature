@@ -36,3 +36,19 @@ Característica: Ordenar, filtrar y pasar de página en el catálogo
     Y hay una segunda página
     Cuando pasa a la segunda página
     Entonces la lista muestra 1 producto
+
+  Escenario: Filtrar por departamento deja solo sus productos
+    Dado que existe un producto "Lácteo" de US$100 con 5 unidades en el departamento "A"
+    Y que existe un producto "Ferretero" de US$100 con 5 unidades en el departamento "B"
+    Cuando el cliente abre el catálogo
+    Y filtra por el departamento de "Lácteo"
+    Entonces ve el producto "Lácteo"
+    Y no ve el producto "Ferretero"
+
+  Escenario: Bajar el precio máximo deja fuera lo que se pasa
+    Dado que existe un producto "Asequible" de US$50 con 5 unidades
+    Y que existe un producto "Carísimo" de US$900 con 5 unidades
+    Cuando el cliente abre el catálogo
+    Y baja el precio máximo a la mitad
+    Entonces ve el producto "Asequible"
+    Y no ve el producto "Carísimo"
