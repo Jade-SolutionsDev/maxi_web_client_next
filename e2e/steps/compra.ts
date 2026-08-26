@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { createBdd } from 'playwright-bdd';
-import { sql } from '../helpers';
+import { sembrarDireccion, sql } from '../helpers';
 
 const { Given, When, Then } = createBdd();
 
@@ -16,14 +16,20 @@ Given('que el cliente no tiene pedidos ni carrito', async () => {
        DELETE FROM orders WHERE client_id IN ${cliente}`);
 });
 
-When(
-  'escribe {string} como dirección de entrega',
-  async ({ page }, direccion: string) => {
-    const campo = page.getByLabel(/dirección de entrega/i);
-    await campo.waitFor({ state: 'visible', timeout: 15_000 });
-    await campo.fill(direccion);
-  },
-);
+Given('que el cliente tiene una dirección guardada', async () => {
+  sembrarDireccion(CORREO_CLIENTE);
+});
+
+/**
+ * El checkout ya no pide la direccion a mano: ofrece las guardadas del cliente
+ * en la zona que esta mirando, con la predeterminada ya elegida. Este paso
+ * comprueba justo eso — que aparece y viene marcada — en vez de escribirla.
+ */
+When('elige su dirección guardada', async ({ page }) => {
+  // La predeterminada tiene que venir ya elegida, sin tocar nada.
+  const elegida = page.getByRole('radio', { name: /predeterminada/i }).first();
+  await expect(elegida).toBeChecked({ timeout: 20_000 });
+});
 
 When('confirma el pedido', async ({ page }) => {
   await page.getByRole('button', { name: /confirmar pedido/i }).click();
