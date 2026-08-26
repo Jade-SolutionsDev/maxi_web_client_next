@@ -10,7 +10,7 @@ import type {
   VerifyTone,
 } from '@/feature/auth/type/verify-status.interface';
 
-const SUPPORT_HINT = '¿Sigue fallando? Escribinos al +53 5 432 6665.';
+const SUPPORT_HINT = '¿Sigue fallando? Escríbenos al +53 5 432 6665.';
 
 export const VERIFY_STATUS_VIEWS: Record<VerifyStatus, VerifyStatusView> = {
   loading: {

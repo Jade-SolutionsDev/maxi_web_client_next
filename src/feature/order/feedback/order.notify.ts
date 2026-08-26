@@ -15,7 +15,7 @@ export const notifyCheckoutFailure = (failure: OrderFailure) => {
 
     notify.warning('Tu carrito cambió', {
       id,
-      description: `Ajustá estas líneas antes de continuar. ${detail}`,
+      description: `Ajusta estas líneas antes de continuar. ${detail}`,
     });
     return;
   }

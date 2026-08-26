@@ -13,7 +13,7 @@ export default function ProductNotFound() {
           Producto no encontrado
         </h1>
         <p className='text-muted'>
-          El producto que buscás no existe o ya no está disponible.
+          El producto que buscas no existe o ya no está disponible.
         </p>
         <Link href='/catalog' className={buttonVariants({ size: 'lg' })}>
           Volver al catálogo

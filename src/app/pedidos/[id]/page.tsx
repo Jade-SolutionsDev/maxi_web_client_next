@@ -10,6 +10,7 @@ import { SafeImage } from '@/app/components/ui/safe-image';
 import { fetchPaymentMethods } from '@/feature/order/action/order.action';
 import { CancellationNotice } from '@/feature/order/components/CancellationNotice';
 import { CancelOrderButton } from '@/feature/order/components/CancelOrderButton';
+import { OrderDeliveryDetails } from '@/feature/order/components/OrderDeliveryDetails';
 import { OrderDetailSkeleton } from '@/feature/order/components/OrderDetailSkeleton';
 import {
   OrderStatusPill,
@@ -149,18 +150,7 @@ async function OrderDetailContent({
                 <MapPin className='size-4 text-primary' aria-hidden='true' />
                 Entrega
               </h3>
-              {order.deliveryAddress ? (
-                <dl className='flex flex-col gap-1 text-sm text-muted'>
-                  {Object.entries(order.deliveryAddress).map(([key, value]) => (
-                    <div key={key} className='flex gap-1.5'>
-                      <dt className='font-semibold capitalize'>{key}:</dt>
-                      <dd>{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              ) : (
-                <p className='text-sm text-muted'>Sin dirección registrada.</p>
-              )}
+              <OrderDeliveryDetails order={order} />
             </section>
 
             <section
