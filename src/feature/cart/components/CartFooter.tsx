@@ -3,7 +3,7 @@
 import { useAuth } from '@clerk/nextjs';
 import { ArrowRight, PiggyBank } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { SheetClose, SheetFooter } from '@/app/components/ui/sheet';
 import { formatPrice } from '@/helpers';
@@ -21,6 +21,9 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
   const mode = useCartStore((state) => state.mode);
   const adoptGuestCart = useCartStore((state) => state.actions.adoptGuestCart);
   const [isPreparing, setIsPreparing] = useState(false);
+  const [isNavigating, startNavigation] = useTransition();
+  const closeSheetRef = useRef(closeSheet);
+  const hasLeftForCheckout = useRef(false);
   const {
     totalItems,
     totalPrice,
@@ -29,6 +32,17 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
     hasUnavailableLines,
   } = useCartData();
   const hasSavings = totalSavings > 0;
+
+  useEffect(() => {
+    closeSheetRef.current = closeSheet;
+  });
+
+  useEffect(() => {
+    if (!hasLeftForCheckout.current || isNavigating) return;
+
+    hasLeftForCheckout.current = false;
+    closeSheetRef.current();
+  }, [isNavigating]);
 
   const handleCheckout = async () => {
     if (!isSignedIn) {
@@ -56,8 +70,10 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
       }
     }
 
-    closeSheet();
-    router.push('/checkout');
+    hasLeftForCheckout.current = true;
+    startNavigation(() => {
+      router.push('/checkout');
+    });
   };
 
   return (
@@ -104,7 +120,7 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
         size='lg'
         type='button'
         disabled={hasUnavailableLines || totalItems === 0 || !isLoaded}
-        loading={isPreparing}
+        loading={isPreparing || isNavigating}
         onClick={handleCheckout}
         className='w-full gap-2'
       >

@@ -11,6 +11,7 @@ import {
   fetchPaymentMethods,
 } from '@/feature/order/action/order.action';
 import { CheckoutLayout } from '@/feature/order/components/CheckoutLayout';
+import { CheckoutSkeleton } from '@/feature/order/components/CheckoutSkeleton';
 import type { FulfillmentOffer } from '@/feature/order/type/fulfillment.type';
 import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { getLocationCatalog } from '@/shared/location/service/location.service';
@@ -94,7 +95,7 @@ export default function CheckoutPage() {
         title='Finalizar compra'
         breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Checkout' }]}
       />
-      <Suspense>
+      <Suspense fallback={<CheckoutSkeleton />}>
         <CheckoutContent />
       </Suspense>
     </main>
