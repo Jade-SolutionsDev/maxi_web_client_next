@@ -49,6 +49,54 @@ export async function invalidarCatalogo(): Promise<void> {
   });
 }
 
+/** Un municipio al que no llega ningun almacen activo. */
+export function municipiosSinEntrega(): string {
+  return sql(`
+    SELECT m.id FROM municipalities m
+     WHERE NOT EXISTS (
+       SELECT 1 FROM stock_location_coverage c
+        JOIN stock_locations sl ON sl.id = c.location_id AND sl.is_active
+       WHERE c.province_id = m.province_id)
+     ORDER BY m.name LIMIT 1`);
+}
+
+/** Las provincias que hoy tiene cubiertas algun almacen activo. */
+export function provinciasConEntrega(): string[] {
+  const filas = sqlFilas(`
+    SELECT p.name FROM provinces p
+     WHERE EXISTS (
+       SELECT 1 FROM stock_location_coverage c
+        JOIN stock_locations sl ON sl.id = c.location_id AND sl.is_active
+       WHERE c.province_id = p.id)
+     ORDER BY p.name`);
+  return filas;
+}
+
+/** Como `sql`, pero devuelve todas las filas y no solo la primera. */
+export function sqlFilas(consulta: string): string[] {
+  const salida = execFileSync(
+    'docker',
+    [
+      'exec',
+      '-i',
+      CONTENEDOR,
+      'psql',
+      '-U',
+      'maxihabana',
+      '-d',
+      BASE_DATOS,
+      '-qtAc',
+      consulta,
+    ],
+    { encoding: 'utf8' },
+  );
+
+  return salida
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l && !/^(INSERT|UPDATE|DELETE|SELECT) \d/.test(l));
+}
+
 /** Municipio cualquiera de una provincia con cobertura, para la cookie de zona. */
 export function municipioConCobertura(): string {
   return sql(`
@@ -105,8 +153,14 @@ export function olvidarProductos() {
  * Un producto nuevo en su propio departamento, para que cada escenario mire
  * solo lo suyo. El sufijo lo hace unico.
  */
-export function sembrarProducto(nombre: string, rebaja: number, precio = 100) {
-  const s = sufijo();
+export function sembrarProducto(
+  nombre: string,
+  rebaja: number,
+  precio = 100,
+  /** Sufijo extra: cada grupo crea su propio departamento. */
+  grupo = '',
+) {
+  const s = `${sufijo()}${grupo}`;
   const base = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
   let categoria = sql(`SELECT id FROM categories WHERE slug = 'cat-e2e-${s}'`);
   if (!categoria) {

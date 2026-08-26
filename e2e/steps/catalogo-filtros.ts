@@ -4,6 +4,7 @@ import {
   API,
   invalidarCatalogo,
   municipioConCobertura,
+  productoSembrado,
   registrarProducto,
   sembrarProducto,
   sql,
@@ -46,10 +47,11 @@ function sembrarConExistencias(
   precio: number,
   rebaja: number,
   unidades: number,
+  grupo = '',
 ) {
   const sembrado = registrarProducto(
     nombre,
-    sembrarProducto(nombre, rebaja, precio),
+    sembrarProducto(nombre, rebaja, precio, grupo),
   );
   const almacen = sql(
     'SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1',
@@ -59,6 +61,53 @@ function sembrarConExistencias(
   );
   return sembrado;
 }
+
+Given(
+  'que existe un producto {string} de US${int} con {int} unidades en el departamento {string}',
+  async (
+    {},
+    nombre: string,
+    precio: number,
+    unidades: number,
+    grupo: string,
+  ) => {
+    sembrarConExistencias(nombre, precio, 0, unidades, grupo);
+  },
+);
+
+When(
+  'filtra por el departamento de {string}',
+  async ({ page }, nombre: string) => {
+    const producto = productoSembrado(nombre);
+    await page
+      .getByRole('checkbox', { name: producto.departamentoNombre })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/department=/, { timeout: 15_000 });
+  },
+);
+
+/**
+ * El tope de precio se arrastra, no se teclea: cada pulsacion mueve un paso de
+ * 10 sobre un maximo de 1000 —cincuenta pulsaciones y cincuenta navegaciones
+ * para llegar a la mitad—, mientras que un arrastre es un gesto y una sola
+ * escritura en la URL, que es cuando el filtro se aplica.
+ */
+When('baja el precio máximo a la mitad', async ({ page }) => {
+  const tope = page.getByRole('slider').last();
+  const marco = await tope.boundingBox();
+  const barra = await page.getByRole('group').first().boundingBox();
+  if (!marco || !barra) throw new Error('No se encontro la barra de precio');
+
+  await page.mouse.move(marco.x + marco.width / 2, marco.y + marco.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(barra.x + barra.width / 2, marco.y + marco.height / 2, {
+    steps: 10,
+  });
+  await page.mouse.up();
+
+  await expect(page).toHaveURL(/maxPrice=5\d0/, { timeout: 15_000 });
+});
 
 When('ordena por {string}', async ({ page }, criterio: string) => {
   await page.getByRole('combobox', { name: /ordenar productos/i }).click();
