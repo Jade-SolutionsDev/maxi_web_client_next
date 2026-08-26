@@ -25,3 +25,20 @@ Una autorización previa no habilita los siguientes cambios.
 Esto no aplica a los comentarios que ya existen en el repositorio: no los borres
 salvo que el código que documentan haya dejado de existir.
 
+
+## Español de Cuba (obligatorio)
+
+Todo el texto en español que ve una persona —storefront, back-office, mensajes
+de la API, correos, textos sembrados en la base de datos— se escribe en el
+español de Cuba, que **tutea**. Nunca voseo rioplatense: suena ajeno al cliente.
+
+- Imperativos: **elige**, **paga**, **envía**, **recoge**, **escríbenos**,
+  **confirma**, **ajusta**, **guarda**, **cambia**, **contacta**.
+  Nunca *elegí*, *pagá*, *enviá*, *recogé*, *escribinos*, *confirmá*.
+- Pronombres y verbos: **tú**, **tienes**, **quieres**, **puedes**, **buscas**,
+  **contigo**. Nunca *vos*, *tenés*, *querés*, *podés*, *buscás*, *con vos*.
+- Vale el "usted" cuando el tono lo pida, pero nunca se mezcla con el voseo.
+
+Aplica igual a los tests: si una aserción busca un texto, se escribe como el
+texto real. Los datos ya sembrados en una base de datos existente no se
+actualizan solos — cámbialos desde el back-office.

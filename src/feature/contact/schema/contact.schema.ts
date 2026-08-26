@@ -1,7 +1,7 @@
 import z from 'zod';
 
 export const ContactBaseSchema = z.object({
-  motiveId: z.uuid({ message: 'Elegí un motivo' }),
+  motiveId: z.uuid({ message: 'Elige un motivo' }),
   message: z
     .string()
     .trim()

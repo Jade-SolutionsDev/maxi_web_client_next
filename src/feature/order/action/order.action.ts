@@ -8,7 +8,9 @@ import {
   OrderIdInputSchema,
   StartPaymentInputSchema,
 } from '../schema/order-action.schema';
+import type { CheckoutAddressPayload } from '../service/order.service';
 import * as orders from '../service/order.service';
+import type { FulfillmentOffer } from '../type/fulfillment.type';
 import type {
   OrderListResult,
   OrderResult,
@@ -16,23 +18,48 @@ import type {
   PaymentResult,
 } from '../type/order.type';
 
+const toAddressPayload = (input: {
+  label?: string;
+  street?: string;
+  betweenStreets?: string;
+  reference?: string;
+  municipalityId?: string;
+  contactPhone?: string;
+  addressId?: string;
+}): CheckoutAddressPayload | undefined => {
+  if (input.addressId || !input.street || !input.municipalityId) {
+    return undefined;
+  }
+
+  return {
+    label: input.label || undefined,
+    street: input.street,
+    betweenStreets: input.betweenStreets || undefined,
+    reference: input.reference || undefined,
+    municipalityId: input.municipalityId,
+    contactPhone: input.contactPhone || undefined,
+  };
+};
+
 export const checkoutAction = async (input: unknown): Promise<OrderResult> => {
   const parsed = CheckoutInputSchema.safeParse(input);
 
   if (!parsed.success) return { failure: { kind: 'unknown' } };
 
   try {
-    const municipalityId = await readMunicipalityId();
+    const { data } = parsed;
+    const fallbackMunicipalityId = await readMunicipalityId();
     const order = await orders.checkout({
-      deliveryMunicipalityId: municipalityId ?? undefined,
-      paymentMethod: parsed.data.paymentMethod || undefined,
-      deliveryAddress: {
-        direccion: parsed.data.direccion,
-        ...(parsed.data.referencias
-          ? { referencias: parsed.data.referencias }
-          : {}),
-      },
-      customerNotes: parsed.data.notas || undefined,
+      fulfillmentType: data.fulfillmentType,
+      deliveryOptionId: data.deliveryOptionId || undefined,
+      pickupAddressId: data.pickupAddressId || undefined,
+      addressId: data.addressId || undefined,
+      address: toAddressPayload(data),
+      saveAddress: data.saveAddress,
+      deliveryMunicipalityId:
+        data.municipalityId || fallbackMunicipalityId || undefined,
+      paymentMethod: data.paymentMethod || undefined,
+      customerNotes: data.notas || undefined,
     });
 
     revalidatePath('/checkout');
@@ -41,6 +68,16 @@ export const checkoutAction = async (input: unknown): Promise<OrderResult> => {
     return { order };
   } catch (error) {
     return { failure: toOrderFailure(error) };
+  }
+};
+
+export const fetchFulfillmentOffer = async (
+  municipalityId?: string,
+): Promise<FulfillmentOffer | null> => {
+  try {
+    return await orders.getFulfillmentOffer(municipalityId);
+  } catch {
+    return null;
   }
 };
 

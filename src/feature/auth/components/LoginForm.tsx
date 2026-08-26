@@ -25,7 +25,7 @@ export const LoginForm = () => {
     defaultValues: { email: '', password: '' },
   });
 
-  const { login, isSubmitting } = useSignIn();
+  const { login, isSubmitting, isReady } = useSignIn();
 
   const onSubmit = async (data: LoginSchemaType) => {
     form.clearErrors();
@@ -60,6 +60,7 @@ export const LoginForm = () => {
         size='lg'
         className='mt-2 w-full'
         loading={isSubmitting}
+        disabled={!isReady || isSubmitting}
       >
         {isSubmitting ? 'Entrando...' : 'Iniciar sesión'}
       </Button>

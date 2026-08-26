@@ -95,7 +95,7 @@ export const ContactForm = ({ motives, isSignedIn }: ContactFormProps) => {
         <FormSelect
           name='motiveId'
           label='Motivo'
-          placeholder='Elegí un motivo'
+          placeholder='Elige un motivo'
           options={motiveOptions}
           required
         />

@@ -262,6 +262,33 @@ describe('unauthenticated fallback', () => {
   });
 });
 
+describe('markCheckedOut', () => {
+  it('empties an account cart without asking the server', () => {
+    useCartStore.setState({
+      mode: 'account',
+      status: 'ready',
+      cart: serverCart(2),
+    });
+
+    actions().markCheckedOut();
+
+    expect(state().cart.lines).toHaveLength(0);
+    expect(state().cart.totalItems).toBe(0);
+    // The order already emptied it there; re-reading would redirect the page.
+    expect(fetchCart).not.toHaveBeenCalled();
+    expect(clearCartLines).not.toHaveBeenCalled();
+  });
+
+  it('empties a guest cart too, storage included', async () => {
+    await actions().addToCart(product, 2);
+
+    actions().markCheckedOut();
+
+    expect(state().cart.totalItems).toBe(0);
+    expect(window.localStorage.getItem('cart-storage')).not.toContain('cola');
+  });
+});
+
 describe('refreshIfStale', () => {
   it('skips the refetch while the cart is still fresh', () => {
     useCartStore.setState({ mode: 'account', lastSyncedAt: Date.now() });

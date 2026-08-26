@@ -2,7 +2,15 @@ import { SafeImage } from '@/app/components/ui/safe-image';
 import type { Cart } from '@/feature/cart/type/cart.interface';
 import { formatPrice } from '@/helpers';
 
-export const CheckoutSummary = ({ cart }: { cart: Cart }) => (
+interface CheckoutSummaryProps {
+  cart: Cart;
+  deliveryFee?: number;
+}
+
+export const CheckoutSummary = ({
+  cart,
+  deliveryFee = 0,
+}: CheckoutSummaryProps) => (
   <section
     aria-labelledby='checkout-summary-title'
     className='rounded-2xl border border-input bg-background p-5 sm:p-6'
@@ -53,12 +61,14 @@ export const CheckoutSummary = ({ cart }: { cart: Cart }) => (
       </div>
       <div className='flex items-baseline justify-between'>
         <dt className='text-sm text-muted'>Envío</dt>
-        <dd className='text-sm text-muted'>Se coordina con la entrega</dd>
+        <dd className='text-sm font-bold text-heading tabular-nums'>
+          {deliveryFee > 0 ? formatPrice(deliveryFee) : 'Gratis'}
+        </dd>
       </div>
       <div className='flex items-baseline justify-between'>
         <dt className='text-base font-bold text-heading'>Total</dt>
         <dd className='text-xl font-bold text-total tabular-nums'>
-          {formatPrice(cart.subtotal)}
+          {formatPrice(cart.subtotal + deliveryFee)}
         </dd>
       </div>
     </dl>

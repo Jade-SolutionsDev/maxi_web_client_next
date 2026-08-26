@@ -7,7 +7,7 @@ import { ContactSkeleton } from '@/feature/contact/components/ContactSkeleton';
 export const metadata: Metadata = {
   title: 'Contacto',
   description:
-    'Escribí al equipo de MaxiHabana: dudas sobre pedidos, pagos, entregas y sugerencias. Te respondemos lo antes posible.',
+    'Escribe al equipo de MaxiHabana: dudas sobre pedidos, pagos, entregas y sugerencias. Te respondemos lo antes posible.',
   alternates: { canonical: '/contacto' },
 };
 

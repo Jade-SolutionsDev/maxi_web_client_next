@@ -1,58 +1,140 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { Form } from '@/app/components/form/Form';
-import { FormInput } from '@/app/components/form/FormInput';
 import { FormTextarea } from '@/app/components/form/FormTextarea';
 import { Button } from '@/app/components/ui/button';
+import type { Address } from '@/feature/address/type/address.interface';
 import { useCartActions } from '@/feature/cart/hook/useCart';
+import type { LocationCatalog } from '@/shared/location/type/location.interface';
 import { checkoutAction } from '../action/order.action';
 import { notifyCheckoutFailure } from '../feedback/order.notify';
 import {
   type CheckoutInput,
   CheckoutInputSchema,
 } from '../schema/checkout.schema';
+import type {
+  FulfillmentOffer,
+  FulfillmentType,
+} from '../type/fulfillment.type';
 import type { PaymentMethod } from '../type/order.type';
+import { CheckoutAddressSelector } from './CheckoutAddressSelector';
+import { DeliveryOptionSelector } from './DeliveryOptionSelector';
+import { FulfillmentMethodTabs } from './FulfillmentMethodTabs';
+import { FulfillmentUnavailable } from './FulfillmentUnavailable';
 import { PaymentMethodSelector } from './PaymentMethodSelector';
+import { PickupPointSelector } from './PickupPointSelector';
 
 interface CheckoutFormProps {
-  municipalityName: string | null;
   paymentMethods: PaymentMethod[];
+  offer: FulfillmentOffer;
+  addresses: Address[];
+  catalog: LocationCatalog;
+  zone: { municipalityId: string; municipalityName: string } | null;
+  onDeliveryFeeChange?: (fee: number) => void;
 }
 
+const zoneProvinceId = (catalog: LocationCatalog, municipalityId: string) =>
+  Object.entries(catalog.municipalitiesByProvince).find(([, municipalities]) =>
+    municipalities.some((municipality) => municipality.id === municipalityId),
+  )?.[0] ?? '';
+
+const availableMethods = (offer: FulfillmentOffer): FulfillmentType[] => {
+  const methods: FulfillmentType[] = [];
+  if (offer.deliveryOptions.length > 0) methods.push('delivery');
+  if (offer.pickupEnabled && offer.pickupPoints.length > 0) {
+    methods.push('pickup');
+  }
+  return methods;
+};
+
 export const CheckoutForm = ({
-  municipalityName,
   paymentMethods,
+  offer,
+  addresses: allAddresses,
+  catalog,
+  zone,
+  onDeliveryFeeChange,
 }: CheckoutFormProps) => {
   const router = useRouter();
-  const { refreshIfStale } = useCartActions();
+  const { markCheckedOut } = useCartActions();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Navigation owns the busy state once the order exists, so nothing can latch:
-  // React clears isNavigating when the transition ends.
   const [isNavigating, startNavigation] = useTransition();
   const busy = isSubmitting || isNavigating;
+
+  const methods = availableMethods(offer);
+  // The cart was priced and stocked for the zone the customer is browsing, so
+  // that is the only place this order can go. Other saved addresses stay in the
+  // address book; they are simply not choices here.
+  const addresses = zone
+    ? allAddresses.filter(
+        (address) => address.municipalityId === zone.municipalityId,
+      )
+    : allAddresses;
+  const defaultAddress = addresses.find((address) => address.isDefault);
 
   const form = useForm<CheckoutInput>({
     resolver: zodResolver(CheckoutInputSchema),
     defaultValues: {
-      direccion: '',
-      referencias: '',
+      fulfillmentType: methods[0] ?? 'pickup',
+      deliveryOptionId: offer.deliveryOptions[0]?.id ?? '',
+      pickupAddressId: offer.pickupPoints[0]?.id ?? '',
+      addressId: defaultAddress?.id ?? addresses[0]?.id ?? '',
+      saveAddress: false,
       notas: '',
       paymentMethod: paymentMethods[0]?.code ?? '',
+      provinceId: zone ? zoneProvinceId(catalog, zone.municipalityId) : '',
+      municipalityId: zone?.municipalityId ?? '',
     },
   });
+
+  const fulfillmentType = form.watch('fulfillmentType');
+  const deliveryOptionId = form.watch('deliveryOptionId') ?? '';
+  const pickupAddressId = form.watch('pickupAddressId') ?? '';
+  const addressId = form.watch('addressId') ?? '';
   const paymentMethod = form.watch('paymentMethod') ?? '';
+
+  useEffect(() => {
+    const options = offer.deliveryOptions;
+    if (options.length === 0) {
+      form.setValue('deliveryOptionId', '');
+      return;
+    }
+    if (!options.some((option) => option.id === deliveryOptionId)) {
+      form.setValue('deliveryOptionId', options[0].id);
+    }
+  }, [offer.deliveryOptions, deliveryOptionId, form]);
+
+  const selectedFee =
+    fulfillmentType === 'pickup'
+      ? 0
+      : (offer.deliveryOptions.find((option) => option.id === deliveryOptionId)
+          ?.fee ?? 0);
+
+  useEffect(() => {
+    onDeliveryFeeChange?.(selectedFee);
+  }, [selectedFee, onDeliveryFeeChange]);
+
+  if (offer.unavailableMessage || methods.length === 0) {
+    return (
+      <FulfillmentUnavailable
+        message={
+          offer.unavailableMessage ??
+          'Por el momento no podemos procesar tu pedido. Escríbenos y lo coordinamos.'
+        }
+      />
+    );
+  }
 
   const handleSubmit = async (values: CheckoutInput) => {
     setIsSubmitting(true);
     const result = await checkoutAction(values);
 
     if (result.order) {
-      refreshIfStale(0);
+      markCheckedOut();
       startNavigation(() => router.push(`/pedidos/${result.order.id}`));
       setIsSubmitting(false);
       return;
@@ -67,28 +149,42 @@ export const CheckoutForm = ({
 
   return (
     <Form form={form} onSubmit={handleSubmit}>
-      {municipalityName && (
-        <p className='flex items-center gap-2 rounded-xl bg-surface px-3 py-2 text-sm text-heading'>
-          <MapPin className='size-4 shrink-0 text-primary' aria-hidden='true' />
-          Entrega en <strong>{municipalityName}</strong>
-        </p>
+      <FulfillmentMethodTabs
+        available={methods}
+        value={fulfillmentType}
+        onChange={(value) => form.setValue('fulfillmentType', value)}
+        disabled={busy}
+      />
+
+      {fulfillmentType === 'pickup' ? (
+        <PickupPointSelector
+          points={offer.pickupPoints}
+          value={pickupAddressId}
+          onChange={(id) => form.setValue('pickupAddressId', id)}
+          disabled={busy}
+        />
+      ) : (
+        <>
+          <CheckoutAddressSelector
+            addresses={addresses}
+            catalog={catalog}
+            zone={zone}
+            value={addressId}
+            onChange={(id) => form.setValue('addressId', id)}
+            disabled={busy}
+          />
+          <DeliveryOptionSelector
+            options={offer.deliveryOptions}
+            value={deliveryOptionId}
+            onChange={(id) => form.setValue('deliveryOptionId', id)}
+            disabled={busy}
+          />
+        </>
       )}
 
-      <FormInput
-        name='direccion'
-        label='Dirección de entrega'
-        placeholder='Calle, número, entre calles'
-        autoComplete='street-address'
-        required
-      />
-      <FormInput
-        name='referencias'
-        label='Referencias (opcional)'
-        placeholder='Edificio, apartamento, punto de referencia'
-      />
       <FormTextarea
         name='notas'
-        label='Notas para la entrega (opcional)'
+        label='Notas para el pedido (opcional)'
         placeholder='Horario preferido, instrucciones para el repartidor…'
       />
 

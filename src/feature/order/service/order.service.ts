@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { type ApiResponse, apiAuth } from '@/api/http';
+import type { FulfillmentOffer } from '../type/fulfillment.type';
 import type { Order, PaymentCharge, PaymentMethod } from '../type/order.type';
 
 const ORDERS_PATH = '/storefront/orders';
@@ -13,12 +14,37 @@ interface OrdersPage {
   meta: { total: number };
 }
 
+export interface CheckoutAddressPayload {
+  label?: string;
+  street: string;
+  betweenStreets?: string;
+  reference?: string;
+  municipalityId: string;
+  contactPhone?: string;
+}
+
 export interface CheckoutPayload {
+  fulfillmentType?: 'delivery' | 'pickup';
+  deliveryOptionId?: string;
+  pickupAddressId?: string;
+  addressId?: string;
+  address?: CheckoutAddressPayload;
+  saveAddress?: boolean;
   deliveryMunicipalityId?: string;
-  deliveryAddress?: Record<string, string>;
   customerNotes?: string;
   paymentMethod?: string;
 }
+
+export const getFulfillmentOffer = async (
+  municipalityId?: string,
+): Promise<FulfillmentOffer> => {
+  const response = await apiAuth<ApiResponse<FulfillmentOffer>>(
+    '/storefront/fulfillment',
+    municipalityId ? { params: { municipalityId } } : undefined,
+  );
+
+  return response.data;
+};
 
 export const getPaymentMethods = async (): Promise<PaymentMethod[]> => {
   const response = await apiAuth<ApiResponse<PaymentMethod[]>>(

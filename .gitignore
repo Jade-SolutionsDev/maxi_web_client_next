@@ -53,3 +53,5 @@ bun.lock
 /test-results/
 /playwright-report/
 /blob-report/
+/e2e/.generado/
+/e2e/.auth/

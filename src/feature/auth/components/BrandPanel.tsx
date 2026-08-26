@@ -17,7 +17,7 @@ const CONTENT: Record<BrandPanelVariant, BrandPanelContent> = {
       'Crea tu cuenta y accede a ofertas exclusivas con envío rápido a toda La Habana.',
   },
   reset: {
-    title: 'Recuperá tu acceso',
+    title: 'Recupera tu acceso',
     description:
       'Te enviamos un código a tu correo para que crees una nueva contraseña y vuelvas a comprar en minutos.',
   },

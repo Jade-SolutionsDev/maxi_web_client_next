@@ -14,7 +14,7 @@ test.describe('Formulario de contacto', () => {
     await page.goto(`${TIENDA}/contacto`);
 
     await expect(
-      page.getByRole('heading', { name: 'Envianos un mensaje' }),
+      page.getByRole('heading', { name: 'Envíanos un mensaje' }),
     ).toBeVisible();
 
     await page.getByLabel(/Motivo/).click();

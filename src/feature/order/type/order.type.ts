@@ -70,6 +70,12 @@ export interface OrderItem {
   lineTotal: number;
 }
 
+export interface OrderPickupAddress {
+  locationName?: string;
+  label?: string | null;
+  address?: string;
+}
+
 export interface Order {
   id: string;
   orderNumber: string | null;
@@ -79,12 +85,16 @@ export interface Order {
   deliveryFee: number;
   total: number;
   deliveryMunicipalityId: string | null;
-  deliveryAddress: Record<string, string> | null;
+  deliveryAddress: Record<string, string | null> | null;
   customerNotes: string | null;
   items?: OrderItem[];
   payment?: PaymentCharge;
   paymentMethod?: OrderPaymentMethod;
   cancellationReason: CancellationReason | null;
+  fulfillmentType: 'delivery' | 'pickup';
+  deliveryOptionLabel: string | null;
+  pickupAddress: OrderPickupAddress | null;
+  pickupLocationId: string | null;
   createdAt: string;
   updatedAt: string;
 }

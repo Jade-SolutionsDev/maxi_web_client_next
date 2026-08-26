@@ -96,7 +96,7 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
 
       {hasUnavailableLines && (
         <p className='rounded-xl bg-destructive/10 px-3 py-2 text-sm font-semibold text-destructive'>
-          Ajustá o quitá los productos sin stock para continuar.
+          Ajusta o quita los productos sin stock para continuar.
         </p>
       )}
 

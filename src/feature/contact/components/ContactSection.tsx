@@ -49,7 +49,7 @@ export async function ContactSection() {
           id='contacto-formulario'
           className='mb-6 text-center font-fredoka text-2xl font-bold text-heading sm:text-3xl'
         >
-          Envianos un mensaje
+          Envíanos un mensaje
         </h2>
         <ContactForm motives={motives} isSignedIn={Boolean(userId)} />
       </section>
