@@ -1,7 +1,7 @@
 import z from 'zod';
 
 export const ResetRequestSchema = z.object({
-  email: z.email({ message: 'Correo no valido' }),
+  email: z.email({ message: 'Correo no válido' }),
 });
 
 export type ResetRequestSchemaType = z.infer<typeof ResetRequestSchema>;

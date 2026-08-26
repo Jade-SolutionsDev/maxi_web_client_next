@@ -10,16 +10,29 @@ const BASE_DATOS = 'maxihabana';
 export function sql(consulta: string): string {
   const salida = execFileSync(
     'docker',
-    ['exec', '-i', CONTENEDOR, 'psql', '-U', 'maxihabana', '-d', BASE_DATOS, '-qtAc', consulta],
+    [
+      'exec',
+      '-i',
+      CONTENEDOR,
+      'psql',
+      '-U',
+      'maxihabana',
+      '-d',
+      BASE_DATOS,
+      '-qtAc',
+      consulta,
+    ],
     { encoding: 'utf8' },
   );
 
   // Un INSERT ... RETURNING devuelve el valor y ademas la linea "INSERT 0 1".
   // Nos quedamos con la primera linea util.
-  return salida
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l && !/^(INSERT|UPDATE|DELETE|SELECT) \d/.test(l))[0] ?? '';
+  return (
+    salida
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l && !/^(INSERT|UPDATE|DELETE|SELECT) \d/.test(l))[0] ?? ''
+  );
 }
 
 /** Invalida el cache del catalogo de la tienda, que dura un dia. */
@@ -45,4 +58,79 @@ export function municipioConCobertura(): string {
         JOIN stock_locations sl ON sl.id = c.location_id AND sl.is_active
        WHERE c.province_id = m.province_id)
      ORDER BY m.name LIMIT 1`);
+}
+
+/**
+ * Cada escenario siembra con su propio sufijo, y limpia por el mismo sufijo al
+ * terminar: asi dos escenarios no se pisan los datos.
+ */
+let sufijoActual = '';
+
+export function nuevoSufijo(): string {
+  sufijoActual = Date.now().toString().slice(-8);
+  return sufijoActual;
+}
+
+export function sufijo(): string {
+  return sufijoActual;
+}
+
+/** Lo sembrado en el escenario en curso, por el nombre con el que se pidio. */
+export type ProductoSembrado = ReturnType<typeof sembrarProducto>;
+
+const sembrados = new Map<string, ProductoSembrado>();
+
+export function registrarProducto(nombre: string, dato: ProductoSembrado) {
+  sembrados.set(nombre, dato);
+  return dato;
+}
+
+export function productoSembrado(nombre: string): ProductoSembrado {
+  const dato = sembrados.get(nombre);
+  if (!dato)
+    throw new Error(`El escenario no sembro ningun producto "${nombre}"`);
+  return dato;
+}
+
+/** Para pasos que aceptan tanto un producto sembrado como un texto cualquiera. */
+export function quizaSembrado(nombre: string): ProductoSembrado | undefined {
+  return sembrados.get(nombre);
+}
+
+export function olvidarProductos() {
+  sembrados.clear();
+}
+
+/**
+ * Un producto nuevo en su propio departamento, para que cada escenario mire
+ * solo lo suyo. El sufijo lo hace unico.
+ */
+export function sembrarProducto(nombre: string, rebaja: number, precio = 100) {
+  const s = sufijo();
+  const base = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  let categoria = sql(`SELECT id FROM categories WHERE slug = 'cat-e2e-${s}'`);
+  if (!categoria) {
+    const departamento = sql(`
+      INSERT INTO categories (name, slug, parent_id, image_desktop_url, image_mobile_url)
+      VALUES ('Dep E2E ${s}', 'dep-e2e-${s}', NULL, 'https://placehold.co/600x400.png', 'https://placehold.co/600x400.png')
+      RETURNING id`);
+    categoria = sql(`
+      INSERT INTO categories (name, slug, parent_id, image_desktop_url, image_mobile_url)
+      VALUES ('Cat E2E ${s}', 'cat-e2e-${s}', '${departamento}', 'https://placehold.co/600x400.png', 'https://placehold.co/600x400.png')
+      RETURNING id`);
+  }
+  const nombreReal = `${nombre} E2E ${s}`;
+  const slug = `${base}-e2e-${s}`;
+  const id = sql(`
+    INSERT INTO products (category_id, sku, name, slug, measure_unit, base_price, discount, image_url)
+    VALUES ('${categoria}', 'E2E-${s}-${base}', '${nombreReal}', '${slug}', 'unidad', ${precio}, ${rebaja}, 'https://placehold.co/600x400.png')
+    RETURNING id`);
+  return {
+    id,
+    slug,
+    nombreReal,
+    categoriaSlug: `cat-e2e-${s}`,
+    categoriaNombre: `Cat E2E ${s}`,
+    departamentoNombre: `Dep E2E ${s}`,
+  };
 }

@@ -40,6 +40,7 @@ interface CartActions {
   hydrateGuest: () => void;
   loadAccountCart: () => Promise<void>;
   adoptGuestCart: () => Promise<void>;
+  markCheckedOut: () => void;
   refreshIfStale: (maxAgeMs: number) => void;
 }
 
@@ -318,6 +319,26 @@ export const useCartStore = create<CartState>()((set, get) => {
         }
 
         get().actions.updateQuantity(productId, line.available);
+      },
+
+      /**
+       * Checkout already emptied the cart server-side when it created the
+       * order. Reading it back from there would be a server action, and a
+       * server action re-renders the page it fires from: `/checkout` redirects
+       * to the catalogue once the cart is empty, and that redirect beat the
+       * navigation to the new order. Nobody ever saw what they had just bought.
+       */
+      markCheckedOut: () => {
+        cancelAllDebounces();
+        // Any reply still in flight belongs to the cart that no longer exists.
+        nextCartSyncToken();
+
+        if (get().mode === 'guest') {
+          setGuestCart([]);
+          return;
+        }
+
+        set({ cart: EMPTY_CART, status: 'ready', lastSyncedAt: Date.now() });
       },
 
       hydrateGuest: enterGuestMode,

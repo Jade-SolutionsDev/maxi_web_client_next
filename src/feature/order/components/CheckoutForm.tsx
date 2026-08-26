@@ -60,7 +60,7 @@ export const CheckoutForm = ({
   onDeliveryFeeChange,
 }: CheckoutFormProps) => {
   const router = useRouter();
-  const { refreshIfStale } = useCartActions();
+  const { markCheckedOut } = useCartActions();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isNavigating, startNavigation] = useTransition();
   const busy = isSubmitting || isNavigating;
@@ -134,7 +134,7 @@ export const CheckoutForm = ({
     const result = await checkoutAction(values);
 
     if (result.order) {
-      refreshIfStale(0);
+      markCheckedOut();
       startNavigation(() => router.push(`/pedidos/${result.order.id}`));
       setIsSubmitting(false);
       return;

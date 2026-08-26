@@ -1,12 +1,22 @@
 # Pruebas de extremo a extremo de la tienda
 
-Playwright sobre el **Chrome del sistema** (`channel: 'chrome'`): no descarga navegadores propios.
-Prueban lo que ni los unitarios ni los e2e de la API pueden probar — que **lo que la API sirve se
-ve en la tienda**, en un navegador de verdad.
+**Escritas en Gherkin, en español.** Las de `features/` se leen sin saber Playwright ni
+programar: describen qué debe hacer la tienda y por qué. Los pasos que las ejecutan viven en
+`steps/`.
+
+```
+e2e/
+  features/     Lo que la tienda debe hacer, en lenguaje corriente
+  steps/        Cómo se comprueba cada frase de las features
+  helpers.ts    Utilidades: SQL, invalidar caché, zona con cobertura
+  .generado/    Specs que produce bddgen. No se edita ni se versiona
+```
+
+Playwright sobre el **Chrome del sistema** (`channel: 'chrome'`): no descarga navegadores.
 
 ## Antes de ejecutar
 
-Hace falta la API levantada con su base, y la tienda:
+La API con su base, y la tienda:
 
 ```bash
 cd ../maxi_api_nestjs && pnpm run docker:db:start && pnpm run start   # :4000
@@ -26,22 +36,30 @@ bun run test:e2e           # sin ventana
 bun run test:e2e:headed    # viendo el navegador
 ```
 
-Al fallar guarda **captura, vídeo y traza** en `test-results/`. La traza se recorre paso a paso con
-`npx playwright show-trace <ruta>`.
+Ambos ejecutan `bddgen` antes: traduce las features a specs. **Sin ese paso Playwright no
+encuentra nada.**
 
-## Cómo están escritas
+Al fallar guarda **captura, vídeo y traza** en `test-results/`. La traza se recorre paso a paso
+con `npx playwright show-trace <ruta>`.
 
-- **Siembran por SQL**, no por la interfaz de administración: aquí se prueba que la tienda refleja
-  el catálogo. Crear el catálogo desde el admin es otra prueba, y va en el repo del admin.
-- **Se navega pulsando**, no construyendo URLs: la prueba no depende de cómo se forme cada enlace.
-- Cada prueba limpia lo que siembra y usa un sufijo de tiempo, para no chocar con datos existentes.
-- `fullyParallel: false`: comparten base de datos.
-- `vitest.config.mts` excluye esta carpeta — si no, vitest intentaría ejecutar estos `.spec.ts`.
+## Añadir un caso de prueba
 
-## Dos trampas que ya costaron tiempo
+1. Escribe el escenario en la feature que le corresponda, en español corriente.
+2. Ejecuta. Si algún paso es nuevo, `bddgen` avisa de que falta.
+3. Impleméntalo en `steps/pasos.ts` y vuelve a ejecutar.
 
-**Las imágenes deben ser de un dominio autorizado** en `next.config.ts` (`placehold.co` sirve). Una
-URL de otro dominio **tumba la página entera del catálogo**, no solo esa tarjeta.
+Los escenarios **siembran sus propios datos** con un sufijo de tiempo y los borran al terminar,
+así que no chocan entre ellos ni con lo que haya en la base.
 
-**La tienda exige zona antes de mostrar nada.** Se fija con la cookie `maxi_location`, y su dominio
-tiene que coincidir con el de la navegación: todo usa `localhost`, no `127.0.0.1`.
+## Cuatro cosas que conviene saber
+
+**`vitest.config.mts` excluye esta carpeta.** Sin eso, vitest recoge los `.spec.js` generados y
+falla al importar Playwright.
+
+**`fullyParallel: false` y `workers: 1`** a propósito: los escenarios comparten base de datos.
+
+**Las imágenes deben ser de un dominio autorizado** en `next.config.ts` (`placehold.co` sirve).
+Una URL de otro dominio **tumba la página entera del catálogo** — ver `MxH-0086`.
+
+**La cookie de zona (`maxi_location`) debe compartir dominio con la navegación.** Todo usa
+`localhost`, no `127.0.0.1`: para el navegador son sitios distintos y la cookie no viajaría.

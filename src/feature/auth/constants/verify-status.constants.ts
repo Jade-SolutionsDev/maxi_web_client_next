@@ -31,11 +31,11 @@ export const VERIFY_STATUS_VIEWS: Record<VerifyStatus, VerifyStatusView> = {
   client_mismatch: {
     tone: 'warning',
     icon: MonitorSmartphone,
-    title: 'Abrí el enlace en el mismo navegador',
+    title: 'Abre el enlace en el mismo navegador',
     description:
       'Este enlace se abrió en un navegador o dispositivo distinto al que usaste para registrarte. Por seguridad tienes que abrirlo donde empezaste.',
     action: { href: '/register', label: 'Volver al registro' },
-    hint: 'Copiá el enlace del correo y pegalo en el navegador donde iniciaste el registro.',
+    hint: 'Copia el enlace del correo y pégalo en el navegador donde iniciaste el registro.',
   },
   expired: {
     tone: 'danger',
