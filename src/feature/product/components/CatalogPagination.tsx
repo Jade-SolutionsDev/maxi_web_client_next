@@ -1,6 +1,5 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import {
   Pagination,
   PaginationContent,
@@ -25,11 +24,9 @@ export const CatalogPagination = ({
   page,
   totalPages,
 }: CatalogPaginationProps) => {
-  const searchParams = useSearchParams();
-  const { requestScroll, isPending } = useCatalogFilterState();
+  const { requestScroll, isPending, filters } = useCatalogFilterState();
 
-  const hrefFor = (target: number) =>
-    buildCatalogPageHref(target, new URLSearchParams(searchParams));
+  const hrefFor = (target: number) => buildCatalogPageHref(target, filters);
 
   // The links navigate on their own; `scroll={false}` stops Next from jumping to
   // the top of the page so the results land under the header instead of behind

@@ -72,6 +72,9 @@ Given(
     grupo: string,
   ) => {
     sembrarConExistencias(nombre, precio, 0, unidades, grupo);
+    // El departamento es nuevo, y la barra de filtros sale de la taxonomia, que
+    // la tienda guarda un dia entero: sin esto el filtro no aparece.
+    await invalidarCatalogo();
   },
 );
 
@@ -156,3 +159,12 @@ const enlaceAPagina2 = (page: import('@playwright/test').Page) =>
 
 const tarjetas = (page: import('@playwright/test').Page) =>
   page.getByRole('listitem').filter({ has: page.locator('article') });
+
+/**
+ * El enlace de pagina se construia desde `useSearchParams()`, que no se entera
+ * de lo que escribe nuqs en la URL: al pasar de pagina se perdia el filtro y el
+ * cliente volvia al catalogo entero. Se comprueba aqui para que no vuelva.
+ */
+Then("el filtro de departamento sigue puesto", async ({ page }) => {
+  await expect(page).toHaveURL(/department=/, { timeout: 15_000 });
+});

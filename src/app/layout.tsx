@@ -67,13 +67,18 @@ export default function RootLayout({
         <ClerkProvider
           allowedRedirectOrigins={['http://localhost:3000', siteUrl]}
         >
-          <CartSync />
-          <Header />
-          <main className='grow'>
-            <NuqsAdapter>{children}</NuqsAdapter>
-          </main>
-          <Footer />
-          <BottomNav />
+          {/*
+            El adaptador envuelve todo, no solo <main>: el buscador de la
+            cabecera lee los filtros del catalogo por nuqs, y fuera del
+            adaptador el hook no funciona.
+          */}
+          <NuqsAdapter>
+            <CartSync />
+            <Header />
+            <main className='grow'>{children}</main>
+            <Footer />
+            <BottomNav />
+          </NuqsAdapter>
         </ClerkProvider>
         <Toaster />
       </body>

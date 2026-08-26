@@ -92,3 +92,13 @@ Then('ve cómo pagar el pedido', async ({ page }) => {
     timeout: 15_000,
   });
 });
+
+When('elige recoger en el almacén', async ({ page }) => {
+  await page.getByRole('tab', { name: /recoger/i }).or(page.getByText(/recoger en tienda/i)).first().click();
+  // El punto de recogida se elige solo cuando solo hay uno.
+  await expect(page.getByText(/mostrador|recogida/i).first()).toBeVisible({ timeout: 15_000 });
+});
+
+Then('el envío no se cobra', async ({ page }) => {
+  await expect(page.getByText(/gratis/i).first()).toBeVisible({ timeout: 15_000 });
+});
