@@ -4,15 +4,16 @@ import Link from 'next/link';
 import { Container } from '@/app/components/layout/Container';
 import jade from '@/assets/jade.svg';
 import logo from '@/assets/logo.svg';
+import { cmsPageHref } from '@/feature/cms-page/constants/cms-page.constants';
 import { toWhatsAppHref } from '@/helpers';
 import { getSiteSettings } from '@/shared/cms/service/cms.service';
-import { FooterLinkColumn } from './FooterLinkColumn';
-import { getFooterDepartmentLinks } from './constants/footer-departments';
 import {
   paymentLogos,
   paymentsPageLink,
   siteLinks,
 } from './constants/footer.constants';
+import { getFooterDepartmentLinks } from './constants/footer-departments';
+import { FooterLinkColumn } from './FooterLinkColumn';
 
 const contactClass =
   'flex items-center gap-3 text-sm text-white/80 transition-colors hover:text-white hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange rounded-sm';
@@ -29,7 +30,7 @@ export const Footer = async () => {
 
   const cmsLegalLinks = footer.legalLinks.map(({ label, slug }) => ({
     label,
-    href: `/paginas/${slug}`,
+    href: cmsPageHref(slug),
   }));
 
   const legalLinks = cmsLegalLinks.some(
@@ -48,7 +49,9 @@ export const Footer = async () => {
               <Image src={logo} alt='Maxi Habana' className='h-10 w-auto' />
             </Link>
 
-            <p className='text-sm text-white/80'>Datos de atención al cliente</p>
+            <p className='text-sm text-white/80'>
+              Datos de atención al cliente
+            </p>
 
             <address className='flex flex-col gap-4 not-italic'>
               <a
