@@ -50,18 +50,23 @@ async function elegirOpcion(
   const disparador = dialogo.getByRole('combobox').nth(indiceCampo);
   await expect(disparador).toBeEnabled({ timeout: 10_000 });
   await disparador.click();
+  await expect(disparador).toHaveAttribute('aria-expanded', 'true', {
+    timeout: 10_000,
+  });
 
   /**
-   * `:visible` no sobra: el popup del desplegable anterior sigue montado y sus
-   * opciones tambien responden al selector, aunque nadie las vea.
+   * `tabindex="0"` no sobra: el popup del desplegable anterior sigue montado y
+   * sus opciones tambien responden a `[role=option]`, incluso a `:visible`
+   * mientras se cierra — pulsarlas fallaba de vez en cuando con "element is
+   * not visible". Base UI deja enfocable una sola opcion por popup, y la del
+   * que acaba de abrirse es la primera.
    */
-  const opciones = dialogo.page().locator('[role=option]:visible');
-  await opciones.first().waitFor({ state: 'visible', timeout: 10_000 });
-  const elegida = (await opciones.first().innerText()).trim();
-  await opciones.first().click();
+  const opcion = dialogo.page().locator('[role=option][tabindex="0"]').last();
+  await opcion.waitFor({ state: 'visible', timeout: 10_000 });
+  await opcion.click();
 
-  // Se cierra al elegir: el disparador pasa a mostrar lo elegido.
-  await expect(disparador).toContainText(elegida, { timeout: 10_000 });
+  // Elegida: el disparador deja de mostrar su texto de invitacion.
+  await expect(disparador).not.toContainText(/Elige/i, { timeout: 10_000 });
 }
 
 When('marca {string} como predeterminada', async ({ page }, nombre: string) => {

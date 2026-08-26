@@ -490,3 +490,22 @@ Then('ve su contenido', async ({ page }) => {
 Then('no ve su contenido', async ({ page }) => {
   await expect(page.getByText(estado.paginaCms!.contenido)).toHaveCount(0);
 });
+
+When('agrega una unidad de {string}', async ({ page }, nombre: string) => {
+  const producto = productoSembrado(nombre);
+  await page
+    .getByRole('button', {
+      name: `Agregar una unidad de ${producto.nombreReal}`,
+    })
+    .last()
+    .click();
+});
+
+When('elimina {string} del carrito', async ({ page }, nombre: string) => {
+  const producto = productoSembrado(nombre);
+  await page
+    .getByRole('button', {
+      name: `Eliminar ${producto.nombreReal} del carrito`,
+    })
+    .click();
+});

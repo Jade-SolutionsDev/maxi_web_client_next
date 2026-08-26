@@ -63,3 +63,12 @@ Característica: Comprar con la sesión iniciada
   Escenario: Finalizar la compra sin nada en el carrito devuelve al catálogo
     Cuando el cliente abre "/checkout"
     Entonces acaba en el catálogo
+
+  Escenario: El pedido dice cómo pagarlo
+    Cuando el cliente abre el catálogo
+    Y añade el primer producto al carrito
+    Y abre el carrito
+    Y pulsa proceder al pago
+    Y escribe "Calle 23 #456, entre 8 y 10" como dirección de entrega
+    Y confirma el pedido
+    Entonces ve cómo pagar el pedido

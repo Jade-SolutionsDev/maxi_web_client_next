@@ -47,3 +47,17 @@ Característica: Carrito de quien todavía no ha iniciado sesión
     Y abre el carrito
     Y pulsa proceder al pago
     Entonces acaba en la pantalla de acceso
+
+  Escenario: Subir la cantidad desde el carrito
+    Cuando el cliente abre el catálogo
+    Y añade el primer producto al carrito
+    Y abre el carrito
+    Y agrega una unidad de "Cola"
+    Entonces el carrito contiene 2 artículos
+
+  Escenario: Quitar el único producto deja el carrito vacío
+    Cuando el cliente abre el catálogo
+    Y añade el primer producto al carrito
+    Y abre el carrito
+    Y elimina "Cola" del carrito
+    Entonces el carrito queda vacío

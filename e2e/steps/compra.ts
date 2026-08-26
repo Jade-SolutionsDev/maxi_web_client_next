@@ -80,3 +80,9 @@ Then('se le advierte que se libera el stock reservado', async ({ page }) => {
 Then('acaba en el catálogo', async ({ page }) => {
   await expect(page).toHaveURL(/\/catalog/, { timeout: 15_000 });
 });
+
+Then('ve cómo pagar el pedido', async ({ page }) => {
+  await expect(page.getByRole('heading', { name: /^Pago$/ })).toBeVisible({
+    timeout: 15_000,
+  });
+});
