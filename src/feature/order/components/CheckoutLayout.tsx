@@ -16,6 +16,7 @@ interface CheckoutLayoutProps {
   offer: FulfillmentOffer;
   addresses: Address[];
   catalog: LocationCatalog;
+  zone: { municipalityId: string; municipalityName: string } | null;
   cartKey: string;
 }
 
@@ -25,6 +26,7 @@ export const CheckoutLayout = ({
   offer,
   addresses,
   catalog,
+  zone,
   cartKey,
 }: CheckoutLayoutProps) => {
   const [deliveryFee, setDeliveryFee] = useState(0);
@@ -46,6 +48,7 @@ export const CheckoutLayout = ({
           offer={offer}
           addresses={addresses}
           catalog={catalog}
+          zone={zone}
           cartKey={cartKey}
           onDeliveryFeeChange={setDeliveryFee}
         />

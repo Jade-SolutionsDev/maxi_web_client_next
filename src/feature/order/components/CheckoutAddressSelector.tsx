@@ -11,6 +11,7 @@ import type { LocationCatalog } from '@/shared/location/type/location.interface'
 interface CheckoutAddressSelectorProps {
   addresses: Address[];
   catalog: LocationCatalog;
+  zone: { municipalityId: string; municipalityName: string } | null;
   value: string;
   onChange: (addressId: string) => void;
   disabled?: boolean;
@@ -21,6 +22,7 @@ export const NEW_ADDRESS = '';
 export const CheckoutAddressSelector = ({
   addresses,
   catalog,
+  zone,
   value,
   onChange,
   disabled,
@@ -112,7 +114,11 @@ export const CheckoutAddressSelector = ({
           aria-hidden='true'
         />
         <span className='text-sm font-semibold text-heading'>
-          {addresses.length > 0 ? 'Usar otra dirección' : 'Agregar dirección'}
+          {addresses.length > 0
+            ? 'Usar otra dirección'
+            : zone
+              ? `Agregar una dirección en ${zone.municipalityName}`
+              : 'Agregar dirección'}
         </span>
       </label>
 
@@ -132,7 +138,17 @@ export const CheckoutAddressSelector = ({
             label='Entre calles (opcional)'
             placeholder='Entre 10 y 12'
           />
-          <AddressMunicipalityFields catalog={catalog} />
+          {zone ? (
+            <p className='flex items-center gap-2 rounded-xl bg-surface px-3 py-2 text-sm text-heading'>
+              <MapPin
+                className='size-4 shrink-0 text-primary'
+                aria-hidden='true'
+              />
+              Entrega en <strong>{zone.municipalityName}</strong>
+            </p>
+          ) : (
+            <AddressMunicipalityFields catalog={catalog} />
+          )}
           <FormInput
             name='reference'
             label='Referencia (opcional)'

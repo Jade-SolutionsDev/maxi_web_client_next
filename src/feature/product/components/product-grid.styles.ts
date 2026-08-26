@@ -1,5 +1,5 @@
 export const productGridClass =
-  'grid justify-center gap-3 grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] md:grid-cols-[repeat(auto-fit,minmax(11rem,1fr))]';
+  'grid justify-center gap-3 grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] md:grid-cols-[repeat(auto-fit,minmax(11rem,18rem))]';
 
 export const productCardSizes =
   '(max-width: 640px) 45vw, (max-width: 1024px) 22vw, 18rem';

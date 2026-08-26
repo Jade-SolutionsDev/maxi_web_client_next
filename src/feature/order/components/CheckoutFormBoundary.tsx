@@ -11,6 +11,7 @@ interface CheckoutFormBoundaryProps {
   offer: FulfillmentOffer;
   addresses: Address[];
   catalog: LocationCatalog;
+  zone: { municipalityId: string; municipalityName: string } | null;
   cartKey: string;
   onDeliveryFeeChange?: (fee: number) => void;
 }

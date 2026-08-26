@@ -5,11 +5,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CheckoutForm } from './CheckoutForm';
 
 const checkoutAction = vi.fn();
+const fetchFulfillmentOffer = vi.fn();
 const push = vi.fn();
 const refresh = vi.fn();
 
 vi.mock('../action/order.action', () => ({
   checkoutAction: (input: unknown) => checkoutAction(input),
+  fetchFulfillmentOffer: (municipalityId?: string) =>
+    fetchFulfillmentOffer(municipalityId),
 }));
 
 vi.mock('next/navigation', () => ({
@@ -58,6 +61,11 @@ const addresses = [
   },
 ];
 
+const zone = {
+  municipalityId: '55555555-5555-4555-8555-555555555555',
+  municipalityName: 'Plaza',
+};
+
 const catalog = {
   provinces: [
     {
@@ -103,6 +111,7 @@ const submit = async () => {
 describe('CheckoutForm', () => {
   beforeEach(() => {
     checkoutAction.mockReset();
+    fetchFulfillmentOffer.mockReset().mockResolvedValue(null);
     push.mockReset();
     refresh.mockReset();
     checkoutAction.mockResolvedValue({ order: { id: 'order-1' } });
@@ -119,6 +128,7 @@ describe('CheckoutForm', () => {
         offer={offer}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
       />,
     );
 
@@ -140,6 +150,7 @@ describe('CheckoutForm', () => {
         offer={offer}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
       />,
     );
 
@@ -160,6 +171,7 @@ describe('CheckoutForm', () => {
         offer={offer}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
       />,
     );
 
@@ -186,6 +198,7 @@ describe('CheckoutForm', () => {
         offer={offer}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
       />,
     );
 
@@ -209,6 +222,7 @@ describe('CheckoutForm', () => {
         offer={offer}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
       />,
     );
 
@@ -232,6 +246,7 @@ describe('CheckoutForm', () => {
         offer={offer}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
       />,
     );
 
@@ -259,6 +274,7 @@ describe('CheckoutForm', () => {
         }}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
       />,
     );
 
@@ -275,10 +291,71 @@ describe('CheckoutForm', () => {
         offer={{ ...offer, deliveryOptions: [] }}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
       />,
     );
 
     expect(screen.queryByText(/¿Cómo querés recibirlo\?/)).toBeNull();
     expect(screen.getByText(/¿Dónde lo recogés\?/)).toBeTruthy();
+  });
+
+  // Nothing serves this zone by delivery: pickup is simply the only offer, so
+  // the customer never reaches a checkout that could only fail.
+  it('offers pickup alone when the zone cannot be delivered to', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={{ ...offer, deliveryOptions: [] }}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.getByText(/¿Dónde lo recogés\?/)).toBeTruthy();
+    expect(screen.queryByText(/Dirección de entrega/)).toBeNull();
+  });
+
+  // The cart was priced and stocked for the zone being browsed, so an address
+  // somewhere else cannot be what this order ships to.
+  it('offers only addresses inside the zone being browsed', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={[
+          ...addresses,
+          {
+            ...addresses[0],
+            id: '77777777-7777-4777-8777-777777777777',
+            street: 'Calle de otra provincia',
+            municipalityId: '88888888-8888-4888-8888-888888888888',
+            isDefault: false,
+          },
+        ]}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.getAllByText(/Calle 23 #456/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/Calle de otra provincia/)).toBeNull();
+  });
+
+  it('pins a new address to the zone instead of asking for the municipality', async () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    await userEvent.click(screen.getByText(/Usar otra dirección/));
+
+    expect(screen.getByText(/Entrega en/)).toBeTruthy();
+    expect(screen.queryByLabelText(/Provincia/)).toBeNull();
   });
 });

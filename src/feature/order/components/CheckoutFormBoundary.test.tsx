@@ -47,6 +47,11 @@ const offer = {
 
 const addresses: never[] = [];
 
+const zone = {
+  municipalityId: '55555555-5555-4555-8555-555555555555',
+  municipalityName: 'Plaza',
+};
+
 const catalog = {
   provinces: [
     {
@@ -85,6 +90,7 @@ describe('CheckoutFormBoundary', () => {
         offer={offer}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
         cartKey='prod-1:1'
       />,
     );
@@ -98,6 +104,7 @@ describe('CheckoutFormBoundary', () => {
         offer={offer}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
         cartKey='prod-2:3'
       />,
     );
@@ -112,6 +119,7 @@ describe('CheckoutFormBoundary', () => {
         offer={offer}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
         cartKey='prod-1:1'
       />,
     );
@@ -124,6 +132,7 @@ describe('CheckoutFormBoundary', () => {
         offer={offer}
         addresses={addresses}
         catalog={catalog}
+        zone={zone}
         cartKey='prod-1:1'
       />,
     );

@@ -17,7 +17,30 @@ export const DeliveryOptionSelector = ({
   onChange,
   disabled,
 }: DeliveryOptionSelectorProps) => {
-  if (options.length < 2) return null;
+  if (options.length === 0) return null;
+
+  if (options.length === 1) {
+    const [only] = options;
+
+    return (
+      <section
+        aria-label='Forma de entrega'
+        className='flex items-start gap-3 rounded-xl border border-input bg-surface p-3'
+      >
+        <span className='min-w-0 flex-1'>
+          <span className='block text-sm font-semibold text-heading'>
+            {only.label}
+          </span>
+          {only.description && (
+            <span className='block text-xs text-muted'>{only.description}</span>
+          )}
+        </span>
+        <span className='shrink-0 text-sm font-bold text-total tabular-nums'>
+          {only.fee > 0 ? formatPrice(only.fee) : 'Gratis'}
+        </span>
+      </section>
+    );
+  }
 
   return (
     <fieldset className='flex flex-col gap-2' disabled={disabled}>

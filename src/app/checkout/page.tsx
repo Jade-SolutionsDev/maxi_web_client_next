@@ -14,6 +14,7 @@ import { CheckoutLayout } from '@/feature/order/components/CheckoutLayout';
 import type { FulfillmentOffer } from '@/feature/order/type/fulfillment.type';
 import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { getLocationCatalog } from '@/shared/location/service/location.service';
+import type { LocationCatalog } from '@/shared/location/type/location.interface';
 
 export const metadata: Metadata = {
   title: 'Finalizar compra | Maxi Habana',
@@ -33,6 +34,21 @@ const fetchAddresses = async () => {
   } catch {
     return [];
   }
+};
+
+const resolveZone = (
+  catalog: LocationCatalog,
+  municipalityId: string | null,
+) => {
+  if (!municipalityId) return null;
+
+  const municipality = Object.values(catalog.municipalitiesByProvince)
+    .flat()
+    .find((entry) => entry.id === municipalityId);
+
+  return municipality
+    ? { municipalityId, municipalityName: municipality.name }
+    : null;
 };
 
 const cartKey = (cart: Cart) =>
@@ -65,6 +81,7 @@ async function CheckoutContent() {
       offer={offer ?? EMPTY_OFFER}
       addresses={addresses}
       catalog={catalog}
+      zone={resolveZone(catalog, municipalityId)}
       cartKey={cartKey(cart)}
     />
   );

@@ -33,8 +33,14 @@ interface CheckoutFormProps {
   offer: FulfillmentOffer;
   addresses: Address[];
   catalog: LocationCatalog;
+  zone: { municipalityId: string; municipalityName: string } | null;
   onDeliveryFeeChange?: (fee: number) => void;
 }
+
+const zoneProvinceId = (catalog: LocationCatalog, municipalityId: string) =>
+  Object.entries(catalog.municipalitiesByProvince).find(([, municipalities]) =>
+    municipalities.some((municipality) => municipality.id === municipalityId),
+  )?.[0] ?? '';
 
 const availableMethods = (offer: FulfillmentOffer): FulfillmentType[] => {
   const methods: FulfillmentType[] = [];
@@ -48,8 +54,9 @@ const availableMethods = (offer: FulfillmentOffer): FulfillmentType[] => {
 export const CheckoutForm = ({
   paymentMethods,
   offer,
-  addresses,
+  addresses: allAddresses,
   catalog,
+  zone,
   onDeliveryFeeChange,
 }: CheckoutFormProps) => {
   const router = useRouter();
@@ -59,6 +66,14 @@ export const CheckoutForm = ({
   const busy = isSubmitting || isNavigating;
 
   const methods = availableMethods(offer);
+  // The cart was priced and stocked for the zone the customer is browsing, so
+  // that is the only place this order can go. Other saved addresses stay in the
+  // address book; they are simply not choices here.
+  const addresses = zone
+    ? allAddresses.filter(
+        (address) => address.municipalityId === zone.municipalityId,
+      )
+    : allAddresses;
   const defaultAddress = addresses.find((address) => address.isDefault);
 
   const form = useForm<CheckoutInput>({
@@ -71,8 +86,8 @@ export const CheckoutForm = ({
       saveAddress: false,
       notas: '',
       paymentMethod: paymentMethods[0]?.code ?? '',
-      provinceId: '',
-      municipalityId: '',
+      provinceId: zone ? zoneProvinceId(catalog, zone.municipalityId) : '',
+      municipalityId: zone?.municipalityId ?? '',
     },
   });
 
@@ -81,6 +96,17 @@ export const CheckoutForm = ({
   const pickupAddressId = form.watch('pickupAddressId') ?? '';
   const addressId = form.watch('addressId') ?? '';
   const paymentMethod = form.watch('paymentMethod') ?? '';
+
+  useEffect(() => {
+    const options = offer.deliveryOptions;
+    if (options.length === 0) {
+      form.setValue('deliveryOptionId', '');
+      return;
+    }
+    if (!options.some((option) => option.id === deliveryOptionId)) {
+      form.setValue('deliveryOptionId', options[0].id);
+    }
+  }, [offer.deliveryOptions, deliveryOptionId, form]);
 
   const selectedFee =
     fulfillmentType === 'pickup'
@@ -142,6 +168,7 @@ export const CheckoutForm = ({
           <CheckoutAddressSelector
             addresses={addresses}
             catalog={catalog}
+            zone={zone}
             value={addressId}
             onChange={(id) => form.setValue('addressId', id)}
             disabled={busy}
