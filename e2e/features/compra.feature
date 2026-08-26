@@ -10,6 +10,7 @@ Característica: Comprar con la sesión iniciada
     Dado que el cliente ha elegido una zona con entrega
     Y que existe un producto "Cola" con 25 unidades y un 0% de rebaja
     Y que el cliente no tiene pedidos ni carrito
+    Y que el cliente tiene una dirección guardada
 
   Escenario: El carrito de un cliente sobrevive a recargar
     Cuando el cliente abre el catálogo
@@ -22,7 +23,7 @@ Característica: Comprar con la sesión iniciada
     Y añade el primer producto al carrito
     Y abre el carrito
     Y pulsa proceder al pago
-    Y escribe "Calle 23 #456, entre 8 y 10" como dirección de entrega
+    Y elige su dirección guardada
     Y confirma el pedido
     Entonces ve su pedido recién creado
     Y el pedido está "Pendiente"
@@ -33,7 +34,7 @@ Característica: Comprar con la sesión iniciada
     Y añade el primer producto al carrito
     Y abre el carrito
     Y pulsa proceder al pago
-    Y escribe "Calle 23 #456, entre 8 y 10" como dirección de entrega
+    Y elige su dirección guardada
     Y confirma el pedido
     Y abre su historial de pedidos
     Entonces el historial incluye ese pedido
@@ -43,7 +44,7 @@ Característica: Comprar con la sesión iniciada
     Y añade el primer producto al carrito
     Y abre el carrito
     Y pulsa proceder al pago
-    Y escribe "Calle 23 #456, entre 8 y 10" como dirección de entrega
+    Y elige su dirección guardada
     Y confirma el pedido
     Y abre el carrito
     Entonces el carrito queda vacío
@@ -53,7 +54,7 @@ Característica: Comprar con la sesión iniciada
     Y añade el primer producto al carrito
     Y abre el carrito
     Y pulsa proceder al pago
-    Y escribe "Calle 23 #456, entre 8 y 10" como dirección de entrega
+    Y elige su dirección guardada
     Y confirma el pedido
     Y pulsa cancelar el pedido
     Entonces se le advierte que se libera el stock reservado
@@ -69,6 +70,6 @@ Característica: Comprar con la sesión iniciada
     Y añade el primer producto al carrito
     Y abre el carrito
     Y pulsa proceder al pago
-    Y escribe "Calle 23 #456, entre 8 y 10" como dirección de entrega
+    Y elige su dirección guardada
     Y confirma el pedido
     Entonces ve cómo pagar el pedido

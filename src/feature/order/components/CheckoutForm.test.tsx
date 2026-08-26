@@ -127,7 +127,15 @@ describe('CheckoutForm', () => {
     // Re-reading is a server action, and a server action re-renders the page
     // it fires from: `/checkout` would redirect to the catalogue and beat the
     // navigation to the new order.
-    render(<CheckoutForm municipalityName={null} paymentMethods={methods} />);
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
 
     await submit();
 
