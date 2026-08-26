@@ -73,3 +73,13 @@ Característica: Comprar con la sesión iniciada
     Y elige su dirección guardada
     Y confirma el pedido
     Entonces ve cómo pagar el pedido
+
+  Escenario: Recoger en el almacén sale gratis
+    Cuando el cliente abre el catálogo
+    Y añade el primer producto al carrito
+    Y abre el carrito
+    Y pulsa proceder al pago
+    Y elige recoger en el almacén
+    Entonces el envío no se cobra
+    Cuando confirma el pedido
+    Entonces ve su pedido recién creado
