@@ -1,5 +1,6 @@
 import type { StaticImageData } from 'next/image';
 import mastercard from '@/assets/mastercard.svg';
+import tropipay from '@/assets/tropipay.png';
 import visa from '@/assets/visa.svg';
 import type { SiteSettings } from '@/shared/cms/type/cms.interface';
 
@@ -19,32 +20,16 @@ export interface PaymentMethodDisplay {
   alt: string;
 }
 
-export const columns: FooterColumn[] = [
-  {
-    title: 'Producto',
-    label: 'Producto',
-    links: [
-      { label: 'Lo más destacado', href: '/catalog?featured=true' },
-      { label: 'En oferta', href: '/catalog?onSale=true' },
-    ],
-  },
-  {
-    title: 'Servicio al cliente',
-    label: 'Servicio al cliente',
-    links: [
-      { label: 'Contáctenos', href: '/contacto' },
-      { label: 'Métodos de Pago', href: '/paginas/metodos-de-pago' },
-    ],
-  },
-  {
-    title: 'Mi Cuenta',
-    label: 'Mi Cuenta',
-    links: [
-      { label: 'Iniciar sesión', href: '/login' },
-      { label: 'Historial de pedidos', href: '/pedidos' },
-    ],
-  },
+export const siteLinks: FooterLink[] = [
+  { label: 'Catálogo', href: '/catalog' },
+  { label: '¿Quiénes somos?', href: '/sobre-nosotros' },
+  { label: 'Contacto', href: '/contacto' },
 ];
+
+export const paymentsPageLink: FooterLink = {
+  label: 'Métodos de pago',
+  href: '/paginas/metodos-de-pago',
+};
 
 export const paymentLogos: Record<
   keyof SiteSettings['payments'],
@@ -53,4 +38,5 @@ export const paymentLogos: Record<
   visa: { src: visa, alt: 'Visa' },
   mastercard: { src: mastercard, alt: 'Mastercard' },
   mibilletera: { src: null, alt: 'Mi Billetera' },
+  tropipay: { src: tropipay, alt: 'TropiPay' },
 };

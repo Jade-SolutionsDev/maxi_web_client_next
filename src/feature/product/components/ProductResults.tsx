@@ -61,6 +61,14 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
   // renders as a silent empty grid that looks like "no products exist".
   const isPageOutOfRange = total > 0 && products.length === 0;
 
+  const emptyResultsTitle = q
+    ? 'En breve tendremos productos'
+    : category
+      ? 'En breve tendremos productos para esta categoría'
+      : department
+        ? 'En breve tendremos productos para este departamento'
+        : 'En breve tendremos productos';
+
   return (
     <div
       id={CATALOG_RESULTS_ID}
@@ -79,18 +87,7 @@ export async function ProductResults({ searchParams }: ProductResultsProps) {
           action={{ href: CATALOG_PATH, label: 'Ir a la primera página' }}
         />
       ) : total === 0 ? (
-        q ? (
-          <EmptyState
-            title={`No encontramos productos para «${q}»`}
-            description='Revisa la escritura o prueba con un término más corto.'
-            action={{ href: CATALOG_PATH, label: 'Ver todo el catálogo' }}
-          />
-        ) : (
-          <EmptyState
-            title='No se encontraron productos'
-            description='Todavía no hay productos para mostrar en el catálogo. Vuelve pronto.'
-          />
-        )
+        <EmptyState eyebrow='¡Muy pronto!' title={emptyResultsTitle} />
       ) : (
         <>
           <ul className={catalogGridClass}>

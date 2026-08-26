@@ -9,6 +9,8 @@ type EmptyStateAction = {
 };
 
 type EmptyStateProps = {
+  /** Short kicker above the title (e.g. "¡Muy pronto!"). Rendered in caps. */
+  eyebrow?: string;
   /** Primary line: what would normally be here (e.g. "Aún no hay productos destacados"). */
   title: string;
   /** Secondary line: why it matters or what to expect. Kept short and reassuring. */
@@ -25,6 +27,7 @@ type EmptyStateProps = {
  * belongs here instead of leaving blank space.
  */
 export const EmptyState = ({
+  eyebrow,
   title,
   description,
   action,
@@ -33,7 +36,7 @@ export const EmptyState = ({
   return (
     <div
       className={cn(
-        'flex flex-col items-center gap-4 rounded-2xl bg-surface px-6 py-12 text-center',
+        'flex flex-col items-center gap-5 rounded-2xl bg-surface px-6 py-12 text-center',
         className,
       )}
     >
@@ -44,8 +47,17 @@ export const EmptyState = ({
         className='h-auto w-28 opacity-90 sm:w-32'
       />
 
-      <div className='flex max-w-sm flex-col gap-1.5'>
-        <p className='text-base font-bold text-heading'>{title}</p>
+      <div className='flex max-w-sm flex-col items-center gap-2'>
+        {eyebrow && (
+          <p className='text-xs font-bold tracking-[0.18em] text-heading uppercase'>
+            {eyebrow}
+          </p>
+        )}
+
+        <p className='font-fredoka text-2xl leading-tight font-bold text-balance text-display sm:text-[1.75rem]'>
+          {title}
+        </p>
+
         {description && <p className='text-sm text-muted'>{description}</p>}
       </div>
 

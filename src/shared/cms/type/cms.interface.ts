@@ -89,14 +89,23 @@ export interface SiteSettings {
   contact: {
     email: string;
     phone: string;
+    hours: string;
   };
   payments: {
     visa: boolean;
     mastercard: boolean;
     mibilletera: boolean;
+    tropipay: boolean;
   };
   services: {
     heading: string;
     subheading: string;
   };
+}
+
+export interface SiteSettingsResponse {
+  footer?: Partial<SiteSettings['footer']>;
+  contact?: Partial<SiteSettings['contact']>;
+  payments?: Partial<SiteSettings['payments']>;
+  services?: Partial<SiteSettings['services']>;
 }

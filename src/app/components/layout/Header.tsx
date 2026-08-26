@@ -8,7 +8,7 @@ import { UserMenu } from '@/app/components/layout/UserMenu';
 import { SearchBoundary } from '@/app/components/search/SearchBoundary';
 import logo from '@/assets/logo.svg';
 import { Cart } from '@/feature/cart/components/Cart';
-import { toTelHref } from '@/helpers';
+import { toWhatsAppHref } from '@/helpers';
 import { getSiteSettings } from '@/shared/cms/service/cms.service';
 
 /** Own row at full width on mobile, centered from md up. */
@@ -59,7 +59,10 @@ export const Header = async () => {
             <PrimaryNavBoundary />
 
             <a
-              href={toTelHref(contact.phone)}
+              href={toWhatsAppHref(contact.phone)}
+              target='_blank'
+              rel='noopener noreferrer'
+              aria-label={`Escríbenos por WhatsApp al ${contact.phone}`}
               className='flex shrink-0 items-center gap-2 rounded-sm text-sm font-bold text-white/90 whitespace-nowrap underline transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange'
             >
               <Phone className='h-4 w-4 shrink-0' aria-hidden='true' />
