@@ -188,3 +188,21 @@ export function sembrarProducto(
     departamentoNombre: `Dep E2E ${s}`,
   };
 }
+
+/**
+ * Una direccion guardada del cliente, en la zona que se esta mirando: el
+ * checkout solo ofrece las direcciones de esa zona.
+ */
+export function sembrarDireccion(
+  correoCliente: string,
+  etiqueta = 'Casa',
+): string {
+  const cliente = sql(
+    `SELECT id FROM clients WHERE email = '${correoCliente}'`,
+  );
+  sql(`DELETE FROM client_addresses WHERE client_id = '${cliente}'`);
+  return sql(`
+    INSERT INTO client_addresses (client_id, label, street, municipality_id, is_default)
+    VALUES ('${cliente}', '${etiqueta}', 'Calle 23 #456', '${municipioConCobertura()}', true)
+    RETURNING id`);
+}
