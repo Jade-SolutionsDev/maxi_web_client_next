@@ -17,14 +17,14 @@ export const TAXONOMY_TAG = 'taxonomy';
 
 const getTaxonomy = async (
   path: string,
-  { featured }: TaxonomyFilters,
+  { featured, municipalityId }: TaxonomyFilters,
 ): Promise<Taxonomy[]> => {
   'use cache';
   cacheLife('hours');
   cacheTag(TAXONOMY_TAG);
 
   const { data } = await api<ApiResponse<Paginated<TaxonomyResponse>>>(path, {
-    params: { featured },
+    params: { featured, municipalityId },
   });
 
   return data.items.map(toTaxonomy);

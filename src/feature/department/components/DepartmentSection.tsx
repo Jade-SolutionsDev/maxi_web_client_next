@@ -4,6 +4,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/app/components/ui/carousel';
+import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { getDepartments } from '@/shared/taxonomy/service/taxonomy.service';
 import { DepartmentCard } from './DepartmentCard';
 import {
@@ -12,7 +13,11 @@ import {
 } from './department-carousel.styles';
 
 async function DepartmentSection() {
-  const departments = await getDepartments({ featured: true });
+  const municipalityId = await readMunicipalityId();
+  const departments = await getDepartments({
+    featured: true,
+    municipalityId: municipalityId ?? undefined,
+  });
 
   if (departments.length === 0) return null;
 

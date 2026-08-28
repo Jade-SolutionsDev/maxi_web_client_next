@@ -22,6 +22,7 @@ export interface TaxonomyResponse {
 
 export interface TaxonomyFilters {
   featured?: boolean;
+  municipalityId?: string;
 }
 
 export interface Taxonomy {
