@@ -8,10 +8,14 @@ import {
 } from '@/app/components/ui/carousel';
 import { CategoryCard } from '@/feature/categories/components/CategoryCard';
 import { categoryHref } from '@/feature/product/constants/catalog-taxonomy-href';
+import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { getCategories } from '@/shared/taxonomy/service/taxonomy.service';
 
 async function CategoriesSection() {
-  const categories = await getCategories();
+  const municipalityId = await readMunicipalityId();
+  const categories = await getCategories({
+    municipalityId: municipalityId ?? undefined,
+  });
 
   return (
     <Section
