@@ -71,7 +71,11 @@ function SelectContent({
   sideOffset = 4,
   align = 'center',
   alignOffset = 0,
-  alignItemWithTrigger = true,
+  // Base UI's macOS-style mode: it lays the popup ON TOP of the trigger so the
+  // selected item covers it. In a form that hides the field being filled and,
+  // with a long list, spills past the surrounding dialog. Default to a plain
+  // dropdown below the trigger; opt in per call site if ever wanted.
+  alignItemWithTrigger = false,
   ...props
 }: SelectPrimitive.Popup.Props &
   Pick<
