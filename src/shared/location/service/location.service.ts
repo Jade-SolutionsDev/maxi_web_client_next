@@ -22,6 +22,11 @@ import type {
 export const getProvinces = async (): Promise<Province[]> => {
   'use cache';
   cacheLife('days');
+  // Sin esta etiqueta el `days` no se puede invalidar: al asignar cobertura a un
+  // almacén la API avisa con el tag `location-catalog`, pero solo lo llevaba
+  // `getLocationCatalog`, no esta caché ni la de municipios —de las que sale el
+  // selector—, así que se quedaban con la lista vacía cacheada de antes.
+  cacheTag('location-catalog');
 
   try {
     const { data } = await api<ApiResponse<ProvinceResponse[]>>('/provinces');
@@ -37,6 +42,9 @@ export const getMunicipalities = async (
 ): Promise<Municipality[]> => {
   'use cache';
   cacheLife('days');
+  // Misma etiqueta que las provincias: una sola revalidación de `location-catalog`
+  // limpia todas las entradas (una por provincia) cuando cambia la cobertura.
+  cacheTag('location-catalog');
 
   try {
     const { data } = await api<ApiResponse<MunicipalityResponse[]>>(
