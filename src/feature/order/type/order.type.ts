@@ -53,6 +53,8 @@ export interface PaymentCharge {
   amount: string | null;
   token: string | null;
   blockchain: string | null;
+  operationNumber: string | null;
+  qrData: Record<string, unknown> | null;
   currency: string | null;
   expiresAt: string | null;
   feeAmount: string | null;

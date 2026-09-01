@@ -338,14 +338,18 @@ export const PaymentPanel = ({
 
           <div className='flex items-center gap-2 rounded-xl bg-surface p-3'>
             <div className='min-w-0 flex-1'>
-              <p className='text-xs text-muted'>Referencia del cobro</p>
+              <p className='text-xs text-muted'>
+                {charge.operationNumber
+                  ? 'Solicitud de cobro'
+                  : 'Referencia del cobro'}
+              </p>
               <code className='text-sm font-semibold break-all text-heading'>
-                {charge.reference}
+                {charge.operationNumber ?? charge.reference}
               </code>
             </div>
             <CopyButton
-              value={charge.reference}
-              label='Copiar referencia del cobro'
+              value={charge.operationNumber ?? charge.reference}
+              label='Copiar el número de la solicitud de cobro'
             />
           </div>
 
