@@ -1,23 +1,34 @@
 'use client';
 
 import { Clock } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { formatCountdown, secondsUntil } from '../lib/payment-time';
+import { useEffect, useRef, useState } from 'react';
+import { formatCountdown, remainingSeconds } from '../lib/payment-time';
 
 interface PaymentCountdownProps {
-  expiresAt: string;
+  expiresAt: string | null;
+  expiresInSeconds: number | null;
   onExpire: () => void;
 }
 
 export const PaymentCountdown = ({
   expiresAt,
+  expiresInSeconds,
   onExpire,
 }: PaymentCountdownProps) => {
-  const [remaining, setRemaining] = useState(() => secondsUntil(expiresAt));
+  const startedAt = useRef(Date.now());
+  const [remaining, setRemaining] = useState(() =>
+    remainingSeconds(expiresInSeconds, expiresAt),
+  );
+
+  useEffect(() => {
+    startedAt.current = Date.now();
+    setRemaining(remainingSeconds(expiresInSeconds, expiresAt));
+  }, [expiresAt, expiresInSeconds]);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const next = secondsUntil(expiresAt);
+      const elapsed = Math.floor((Date.now() - startedAt.current) / 1000);
+      const next = remainingSeconds(expiresInSeconds, expiresAt, elapsed);
       setRemaining(next);
 
       if (next <= 0) {
@@ -27,7 +38,7 @@ export const PaymentCountdown = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [expiresAt, onExpire]);
+  }, [expiresAt, expiresInSeconds, onExpire]);
 
   return (
     <p className='flex items-center justify-center gap-2 text-sm font-semibold text-heading tabular-nums'>
