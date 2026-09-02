@@ -12,6 +12,7 @@ import {
   buildProductDetailHref,
   extractProductId,
 } from '../constants/product-detail-href';
+import { ProductStructuredData } from '../seo/ProductStructuredData';
 import { getProductById } from '../service/product.service';
 import { ProductPrice } from './ProductPrice';
 import { ProductPurchase } from './ProductPurchase';
@@ -45,6 +46,7 @@ async function ProductDetails({ params }: ProductDetailsProps) {
 
   return (
     <>
+      <ProductStructuredData product={product} />
       <PageHero
         title={product.name}
         breadcrumbs={[
