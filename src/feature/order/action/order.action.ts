@@ -14,6 +14,7 @@ import type { FulfillmentOffer } from '../type/fulfillment.type';
 import type {
   OrderListResult,
   OrderResult,
+  PaymentCharge,
   PaymentMethod,
   PaymentResult,
 } from '../type/order.type';
@@ -41,6 +42,17 @@ const toAddressPayload = (input: {
   };
 };
 
+const openPaymentCharge = async (
+  orderId: string,
+  method?: string,
+): Promise<PaymentCharge | undefined> => {
+  try {
+    return await orders.startPayment(orderId, method);
+  } catch {
+    return undefined;
+  }
+};
+
 export const checkoutAction = async (input: unknown): Promise<OrderResult> => {
   const parsed = CheckoutInputSchema.safeParse(input);
 
@@ -62,10 +74,15 @@ export const checkoutAction = async (input: unknown): Promise<OrderResult> => {
       customerNotes: data.notas || undefined,
     });
 
+    const payment = await openPaymentCharge(
+      order.id,
+      data.paymentMethod || undefined,
+    );
+
     revalidatePath('/checkout');
     revalidatePath('/pedidos');
 
-    return { order };
+    return { order: payment ? { ...order, payment } : order };
   } catch (error) {
     return { failure: toOrderFailure(error) };
   }
