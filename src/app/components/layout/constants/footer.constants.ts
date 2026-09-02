@@ -2,10 +2,6 @@ import type { StaticImageData } from 'next/image';
 import mastercard from '@/assets/mastercard.svg';
 import tropipay from '@/assets/tropipay.png';
 import visa from '@/assets/visa.svg';
-import {
-  cmsPageHref,
-  PAYMENTS_PAGE_SLUG,
-} from '@/feature/cms-page/constants/cms-page.constants';
 import type { SiteSettings } from '@/shared/cms/type/cms.interface';
 
 export interface FooterLink {
@@ -29,11 +25,6 @@ export const siteLinks: FooterLink[] = [
   { label: 'Sobre nosotros', href: '/sobre-nosotros' },
   { label: 'Contacto', href: '/contacto' },
 ];
-
-export const paymentsPageLink: FooterLink = {
-  label: 'Métodos de pago',
-  href: cmsPageHref(PAYMENTS_PAGE_SLUG),
-};
 
 export const paymentLogos: Record<
   keyof SiteSettings['payments'],

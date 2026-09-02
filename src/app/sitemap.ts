@@ -1,13 +1,10 @@
 import type { MetadataRoute } from 'next';
-import {
-  cmsPageHref,
-  PAYMENTS_PAGE_SLUG,
-} from '@/feature/cms-page/constants/cms-page.constants';
+import { cmsPageHref } from '@/feature/cms-page/constants/cms-page.constants';
 import { departmentHref } from '@/feature/product/constants/catalog-taxonomy-href';
 import { buildProductDetailHref } from '@/feature/product/constants/product-detail-href';
 import { getProducts } from '@/feature/product/service/product.service';
 import type { Product } from '@/feature/product/type/product.interface';
-import { getSiteSettings } from '@/shared/cms/service/cms.service';
+import { getCmsPages } from '@/shared/cms/service/cms.service';
 import { absoluteUrl } from '@/shared/seo/site-url';
 import { getDepartments } from '@/shared/taxonomy/service/taxonomy.service';
 
@@ -58,19 +55,13 @@ const departmentEntries = async (): Promise<Entry[]> => {
 };
 
 const cmsPageEntries = async (): Promise<Entry[]> => {
-  try {
-    const { footer } = await getSiteSettings();
-    const slugs = new Set(footer.legalLinks.map(({ slug }) => slug));
-    slugs.add(PAYMENTS_PAGE_SLUG);
+  const pages = await getCmsPages();
 
-    return [...slugs].map((slug) => ({
-      url: absoluteUrl(cmsPageHref(slug)),
-      changeFrequency: 'monthly',
-      priority: 0.4,
-    }));
-  } catch {
-    return [];
-  }
+  return pages.map(({ slug }) => ({
+    url: absoluteUrl(cmsPageHref(slug)),
+    changeFrequency: 'monthly',
+    priority: 0.4,
+  }));
 };
 
 const collectProducts = async (): Promise<Product[]> => {

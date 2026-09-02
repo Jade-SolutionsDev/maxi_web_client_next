@@ -75,6 +75,11 @@ export interface CmsPage {
   content: string;
 }
 
+export interface CmsPageLink {
+  slug: string;
+  title: string;
+}
+
 export interface SiteLegalLink {
   label: string;
   slug: string;
