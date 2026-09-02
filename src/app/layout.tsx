@@ -4,15 +4,15 @@ import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { CartSync } from '@/feature/cart/components/CartSync';
+import { SiteStructuredData } from '@/shared/seo/components/SiteStructuredData';
+import { SITE_URL } from '@/shared/seo/site-url';
 import { Toaster } from './components/feedback/Toaster';
 import { BottomNav } from './components/layout/bottom-nav';
 import { Footer } from './components/layout/Footer';
 import { Header } from './components/layout/Header';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'MaxiHabana',
     template: '%s | MaxiHabana',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     title: 'MaxiHabana — Tu supermercado online',
     description:
       'Compra online en MaxiHabana: departamentos, productos destacados y las mejores ofertas del día con recogida en tienda.',
-    url: siteUrl,
+    url: SITE_URL,
     locale: 'es_CU',
   },
   twitter: {
@@ -65,7 +65,7 @@ export default function RootLayout({
     >
       <body className='flex min-h-full flex-col pb-[var(--bottom-nav-height)]'>
         <ClerkProvider
-          allowedRedirectOrigins={['http://localhost:3000', siteUrl]}
+          allowedRedirectOrigins={['http://localhost:3000', SITE_URL]}
         >
           {/*
             El adaptador envuelve todo, no solo <main>: el buscador de la
@@ -81,6 +81,7 @@ export default function RootLayout({
           </NuqsAdapter>
         </ClerkProvider>
         <Toaster />
+        <SiteStructuredData />
       </body>
     </html>
   );
