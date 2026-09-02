@@ -1,9 +1,10 @@
 import { formatPrice } from '@/helpers';
-import { computePreviousPrice } from '@/lib/product-price';
+import { resolvePreviousPrice } from '@/lib/product-price';
 import { cn } from '@/lib/utils';
 
 interface ProductPriceProps {
   price: number;
+  basePrice?: number;
   discount?: number;
   /** `sm` = product card. `lg` = product detail. */
   size?: 'sm' | 'lg';
@@ -22,11 +23,12 @@ const sizeStyles = {
  */
 export const ProductPrice = ({
   price,
+  basePrice,
   discount = 0,
   size = 'sm',
   className,
 }: ProductPriceProps) => {
-  const previousPrice = computePreviousPrice(price, discount);
+  const previousPrice = resolvePreviousPrice(price, discount, basePrice);
   const theme = sizeStyles[size];
 
   return (

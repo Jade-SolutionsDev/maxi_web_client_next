@@ -81,6 +81,7 @@ async function ProductDetails({ params }: ProductDetailsProps) {
 
           <ProductPrice
             price={product.price}
+            basePrice={product.basePrice}
             discount={product.discount}
             size='lg'
           />

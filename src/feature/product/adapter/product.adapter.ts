@@ -5,6 +5,7 @@ export const toProduct = (product: ProductResponse): Product => ({
   slug: product.slug,
   name: product.name.trim(),
   price: product.finalPrice,
+  basePrice: product.basePrice,
   discount: product.discount,
   measureUnit: product.measureUnit,
   format: product.format ?? undefined,
