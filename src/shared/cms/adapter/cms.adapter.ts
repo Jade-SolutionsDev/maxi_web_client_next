@@ -3,6 +3,7 @@ import type {
   BannerSlide,
   CmsBannerResponse,
   CmsPage,
+  CmsPageLink,
   CmsPageResponse,
   CmsServiceResponse,
   CmsStaffMemberResponse,
@@ -71,4 +72,9 @@ export const toCmsPage = (page: CmsPageResponse): CmsPage => ({
   slug: page.slug,
   title: page.title.trim(),
   content: page.content,
+});
+
+export const toCmsPageLink = (page: CmsPageResponse): CmsPageLink => ({
+  slug: page.slug,
+  title: page.title.trim(),
 });
