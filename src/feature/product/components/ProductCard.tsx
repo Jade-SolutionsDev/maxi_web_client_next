@@ -12,7 +12,7 @@ import { buildProductDetailHref } from '@/feature/product/constants/product-deta
 import { notifyStockLimit } from '@/feature/product/feedback/stock-limit.notify';
 import type { Product } from '@/feature/product/type/product.interface';
 import { formatDiscount } from '@/helpers';
-import { computePreviousPrice } from '@/lib/product-price';
+import { resolvePreviousPrice } from '@/lib/product-price';
 import { ProductPrice } from './ProductPrice';
 
 type ProductCardProps = {
@@ -31,7 +31,7 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
   const imageRef = useRef<HTMLImageElement>(null);
 
   const discount = product.discount ?? 0;
-  const previousPrice = computePreviousPrice(price, discount);
+  const previousPrice = resolvePreviousPrice(price, discount, product.basePrice);
 
   const handleAddToCart = () => {
     // Fired on the click, not on the response: the animation acknowledges the
@@ -75,6 +75,7 @@ function ProductCard({ product, imageSizes = '100vw' }: ProductCardProps) {
 
           <ProductPrice
             price={price}
+            basePrice={product.basePrice}
             discount={product.discount}
             size='sm'
             className='mt-auto'

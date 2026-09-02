@@ -69,6 +69,12 @@ export interface Product {
   slug: string;
   name: string;
   price: number;
+  /**
+   * Pre-discount price straight from the API. Used to render the crossed-out
+   * "previous price" without reversing the rounded `price` (which drifts by a
+   * cent).
+   */
+  basePrice?: number;
   measureUnit: string;
   format?: string;
   discount?: number;

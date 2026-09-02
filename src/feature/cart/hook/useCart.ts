@@ -1,17 +1,12 @@
 import { roundMoney } from '@/helpers';
-import { computePreviousPrice } from '@/lib/product-price';
+import { resolvePreviousPrice } from '@/lib/product-price';
 import { useCartStore } from '../store/cart.store';
 import { type CartLine, EMPTY_CART } from '../type/cart.interface';
 
 const MIN_SAVINGS = 0.01;
 
-export const linePreviousPrice = (line: CartLine): number | null => {
-  if (line.basePrice !== undefined && line.basePrice > line.unitPrice) {
-    return line.basePrice;
-  }
-
-  return computePreviousPrice(line.unitPrice, line.discount ?? 0);
-};
+export const linePreviousPrice = (line: CartLine): number | null =>
+  resolvePreviousPrice(line.unitPrice, line.discount ?? 0, line.basePrice);
 
 export const useCartData = () => {
   const cart = useCartStore((state) => state.cart) ?? EMPTY_CART;
