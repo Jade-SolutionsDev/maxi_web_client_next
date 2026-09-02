@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL, absoluteUrl } from '@/shared/seo/site-url';
+import { absoluteUrl, SITE_URL } from '@/shared/seo/site-url';
 
 const PRIVATE_PATHS = [
   '/api/',
