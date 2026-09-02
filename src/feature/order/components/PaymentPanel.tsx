@@ -236,7 +236,7 @@ export const PaymentPanel = ({
                 charge.currency ?? undefined,
               )}
             </strong>{' '}
-            en la pasarela segura. Al terminar volvés a esta página.
+            en la pasarela segura. Al terminar vuelves a esta página.
           </p>
 
           <a
@@ -267,7 +267,7 @@ export const PaymentPanel = ({
             methods={paymentMethods}
             value={method}
             onChange={setMethod}
-            legend='¿Preferís otra forma de pago?'
+            legend='¿Prefieres otra forma de pago?'
             disabled={isStarting}
           />
 
@@ -285,7 +285,7 @@ export const PaymentPanel = ({
         </div>
       )}
 
-      {mode === 'instructions' && charge && (
+      {mode === 'instructions' && charge && charge.depositAddress && (
         <div className='flex flex-col gap-4'>
           <p className='text-sm text-muted'>
             Envía{' '}
@@ -302,7 +302,7 @@ export const PaymentPanel = ({
               {charge.depositAddress}
             </code>
             <CopyButton
-              value={charge.depositAddress ?? ''}
+              value={charge.depositAddress}
               label='Copiar dirección de depósito'
             />
           </div>
@@ -322,6 +322,46 @@ export const PaymentPanel = ({
           <p className='text-center text-xs text-muted'>
             Esta pantalla se actualiza sola cuando detectemos tu pago.
             Referencia: {charge.reference}
+          </p>
+        </div>
+      )}
+
+      {mode === 'instructions' && charge && !charge.depositAddress && (
+        <div className='flex flex-col gap-4'>
+          <p className='text-sm text-muted'>
+            Abre tu app de Mi Billetera y paga la solicitud de cobro por{' '}
+            <strong className='text-heading'>
+              {charge.amount} {charge.currency ?? ''}
+            </strong>
+            .
+          </p>
+
+          <div className='flex items-center gap-2 rounded-xl bg-surface p-3'>
+            <div className='min-w-0 flex-1'>
+              <p className='text-xs text-muted'>
+                {charge.operationNumber
+                  ? 'Solicitud de cobro'
+                  : 'Referencia del cobro'}
+              </p>
+              <code className='text-sm font-semibold break-all text-heading'>
+                {charge.operationNumber ?? charge.reference}
+              </code>
+            </div>
+            <CopyButton
+              value={charge.operationNumber ?? charge.reference}
+              label='Copiar el número de la solicitud de cobro'
+            />
+          </div>
+
+          {charge.expiresAt && (
+            <PaymentCountdown
+              expiresAt={charge.expiresAt}
+              onExpire={handleExpire}
+            />
+          )}
+
+          <p className='text-center text-xs text-muted'>
+            Esta pantalla se actualiza sola cuando detectemos tu pago.
           </p>
         </div>
       )}

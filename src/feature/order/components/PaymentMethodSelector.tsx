@@ -20,7 +20,43 @@ export const PaymentMethodSelector = ({
   legend = 'Forma de pago',
   disabled,
 }: PaymentMethodSelectorProps) => {
-  if (methods.length < 2) return null;
+  if (methods.length === 0) return null;
+
+  if (methods.length === 1) {
+    const [method] = methods;
+    if (!method) return null;
+
+    return (
+      <div className='flex flex-col gap-2'>
+        <p className='mb-2 text-sm font-medium text-heading'>{legend}</p>
+        <div
+          className={cn(
+            'flex items-start gap-3 rounded-xl border border-primary bg-primary/5 p-3',
+            disabled && 'opacity-60',
+          )}
+        >
+          <PaymentMethodIcon
+            icon={method.icon}
+            className='mt-0.5 size-5 shrink-0 text-primary'
+          />
+          <span className='min-w-0 flex-1'>
+            <span className='block text-sm font-semibold text-heading'>
+              {method.label}
+            </span>
+            {method.description && (
+              <span className='block text-xs text-muted'>
+                {method.description}
+              </span>
+            )}
+          </span>
+          <Check
+            className='size-4 shrink-0 text-primary'
+            aria-hidden='true'
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <fieldset className='flex flex-col gap-2' disabled={disabled}>
