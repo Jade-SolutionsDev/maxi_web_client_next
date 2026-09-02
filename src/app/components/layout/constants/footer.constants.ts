@@ -26,7 +26,7 @@ export interface PaymentMethodDisplay {
 
 export const siteLinks: FooterLink[] = [
   { label: 'Catálogo', href: '/catalog' },
-  { label: '¿Quiénes somos?', href: '/sobre-nosotros' },
+  { label: 'Sobre nosotros', href: '/sobre-nosotros' },
   { label: 'Contacto', href: '/contacto' },
 ];
 

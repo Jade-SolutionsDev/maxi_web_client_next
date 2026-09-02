@@ -12,7 +12,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   },
   contact: {
     email: 'comercialmaxihabana@gmail.com',
-    phone: '+53 5 432 6665',
+    phone: '+53 5 2519414',
     hours: '24 horas',
   },
   payments: {
