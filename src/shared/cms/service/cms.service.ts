@@ -5,6 +5,7 @@ import { type ApiResponse, api } from '@/api/http';
 import {
   toBannerSlide,
   toCmsPage,
+  toCmsPageLink,
   toServiceItem,
   toSiteSettings,
   toStaffMember,
@@ -14,6 +15,7 @@ import type {
   BannerSlide,
   CmsBannerResponse,
   CmsPage,
+  CmsPageLink,
   CmsPageResponse,
   CmsServiceResponse,
   CmsStaffMemberResponse,
@@ -77,6 +79,20 @@ export const getStaff = async (): Promise<StaffMember[]> => {
     const { data } =
       await api<ApiResponse<CmsStaffMemberResponse[]>>('/public/cms/staff');
     return data.map(toStaffMember);
+  } catch {
+    return [];
+  }
+};
+
+export const getCmsPages = async (): Promise<CmsPageLink[]> => {
+  'use cache';
+  cacheLife('hours');
+  cacheTag('cms');
+
+  try {
+    const { data } =
+      await api<ApiResponse<CmsPageResponse[]>>('/public/cms/pages');
+    return data.map(toCmsPageLink);
   } catch {
     return [];
   }

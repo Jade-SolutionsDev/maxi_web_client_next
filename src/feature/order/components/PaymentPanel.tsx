@@ -22,7 +22,7 @@ import {
   notifyPaymentFailure,
   notifyPaymentReturn,
 } from '../feedback/order.notify';
-import { secondsUntil } from '../lib/payment-time';
+import { remainingSeconds } from '../lib/payment-time';
 import {
   type Order,
   type PaymentCharge,
@@ -61,7 +61,10 @@ const resolveMode = (
   if (order.paymentStatus === 'refunded') return 'refunded';
   if (charge) {
     if (charge.status === 'REQUIRES_ACTION') {
-      if (charge.expiresAt && secondsUntil(charge.expiresAt) <= 0) {
+      if (
+        (charge.expiresAt || charge.expiresInSeconds !== null) &&
+        remainingSeconds(charge.expiresInSeconds, charge.expiresAt) <= 0
+      ) {
         return 'charge-failed';
       }
 
@@ -254,6 +257,7 @@ export const PaymentPanel = ({
           {charge.expiresAt && (
             <PaymentCountdown
               expiresAt={charge.expiresAt}
+              expiresInSeconds={charge.expiresInSeconds}
               onExpire={handleExpire}
             />
           )}
@@ -315,6 +319,7 @@ export const PaymentPanel = ({
           {charge.expiresAt && (
             <PaymentCountdown
               expiresAt={charge.expiresAt}
+              expiresInSeconds={charge.expiresInSeconds}
               onExpire={handleExpire}
             />
           )}
@@ -356,6 +361,7 @@ export const PaymentPanel = ({
           {charge.expiresAt && (
             <PaymentCountdown
               expiresAt={charge.expiresAt}
+              expiresInSeconds={charge.expiresInSeconds}
               onExpire={handleExpire}
             />
           )}

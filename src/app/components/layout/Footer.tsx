@@ -4,40 +4,29 @@ import Link from 'next/link';
 import { Container } from '@/app/components/layout/Container';
 import jade from '@/assets/jade.svg';
 import logo from '@/assets/logo.svg';
-import { cmsPageHref } from '@/feature/cms-page/constants/cms-page.constants';
 import { toWhatsAppHref } from '@/helpers';
-import { getSiteSettings } from '@/shared/cms/service/cms.service';
-import {
-  paymentLogos,
-  paymentsPageLink,
-  siteLinks,
-} from './constants/footer.constants';
+import { getCmsPages, getSiteSettings } from '@/shared/cms/service/cms.service';
+import { paymentLogos, siteLinks } from './constants/footer.constants';
 import { getFooterDepartmentLinks } from './constants/footer-departments';
+import { buildFooterLegalLinks } from './constants/footer-legal-links';
 import { FooterLinkColumn } from './FooterLinkColumn';
 
 const contactClass =
   'flex items-center gap-3 text-sm text-white/80 transition-colors hover:text-white hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange rounded-sm';
 
 export const Footer = async () => {
-  const [{ footer, contact, payments }, departmentLinks] = await Promise.all([
-    getSiteSettings(),
-    getFooterDepartmentLinks(),
-  ]);
+  const [{ footer, contact, payments }, departmentLinks, cmsPages] =
+    await Promise.all([
+      getSiteSettings(),
+      getFooterDepartmentLinks(),
+      getCmsPages(),
+    ]);
 
   const enabledMethods = (
     Object.keys(paymentLogos) as (keyof typeof paymentLogos)[]
   ).filter((method) => payments[method]);
 
-  const cmsLegalLinks = footer.legalLinks.map(({ label, slug }) => ({
-    label,
-    href: cmsPageHref(slug),
-  }));
-
-  const legalLinks = cmsLegalLinks.some(
-    (link) => link.href === paymentsPageLink.href,
-  )
-    ? cmsLegalLinks
-    : [...cmsLegalLinks, paymentsPageLink];
+  const legalLinks = buildFooterLegalLinks(footer.legalLinks, cmsPages);
 
   return (
     <footer className='bg-footer text-white'>
