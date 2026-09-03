@@ -57,6 +57,7 @@ export interface PaymentCharge {
   qrData: Record<string, unknown> | null;
   currency: string | null;
   expiresAt: string | null;
+  expiresInSeconds: number | null;
   feeAmount: string | null;
   settlementAmount: string | null;
   errorMessage: string | null;
