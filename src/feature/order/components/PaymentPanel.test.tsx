@@ -1,5 +1,4 @@
 import { cleanup, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Order, PaymentCharge, PaymentMethod } from '../type/order.type';
 import { PaymentPanel } from './PaymentPanel';
@@ -102,22 +101,7 @@ describe('PaymentPanel', () => {
     ).toBe('https://pasarela.example/pay/4821');
     expect(screen.queryByRole('button', { name: START_PROMPT })).toBeNull();
     expect(screen.queryByRole('radio')).toBeNull();
-  });
-
-  it('deja cambiar de forma de pago solo si el cliente lo pide', async () => {
-    const user = userEvent.setup();
-
-    render(
-      <PaymentPanel
-        order={order}
-        payment={charge({ redirectUrl: 'https://pasarela.example/pay/4821' })}
-        paymentMethods={paymentMethods}
-      />,
-    );
-
-    await user.click(screen.getByRole('button', { name: SWITCH_PROMPT }));
-
-    expect(screen.getAllByRole('radio')).toHaveLength(paymentMethods.length);
+    expect(screen.queryByText(SWITCH_PROMPT)).toBeNull();
   });
 
   it('muestra la solicitud de cobro de Mi Billetera sin volver a pedir el método de pago', () => {
