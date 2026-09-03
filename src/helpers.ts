@@ -65,6 +65,16 @@ export const clamp = (value: number, min: number, max: number) =>
  */
 export const roundMoney = (value: number) => Math.round(value * 100) / 100;
 
+export const truncateDecimals = (
+  value: string | number,
+  decimals: number = 2,
+): string => {
+  const [whole, fraction = ''] = String(value).split('.');
+  if (decimals <= 0) return whole;
+
+  return `${whole}.${fraction.slice(0, decimals).padEnd(decimals, '0')}`;
+};
+
 /** Ascending list of the integers in the inclusive `[from, to]` range. */
 export const range = (from: number, to: number): number[] =>
   Array.from({ length: Math.max(to - from + 1, 0) }, (_, i) => from + i);
