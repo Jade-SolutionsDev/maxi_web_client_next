@@ -10,7 +10,7 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, buttonVariants } from '@/app/components/ui/button';
-import { formatPrice } from '@/helpers';
+import { formatPrice, truncateDecimals } from '@/helpers';
 import { cn } from '@/lib/utils';
 import {
   fetchPaymentStatus,
@@ -336,7 +336,7 @@ export const PaymentPanel = ({
           <p className='text-sm text-muted'>
             Abre tu app de Mi Billetera y paga la solicitud de cobro por{' '}
             <strong className='text-heading'>
-              {charge.amount} {charge.currency ?? ''}
+              {truncateDecimals(charge.amount ?? '0')} {charge.currency ?? ''}
             </strong>
             .
           </p>
