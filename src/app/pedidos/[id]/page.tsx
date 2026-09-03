@@ -7,7 +7,10 @@ import { ApiError } from '@/api/error';
 import { Container } from '@/app/components/layout/Container';
 import { PageHero } from '@/app/components/ui/page-hero';
 import { SafeImage } from '@/app/components/ui/safe-image';
-import { fetchPaymentMethods } from '@/feature/order/action/order.action';
+import {
+  fetchPaymentMethods,
+  fetchPaymentStatus,
+} from '@/feature/order/action/order.action';
 import { CancellationNotice } from '@/feature/order/components/CancellationNotice';
 import { CancelOrderButton } from '@/feature/order/components/CancelOrderButton';
 import { OrderDeliveryDetails } from '@/feature/order/components/OrderDeliveryDetails';
@@ -51,9 +54,10 @@ async function OrderDetailContent({
   if (!userId) redirect('/login');
 
   const { id } = await params;
-  const [order, paymentMethods] = await Promise.all([
+  const [order, paymentMethods, paymentResult] = await Promise.all([
     loadOrder(id),
     fetchPaymentMethods(),
+    fetchPaymentStatus({ orderId: id }),
   ]);
 
   return (
@@ -175,7 +179,11 @@ async function OrderDetailContent({
         </div>
 
         {order.status !== 'cancelled' && (
-          <PaymentPanel order={order} paymentMethods={paymentMethods} />
+          <PaymentPanel
+            order={order}
+            payment={paymentResult.payment ?? null}
+            paymentMethods={paymentMethods}
+          />
         )}
       </div>
     </Container>

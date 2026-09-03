@@ -37,6 +37,7 @@ const POLL_INTERVAL_MS = 8000;
 
 interface PaymentPanelProps {
   order: Order;
+  payment?: PaymentCharge | null;
   paymentMethods?: PaymentMethod[];
 }
 
@@ -83,18 +84,18 @@ const resolveMode = (
 
 export const PaymentPanel = ({
   order,
+  payment,
   paymentMethods = [],
 }: PaymentPanelProps) => {
   const router = useRouter();
   const gatewayOutcome = useSearchParams().get('pago');
-  const [charge, setCharge] = useState<PaymentCharge | null>(
-    order.payment ?? null,
-  );
+  const openCharge = payment ?? order.payment ?? null;
+  const [charge, setCharge] = useState<PaymentCharge | null>(openCharge);
   const [gatewayDown, setGatewayDown] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [expiredLocally, setExpiredLocally] = useState(false);
   const [method, setMethod] = useState(
-    order.payment?.provider ?? paymentMethods[0]?.code ?? '',
+    openCharge?.provider ?? paymentMethods[0]?.code ?? '',
   );
   const paidNotified = useRef(order.paymentStatus === 'paid');
 
