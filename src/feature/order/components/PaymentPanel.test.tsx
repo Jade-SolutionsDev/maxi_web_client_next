@@ -82,6 +82,7 @@ const charge = (overrides: Partial<PaymentCharge>): PaymentCharge => ({
 });
 
 const START_PROMPT = 'Continuar con el pago';
+const SWITCH_PROMPT = '¿Prefieres otra forma de pago?';
 
 afterEach(cleanup);
 
@@ -99,6 +100,8 @@ describe('PaymentPanel', () => {
       screen.getByRole('link', { name: /Pagar ahora/i }).getAttribute('href'),
     ).toBe('https://pasarela.example/pay/4821');
     expect(screen.queryByRole('button', { name: START_PROMPT })).toBeNull();
+    expect(screen.queryByRole('radio')).toBeNull();
+    expect(screen.queryByText(SWITCH_PROMPT)).toBeNull();
   });
 
   it('muestra la solicitud de cobro de Mi Billetera sin volver a pedir el método de pago', () => {

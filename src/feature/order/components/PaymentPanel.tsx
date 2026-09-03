@@ -267,26 +267,6 @@ export const PaymentPanel = ({
             ¿Ya pagaste? Esta pantalla se actualiza sola en cuanto lo
             confirmemos. Referencia: {charge.reference}
           </p>
-
-          <PaymentMethodSelector
-            methods={paymentMethods}
-            value={method}
-            onChange={setMethod}
-            legend='¿Prefieres otra forma de pago?'
-            disabled={isStarting}
-          />
-
-          {method !== charge.provider && (
-            <Button
-              type='button'
-              variant='outline'
-              loading={isStarting}
-              onClick={handleStart}
-              className='w-full sm:w-auto sm:self-start'
-            >
-              Cambiar forma de pago
-            </Button>
-          )}
         </div>
       )}
 
