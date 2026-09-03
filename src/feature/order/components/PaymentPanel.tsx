@@ -32,7 +32,6 @@ import {
 import { CopyButton } from './CopyButton';
 import { PaymentCountdown } from './PaymentCountdown';
 import { PaymentMethodSelector } from './PaymentMethodSelector';
-import { PaymentMethodSwitcher } from './PaymentMethodSwitcher';
 
 const POLL_INTERVAL_MS = 8000;
 
@@ -268,15 +267,6 @@ export const PaymentPanel = ({
             ¿Ya pagaste? Esta pantalla se actualiza sola en cuanto lo
             confirmemos. Referencia: {charge.reference}
           </p>
-
-          <PaymentMethodSwitcher
-            methods={paymentMethods}
-            currentProvider={charge.provider}
-            value={method}
-            onChange={setMethod}
-            onConfirm={handleStart}
-            isStarting={isStarting}
-          />
         </div>
       )}
 
