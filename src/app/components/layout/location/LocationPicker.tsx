@@ -126,6 +126,7 @@ export const LocationPicker = ({
           onClose={() => answerConfirmWith(false)}
           onConfirm={() => answerConfirmWith(true)}
           variant='warning'
+          align='center'
           icon={MapPin}
           title={DISCARD_CART_TITLE}
           description={DISCARD_CART_DESCRIPTION}
