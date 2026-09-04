@@ -135,7 +135,18 @@ export const CheckoutForm = ({
 
     if (result.order) {
       markCheckedOut();
-      startNavigation(() => router.push(`/pedidos/${result.order.id}`));
+      /**
+       * El pedido se crea aunque la pasarela falle: el cobro se intenta después
+       * de la transacción. Cuando eso pasa, la persona aterrizaba en la ficha
+       * del pedido con el selector delante y **sin una palabra** de por qué,
+       * como si su clic no hubiera hecho nada. Se le pasa cuál falló para que
+       * la ficha lo diga.
+       */
+      const noSePudoCobrar = Boolean(values.paymentMethod) && !result.order.payment;
+      const destino = noSePudoCobrar
+        ? `/pedidos/${result.order.id}?pagoFallido=${encodeURIComponent(values.paymentMethod as string)}`
+        : `/pedidos/${result.order.id}`;
+      startNavigation(() => router.push(destino));
       setIsSubmitting(false);
       return;
     }
