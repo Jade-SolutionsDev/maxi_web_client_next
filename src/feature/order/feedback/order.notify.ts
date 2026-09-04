@@ -45,10 +45,12 @@ export const notifyPaymentFailure = (failure: OrderFailure) => {
   }
 
   if (failure.kind === 'gateway-unavailable') {
-    notify.info('La pasarela de pago no está disponible', {
+    // No se promete confirmación manual: el pago manual puede estar desactivado
+    // —lo está en producción— y entonces esa confirmación no llega nunca.
+    notify.info('Esa forma de pago no está disponible', {
       id,
       description:
-        'Tu pedido queda registrado y lo confirmaremos manualmente. También puedes reintentar más tarde.',
+        'Tu pedido queda reservado. Prueba con otra forma de pago o inténtalo en unos minutos.',
     });
     return;
   }
