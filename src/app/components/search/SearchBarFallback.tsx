@@ -1,6 +1,7 @@
 import { Search } from 'lucide-react';
 import {
   SEARCH_PLACEHOLDER,
+  searchActionsClass,
   searchFieldClass,
   searchIconClass,
   searchInputClass,
@@ -16,14 +17,12 @@ type SearchBarFallbackProps = {
  * in the static HTML (good for SEO/a11y) and holds the exact same footprint, so
  * the header does not shift on hydration. It has no submit handler — the input
  * is disabled until the real one arrives, rather than silently swallowing an
- * Enter the page cannot act on yet.
+ * Enter the page cannot act on yet. No clear button either: there is nothing
+ * typed to clear.
  */
 export const SearchBarFallback = ({ className }: SearchBarFallbackProps) => (
   <search className={className}>
     <div className={searchFieldClass}>
-      <span className={searchIconClass} aria-hidden='true'>
-        <Search className='h-5 w-5' />
-      </span>
       <label htmlFor='product-search-fallback' className='sr-only'>
         {SEARCH_PLACEHOLDER}
       </label>
@@ -34,6 +33,11 @@ export const SearchBarFallback = ({ className }: SearchBarFallbackProps) => (
         placeholder={SEARCH_PLACEHOLDER}
         className={searchInputClass}
       />
+      <div className={searchActionsClass}>
+        <span className={searchIconClass} aria-hidden='true'>
+          <Search className='h-5 w-5' />
+        </span>
+      </div>
     </div>
   </search>
 );
