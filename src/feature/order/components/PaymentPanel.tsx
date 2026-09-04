@@ -462,7 +462,7 @@ export const PaymentPanel = ({
           tone='progress'
           icon={<HandCoins className='size-8' aria-hidden='true' />}
           title='Pago pendiente de confirmación'
-          description='La pasarela de pago no está disponible en este momento. Tu pedido queda registrado y confirmaremos el pago manualmente; también puedes reintentar más tarde.'
+          description='Tu pedido queda registrado. Nos pondremos en contacto contigo para coordinar el pago y lo confirmaremos a mano.'
         />
       )}
     </section>
