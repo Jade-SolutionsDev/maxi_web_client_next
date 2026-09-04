@@ -218,7 +218,9 @@ describe('PaymentPanel', () => {
     expect(screen.queryByText(/confirmaremos el pago manualmente/i)).toBeNull();
   });
 
-  it('sí la promete cuando el pago manual está entre las opciones', async () => {
+  it('tampoco la promete cuando el pago manual sí está entre las opciones', async () => {
+    // El cliente eligió una pasarela, no pago manual: que esté disponible no
+    // autoriza a darle su pedido por encaminado a una confirmación a mano.
     vi.mocked(startPaymentAttempt).mockResolvedValue({
       payment: null,
       failure: { kind: 'gateway-unavailable' },
@@ -244,8 +246,12 @@ describe('PaymentPanel', () => {
       screen.getByRole('button', { name: /continuar con el pago/i }),
     );
 
-    await waitFor(() =>
-      expect(screen.getByText(/confirmaremos el pago manualmente/i)).toBeTruthy(),
-    );
+    await screen.findByRole('alert');
+    expect(screen.queryByText(/confirmaremos el pago manualmente/i)).toBeNull();
+    // Y sobre todo: sigue habiendo por dónde salir.
+    expect(screen.getAllByRole('radio').length).toBeGreaterThan(1);
+    expect(
+      screen.getByRole('button', { name: /continuar con el pago/i }),
+    ).toBeTruthy();
   });
 });
