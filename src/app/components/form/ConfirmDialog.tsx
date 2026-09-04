@@ -29,8 +29,35 @@ const confirmIconVariants = cva(
   },
 );
 
+const confirmFooterVariants = cva(
+  'flex-row border-heading/10 bg-transparent p-3',
+  {
+    variants: {
+      align: {
+        end: 'justify-end sm:justify-end',
+        center: 'justify-center sm:justify-center',
+      },
+    },
+    defaultVariants: { align: 'end' },
+  },
+);
+
+const confirmActionVariants = cva('flex-1', {
+  variants: {
+    align: {
+      end: 'sm:flex-none',
+      center: 'sm:min-w-36 sm:flex-none',
+    },
+  },
+  defaultVariants: { align: 'end' },
+});
+
 type ConfirmDialogVariant = NonNullable<
   VariantProps<typeof confirmIconVariants>['variant']
+>;
+
+type ConfirmDialogAlign = NonNullable<
+  VariantProps<typeof confirmFooterVariants>['align']
 >;
 
 const confirmButtonVariant = {
@@ -48,6 +75,7 @@ interface ConfirmDialogProps {
   cancelText?: string;
   icon: LucideIcon;
   variant?: ConfirmDialogVariant;
+  align?: ConfirmDialogAlign;
   isLoading?: boolean;
 }
 
@@ -61,6 +89,7 @@ export function ConfirmDialog({
   onConfirm,
   icon: Icon,
   variant = 'default',
+  align = 'end',
   isLoading = false,
 }: ConfirmDialogProps) {
   // While the action is running the dialog stays put: dismissing it would hide
@@ -91,12 +120,12 @@ export function ConfirmDialog({
 
         {/* Side by side from the smallest screen: two short actions read faster
             than a stack, and it keeps the sheet from feeling like a full page. */}
-        <DialogFooter className='flex-row justify-end border-heading/10 bg-transparent p-3'>
+        <DialogFooter className={cn(confirmFooterVariants({ align }))}>
           <Button
             type='button'
             size='sm'
             variant='outline'
-            className='flex-1 sm:flex-none'
+            className={cn(confirmActionVariants({ align }))}
             disabled={isLoading}
             onClick={(e) => {
               e.stopPropagation();
@@ -110,7 +139,7 @@ export function ConfirmDialog({
             type='button'
             size='sm'
             variant={confirmButtonVariant[variant]}
-            className='flex-1 sm:flex-none'
+            className={cn(confirmActionVariants({ align }))}
             loading={isLoading}
             onClick={(e) => {
               e.stopPropagation();
