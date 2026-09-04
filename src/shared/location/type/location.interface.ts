@@ -50,3 +50,8 @@ export interface SelectedLocation {
   municipalityId: string;
   municipalityName: string;
 }
+
+export interface SaveLocationResult {
+  error?: string;
+  provinceChanged?: boolean;
+}

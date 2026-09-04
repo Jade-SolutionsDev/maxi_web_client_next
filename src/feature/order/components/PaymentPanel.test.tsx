@@ -1,6 +1,8 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Order, PaymentCharge, PaymentMethod } from '../type/order.type';
+import { startPaymentAttempt } from '../action/order.action';
 import { PaymentPanel } from './PaymentPanel';
 
 const refresh = vi.fn();
@@ -131,5 +133,125 @@ describe('PaymentPanel', () => {
     );
 
     expect(screen.getByRole('button', { name: START_PROMPT })).toBeTruthy();
+  });
+  /**
+   * Una pasarela caída dejaba al cliente en «lo confirmaremos manualmente»:
+   * esa pantalla sustituía al selector, así que no podía elegir otra forma de
+   * pago, y prometía una confirmación a mano que no llega cuando el pago
+   * manual está desactivado — como lo está en producción.
+   */
+  it('deja elegir otra forma de pago cuando una pasarela falla', async () => {
+    vi.mocked(startPaymentAttempt).mockResolvedValue({
+      payment: null,
+      failure: { kind: 'gateway-unavailable' },
+    } as never);
+
+    render(
+      <PaymentPanel
+        order={order}
+        payment={null}
+        paymentMethods={paymentMethods}
+      />,
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: /continuar con el pago/i }),
+    );
+
+    // El selector sigue ahí, con las dos opciones.
+    await waitFor(() =>
+      expect(screen.getByText(/no está disponible/i)).toBeTruthy(),
+    );
+    expect(
+      screen.getByRole('button', { name: /continuar con el pago/i }),
+    ).toBeTruthy();
+    // Por las opciones del selector, no por el texto suelto: «Tarjeta» también
+    // aparece en el aviso, y una búsqueda ambigua probaría otra cosa.
+    const opciones = screen.getAllByRole('radio');
+    expect(opciones).toHaveLength(2);
+    expect(opciones.map((o) => o.getAttribute('value'))).toEqual([
+      'tropipay',
+      'mibilletera',
+    ]);
+  });
+
+  it('dice cuál falló, no un mensaje genérico', async () => {
+    vi.mocked(startPaymentAttempt).mockResolvedValue({
+      payment: null,
+      failure: { kind: 'gateway-unavailable' },
+    } as never);
+
+    render(
+      <PaymentPanel
+        order={order}
+        payment={null}
+        paymentMethods={paymentMethods}
+      />,
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: /continuar con el pago/i }),
+    );
+
+    const aviso = await screen.findByRole('alert');
+    expect(aviso.textContent).toMatch(/tarjeta/i);
+    expect(aviso.textContent).toMatch(/prueba con otra/i);
+  });
+
+  // Solo se promete confirmación a mano cuando el pago manual se ofrece.
+  it('no promete confirmación manual si el pago manual no está disponible', async () => {
+    vi.mocked(startPaymentAttempt).mockResolvedValue({
+      payment: null,
+      failure: { kind: 'gateway-unavailable' },
+    } as never);
+
+    render(
+      <PaymentPanel
+        order={order}
+        payment={null}
+        paymentMethods={paymentMethods}
+      />,
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: /continuar con el pago/i }),
+    );
+
+    await screen.findByRole('alert');
+    expect(screen.queryByText(/confirmaremos el pago manualmente/i)).toBeNull();
+  });
+
+  it('tampoco la promete cuando el pago manual sí está entre las opciones', async () => {
+    // El cliente eligió una pasarela, no pago manual: que esté disponible no
+    // autoriza a darle su pedido por encaminado a una confirmación a mano.
+    vi.mocked(startPaymentAttempt).mockResolvedValue({
+      payment: null,
+      failure: { kind: 'gateway-unavailable' },
+    } as never);
+
+    render(
+      <PaymentPanel
+        order={order}
+        payment={null}
+        paymentMethods={[
+          ...paymentMethods,
+          {
+            code: 'manual',
+            label: 'Pago manual',
+            description: null,
+            icon: null,
+            kind: 'manual',
+          },
+        ]}
+      />,
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: /continuar con el pago/i }),
+    );
+
+    await screen.findByRole('alert');
+    expect(screen.queryByText(/confirmaremos el pago manualmente/i)).toBeNull();
+    // Y sobre todo: sigue habiendo por dónde salir.
+    expect(screen.getAllByRole('radio').length).toBeGreaterThan(1);
+    expect(
+      screen.getByRole('button', { name: /continuar con el pago/i }),
+    ).toBeTruthy();
   });
 });

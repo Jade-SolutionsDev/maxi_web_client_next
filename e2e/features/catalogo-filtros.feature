@@ -29,6 +29,15 @@ Característica: Ordenar, filtrar y pasar de página en el catálogo
     Entonces ve el producto "Rebajado"
     Y no ve el producto "Entero"
 
+  Escenario: Quitar el filtro de ofertas devuelve el catálogo entero
+    Dado que existe un producto "Rebajado" de US$100 con 10 unidades y un 30% de rebaja
+    Y que existe un producto "Entero" de US$100 con 10 unidades
+    Cuando el cliente abre el catálogo
+    Y filtra por productos en oferta
+    Y quita el filtro de ofertas
+    Entonces ve el producto "Rebajado"
+    Y ve el producto "Entero"
+
   # Se filtra por el departamento propio de la siembra a proposito: contar sobre
   # el catalogo entero da por hecho que la base esta vacia, y no lo esta —el
   # fixture del admin y la siembra de demostracion dejan productos dentro—.

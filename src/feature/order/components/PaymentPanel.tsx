@@ -54,7 +54,6 @@ type PanelMode =
 const resolveMode = (
   order: Order,
   charge: PaymentCharge | null,
-  gatewayDown: boolean,
 ): PanelMode => {
   if (order.paymentStatus === 'paid' || charge?.status === 'SUCCEEDED') {
     return 'paid';
@@ -79,7 +78,19 @@ const resolveMode = (
     return 'charge-failed';
   }
 
-  return gatewayDown ? 'manual-pending' : 'start';
+  /**
+   * Una pasarela caída ya no se lleva el panel por delante.
+   *
+   * Antes acababa siempre en «lo confirmaremos manualmente»: sustituía al
+   * selector —dejando al cliente sin ninguna otra forma de pagar— y prometía
+   * una confirmación a mano que nadie había pedido; el cliente había elegido
+   * Mi Billetera, no pago manual. Ahora se vuelve al selector con la pasarela
+   * caída señalada, y quien quiera pago manual lo elige él.
+   *
+   * `manual-pending` sigue existiendo arriba, para lo que de verdad es: un
+   * cobro manual ya creado y esperando confirmación.
+   */
+  return 'start';
 };
 
 export const PaymentPanel = ({
@@ -88,10 +99,25 @@ export const PaymentPanel = ({
   paymentMethods = [],
 }: PaymentPanelProps) => {
   const router = useRouter();
-  const gatewayOutcome = useSearchParams().get('pago');
+  const searchParams = useSearchParams();
+  const gatewayOutcome = searchParams.get('pago');
+  // Lo pone el checkout cuando el pedido se creó pero su cobro no.
+  const failedAtCheckout = searchParams.get('pagoFallido');
   const openCharge = payment ?? order.payment ?? null;
   const [charge, setCharge] = useState<PaymentCharge | null>(openCharge);
-  const [gatewayDown, setGatewayDown] = useState(false);
+  /**
+   * La pasarela que acaba de fallar y el porqué. Vive en el panel y no en un
+   * aviso pasajero: el aviso se va solo y deja al cliente delante de un
+   * selector que parece no haber hecho nada.
+   */
+  const [failedMethod, setFailedMethod] = useState<{
+    code: string;
+    reason: string;
+  } | null>(
+    failedAtCheckout
+      ? { code: failedAtCheckout, reason: 'no pudo iniciar el pago' }
+      : null,
+  );
   const [isStarting, setIsStarting] = useState(false);
   const [expiredLocally, setExpiredLocally] = useState(false);
   const [method, setMethod] = useState(
@@ -102,7 +128,7 @@ export const PaymentPanel = ({
   const applyCharge = useCallback(
     (next: PaymentCharge) => {
       setCharge(next);
-      setGatewayDown(false);
+      setFailedMethod(null);
 
       if (next.status === 'SUCCEEDED' && !paidNotified.current) {
         paidNotified.current = true;
@@ -120,7 +146,6 @@ export const PaymentPanel = ({
       applyCharge(result.payment);
       return;
     }
-    if (result.failure.kind === 'gateway-unavailable') setGatewayDown(true);
   }, [order.id, applyCharge]);
 
   useEffect(() => {
@@ -167,7 +192,13 @@ export const PaymentPanel = ({
       applyCharge(result.payment);
       return;
     }
-    if (result.failure.kind === 'gateway-unavailable') setGatewayDown(true);
+    setFailedMethod({
+      code: method,
+      reason:
+        result.failure.kind === 'gateway-unavailable'
+          ? 'no está disponible en este momento'
+          : 'no pudo iniciar el pago',
+    });
     notifyPaymentFailure(result.failure);
   };
 
@@ -177,12 +208,8 @@ export const PaymentPanel = ({
   }, [refresh]);
 
   const mode = expiredLocally
-    ? resolveMode(
-        order,
-        charge && { ...charge, status: 'EXPIRED' },
-        gatewayDown,
-      )
-    : resolveMode(order, charge, gatewayDown);
+    ? resolveMode(order, charge && { ...charge, status: 'EXPIRED' })
+    : resolveMode(order, charge);
 
   return (
     <section
@@ -395,6 +422,22 @@ export const PaymentPanel = ({
             Tu pedido está reservado. Elige cómo pagarlo para continuar.
           </p>
 
+          {failedMethod && (
+            <p
+              role='alert'
+              className='rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-heading'
+            >
+              <strong>
+                {paymentMethods.find((o) => o.code === failedMethod.code)
+                  ?.label ?? 'La forma de pago elegida'}
+              </strong>{' '}
+              {failedMethod.reason}.{' '}
+              {paymentMethods.length > 1
+                ? 'Prueba con otra de las opciones.'
+                : 'Vuelve a intentarlo en unos minutos.'}
+            </p>
+          )}
+
           <PaymentMethodSelector
             methods={paymentMethods}
             value={method}
@@ -419,7 +462,7 @@ export const PaymentPanel = ({
           tone='progress'
           icon={<HandCoins className='size-8' aria-hidden='true' />}
           title='Pago pendiente de confirmación'
-          description='La pasarela de pago no está disponible en este momento. Tu pedido queda registrado y confirmaremos el pago manualmente; también puedes reintentar más tarde.'
+          description='Tu pedido queda registrado. Nos pondremos en contacto contigo para coordinar el pago y lo confirmaremos a mano.'
         />
       )}
     </section>

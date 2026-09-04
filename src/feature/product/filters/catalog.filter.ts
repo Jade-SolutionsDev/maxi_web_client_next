@@ -46,18 +46,12 @@ export const useProductFilter = ({
   };
 
   const handleFeaturedProduct = (isFeatured: boolean) => {
-    setFilters((prev) => ({
-      featured: prev.featured === isFeatured ? null : isFeatured,
-      page: null,
-    }));
+    setFilters({ featured: isFeatured || null, page: null });
     onFilterApplied?.();
   };
 
   const handleOnSaleProduct = (isOnSale: boolean) => {
-    setFilters((prev) => ({
-      onSale: prev.onSale === isOnSale ? null : isOnSale,
-      page: null,
-    }));
+    setFilters({ onSale: isOnSale || null, page: null });
     onFilterApplied?.();
   };
 

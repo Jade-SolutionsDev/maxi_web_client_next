@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { MapPin } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { ConfirmDialog } from '@/app/components/form/ConfirmDialog';
 import {
   Dialog,
   DialogContent,
@@ -9,18 +11,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/app/components/ui/dialog';
+import {
+  cartHasLines,
+  clearCartForNewProvince,
+} from '@/feature/cart/lib/cart-zone-reset';
+import type { LocationFormSchemaType } from '@/shared/location/schema/location.schema';
 import type {
   LocationOption,
+  SaveLocationResult,
   SelectedLocation,
 } from '@/shared/location/type/location.interface';
 import { LocationBadge } from './LocationBadge';
 import { LocationForm } from './LocationForm';
 
+const DISCARD_CART_TITLE = '¿Deseas cambiar tu ubicación?';
+
+const DISCARD_CART_DESCRIPTION =
+  'Al cambiar la dirección o zona de compra, la disponibilidad de los productos puede variar. Para evitar inconsistencias, los productos de tu carrito actual serán eliminados.';
+
 interface LocationPickerProps {
   provinces: LocationOption[];
   municipalitiesByProvince: Record<string, LocationOption[]>;
   selected: SelectedLocation | null;
-  onSubmit: (input: { municipalityId: string }) => Promise<{ error?: string }>;
+  onSubmit: (input: { municipalityId: string }) => Promise<SaveLocationResult>;
   className?: string;
 }
 
@@ -32,11 +45,39 @@ export const LocationPicker = ({
   className,
 }: LocationPickerProps) => {
   const [isOpen, setIsOpen] = useState(selected === null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const answerConfirm = useRef<((accepted: boolean) => void) | null>(null);
 
-  const handleSubmit = async (input: { municipalityId: string }) => {
-    const result = await onSubmit(input);
+  const leavesProvinceWithCart = (provinceId: string) =>
+    selected !== null && provinceId !== selected.provinceId && cartHasLines();
 
-    if (!result.error) setIsOpen(false);
+  const askToDiscardCart = () =>
+    new Promise<boolean>((accept) => {
+      answerConfirm.current = accept;
+      setIsConfirmOpen(true);
+    });
+
+  const answerConfirmWith = (accepted: boolean) => {
+    setIsConfirmOpen(false);
+    answerConfirm.current?.(accepted);
+    answerConfirm.current = null;
+  };
+
+  const handleSubmit = async ({
+    provinceId,
+    municipalityId,
+  }: LocationFormSchemaType) => {
+    if (leavesProvinceWithCart(provinceId) && !(await askToDiscardCart())) {
+      return {};
+    }
+
+    const result = await onSubmit({ municipalityId });
+
+    if (result.error) return result;
+
+    if (result.provinceChanged) clearCartForNewProvince();
+
+    setIsOpen(false);
 
     return result;
   };
@@ -78,6 +119,18 @@ export const LocationPicker = ({
           municipalitiesByProvince={municipalitiesByProvince}
           selected={selected}
           onSubmit={handleSubmit}
+        />
+
+        <ConfirmDialog
+          isOpen={isConfirmOpen}
+          onClose={() => answerConfirmWith(false)}
+          onConfirm={() => answerConfirmWith(true)}
+          variant='warning'
+          icon={MapPin}
+          title={DISCARD_CART_TITLE}
+          description={DISCARD_CART_DESCRIPTION}
+          submitText='Cambiar ubicación'
+          cancelText='Cancelar'
         />
       </DialogContent>
     </Dialog>

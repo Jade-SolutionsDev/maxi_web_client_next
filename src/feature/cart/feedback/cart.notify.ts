@@ -54,3 +54,11 @@ export const notifyMergeReport = ({ clamped, dropped }: MergeReport) => {
     });
   }
 };
+
+export const notifyCartClearedForNewProvince = () => {
+  notify.info('Vaciamos tu carrito', {
+    id: 'cart-zone:province-changed',
+    description:
+      'Los productos y precios cambian con la provincia, así que empiezas de nuevo con el catálogo de tu nueva zona.',
+  });
+};

@@ -52,3 +52,21 @@ export const findSelection = (
 
   return null;
 };
+
+export const hasChangedProvince = (
+  catalog: LocationCatalog,
+  previousMunicipalityId: string | null,
+  nextMunicipalityId: string,
+): boolean => {
+  if (!previousMunicipalityId) return false;
+  if (previousMunicipalityId === nextMunicipalityId) return false;
+
+  const previous = findSelection(catalog, previousMunicipalityId);
+
+  if (!previous) return true;
+
+  return (
+    previous.provinceId !==
+    findSelection(catalog, nextMunicipalityId)?.provinceId
+  );
+};

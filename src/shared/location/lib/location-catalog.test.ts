@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { LocationCatalog } from '../type/location.interface';
-import { findSelection, toLocationOptions } from './location-catalog';
+import {
+  findSelection,
+  hasChangedProvince,
+  toLocationOptions,
+} from './location-catalog';
 
 const habana = 'f3f09219-18cc-44ec-b297-41853727c21e';
 const pinar = '8a2c1f44-2b6e-4a71-9c05-6d0b8e3f1a92';
@@ -110,5 +114,28 @@ describe('findSelection', () => {
     };
 
     expect(findSelection(orphaned, plaza)).toBeNull();
+  });
+});
+
+describe('hasChangedProvince', () => {
+  it('is false when both municipalities belong to the same province', () => {
+    expect(hasChangedProvince(catalog, habanaVieja, plaza)).toBe(false);
+  });
+
+  it('is false when the municipality did not change', () => {
+    expect(hasChangedProvince(catalog, plaza, plaza)).toBe(false);
+  });
+
+  it('is true when the new municipality belongs to another province', () => {
+    expect(hasChangedProvince(catalog, plaza, vinales)).toBe(true);
+  });
+
+  it('is false when there was no previous municipality', () => {
+    expect(hasChangedProvince(catalog, null, plaza)).toBe(false);
+    expect(hasChangedProvince(catalog, '', plaza)).toBe(false);
+  });
+
+  it('is true when the previous municipality no longer resolves to a province', () => {
+    expect(hasChangedProvince(catalog, 'not-a-real-id', plaza)).toBe(true);
   });
 });
