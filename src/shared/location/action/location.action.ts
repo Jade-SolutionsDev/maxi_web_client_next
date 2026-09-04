@@ -1,14 +1,14 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { writeMunicipalityId } from '../cookie/location.cookie';
-import { findSelection } from '../lib/location-catalog';
+import {
+  readMunicipalityId,
+  writeMunicipalityId,
+} from '../cookie/location.cookie';
+import { findSelection, hasChangedProvince } from '../lib/location-catalog';
 import { SelectedMunicipalitySchema } from '../schema/location.schema';
 import { getLocationCatalog } from '../service/location.service';
-
-interface SaveLocationResult {
-  error?: string;
-}
+import type { SaveLocationResult } from '../type/location.interface';
 
 const GENERIC_ERROR = 'No pudimos guardar tu ubicación. Inténtalo de nuevo.';
 
@@ -29,11 +29,19 @@ export const saveLocation = async (
       return { error: 'Esa ubicación no está disponible' };
     }
 
+    const previousMunicipalityId = await readMunicipalityId();
+
     await writeMunicipalityId(selection.municipalityId);
 
     revalidatePath('/', 'layout');
 
-    return {};
+    return {
+      provinceChanged: hasChangedProvince(
+        catalog,
+        previousMunicipalityId,
+        selection.municipalityId,
+      ),
+    };
   } catch {
     return { error: GENERIC_ERROR };
   }

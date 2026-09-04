@@ -9,8 +9,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/app/components/ui/dialog';
+import { clearCartForNewProvince } from '@/feature/cart/lib/cart-zone-reset';
 import type {
   LocationOption,
+  SaveLocationResult,
   SelectedLocation,
 } from '@/shared/location/type/location.interface';
 import { LocationBadge } from './LocationBadge';
@@ -20,7 +22,7 @@ interface LocationPickerProps {
   provinces: LocationOption[];
   municipalitiesByProvince: Record<string, LocationOption[]>;
   selected: SelectedLocation | null;
-  onSubmit: (input: { municipalityId: string }) => Promise<{ error?: string }>;
+  onSubmit: (input: { municipalityId: string }) => Promise<SaveLocationResult>;
   className?: string;
 }
 
@@ -36,7 +38,11 @@ export const LocationPicker = ({
   const handleSubmit = async (input: { municipalityId: string }) => {
     const result = await onSubmit(input);
 
-    if (!result.error) setIsOpen(false);
+    if (result.error) return result;
+
+    if (result.provinceChanged) clearCartForNewProvince();
+
+    setIsOpen(false);
 
     return result;
   };
