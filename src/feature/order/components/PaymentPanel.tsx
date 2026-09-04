@@ -95,7 +95,10 @@ export const PaymentPanel = ({
   paymentMethods = [],
 }: PaymentPanelProps) => {
   const router = useRouter();
-  const gatewayOutcome = useSearchParams().get('pago');
+  const searchParams = useSearchParams();
+  const gatewayOutcome = searchParams.get('pago');
+  // Lo pone el checkout cuando el pedido se creó pero su cobro no.
+  const failedAtCheckout = searchParams.get('pagoFallido');
   const openCharge = payment ?? order.payment ?? null;
   const [charge, setCharge] = useState<PaymentCharge | null>(openCharge);
   const [gatewayDown, setGatewayDown] = useState(false);
@@ -107,7 +110,11 @@ export const PaymentPanel = ({
   const [failedMethod, setFailedMethod] = useState<{
     code: string;
     reason: string;
-  } | null>(null);
+  } | null>(
+    failedAtCheckout
+      ? { code: failedAtCheckout, reason: 'no pudo iniciar el pago' }
+      : null,
+  );
   const [isStarting, setIsStarting] = useState(false);
   const [expiredLocally, setExpiredLocally] = useState(false);
   const [method, setMethod] = useState(

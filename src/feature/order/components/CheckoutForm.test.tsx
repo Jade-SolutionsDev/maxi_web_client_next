@@ -116,7 +116,9 @@ describe('CheckoutForm', () => {
     push.mockReset();
     refresh.mockReset();
     markCheckedOut.mockReset();
-    checkoutAction.mockResolvedValue({ order: { id: 'order-1' } });
+    checkoutAction.mockResolvedValue({
+      order: { id: 'order-1', payment: { reference: 'MCH-1' } },
+    });
   });
 
   afterEach(() => {
@@ -156,6 +158,33 @@ describe('CheckoutForm', () => {
     await submit();
 
     await waitFor(() => expect(push).toHaveBeenCalledWith('/pedidos/order-1'));
+  });
+
+  /**
+   * El pedido se crea aunque la pasarela falle —el cobro se intenta después de
+   * la transacción—, y entonces la persona aterrizaba en la ficha con el
+   * selector delante y sin una palabra de por qué. Se le pasa cuál falló.
+   */
+  it('avisa cuál pasarela falló cuando el pedido se crea sin cobro', async () => {
+    checkoutAction.mockResolvedValue({ order: { id: 'order-1' } });
+
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    await submit();
+
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        expect.stringContaining('/pedidos/order-1?pagoFallido='),
+      ),
+    );
   });
 
   it('keeps the button busy while the order is being created', async () => {
