@@ -53,6 +53,5 @@ export interface SelectedLocation {
 
 export interface SaveLocationResult {
   error?: string;
-  /** The cart is priced and stocked per province, so it cannot survive a jump. */
   provinceChanged?: boolean;
 }

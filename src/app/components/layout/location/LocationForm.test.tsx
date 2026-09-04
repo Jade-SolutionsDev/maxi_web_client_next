@@ -147,7 +147,10 @@ describe('LocationForm', () => {
     await user.click(screen.getByRole('button', { name: /Confirmar/ }));
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalledWith({ municipalityId: vinales });
+      expect(onSubmit).toHaveBeenCalledWith({
+        provinceId: pinar,
+        municipalityId: vinales,
+      });
     });
   });
 
@@ -160,7 +163,10 @@ describe('LocationForm', () => {
     await user.click(screen.getByRole('button', { name: /Confirmar/ }));
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalledWith({ municipalityId: plaza });
+      expect(onSubmit).toHaveBeenCalledWith({
+        provinceId: habana,
+        municipalityId: plaza,
+      });
     });
   });
 

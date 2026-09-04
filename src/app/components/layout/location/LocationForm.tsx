@@ -27,7 +27,7 @@ interface LocationFormProps {
   provinces: LocationOption[];
   municipalitiesByProvince: Record<string, LocationOption[]>;
   selected?: SelectedLocation | null;
-  onSubmit: (input: { municipalityId: string }) => Promise<{ error?: string }>;
+  onSubmit: (input: LocationFormSchemaType) => Promise<{ error?: string }>;
 }
 
 export const LocationForm = ({
@@ -49,10 +49,10 @@ export const LocationForm = ({
   const provinceId = useWatch({ control: form.control, name: 'provinceId' });
   const municipalityOptions = municipalitiesByProvince[provinceId] ?? [];
 
-  const handleSubmit = async ({ municipalityId }: LocationFormSchemaType) => {
+  const handleSubmit = async (values: LocationFormSchemaType) => {
     form.clearErrors();
 
-    const { error } = await onSubmit({ municipalityId });
+    const { error } = await onSubmit(values);
     if (!error) return;
 
     form.setError('root', { message: error });
