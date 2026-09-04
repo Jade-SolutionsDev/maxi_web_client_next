@@ -33,7 +33,9 @@ export const FilterGroups = () => {
             <Checkbox
               id='featured'
               checked={filters.featured === true}
-              onCheckedChange={() => handleFeaturedProduct(!filters.featured)}
+              onCheckedChange={(checked) =>
+                handleFeaturedProduct(checked === true)
+              }
             />
             <Label htmlFor='featured'>Productos destacados</Label>
           </div>
@@ -42,7 +44,9 @@ export const FilterGroups = () => {
             <Checkbox
               id='onSale'
               checked={filters.onSale === true}
-              onCheckedChange={() => handleOnSaleProduct(!filters.onSale)}
+              onCheckedChange={(checked) =>
+                handleOnSaleProduct(checked === true)
+              }
             />
             <Label htmlFor='onSale'>Productos en oferta</Label>
           </div>

@@ -13,7 +13,9 @@ vi.mock('../feedback/cart.notify', () => ({
   notifyCartClearedForNewProvince: () => notifyCartClearedForNewProvince(),
 }));
 
-const { clearCartForNewProvince } = await import('./cart-zone-reset');
+const { cartHasLines, clearCartForNewProvince } = await import(
+  './cart-zone-reset'
+);
 
 const stateWith = (lines: number) => ({
   cart: {
@@ -47,5 +49,19 @@ describe('clearCartForNewProvince', () => {
 
     expect(clearCart).not.toHaveBeenCalled();
     expect(notifyCartClearedForNewProvince).not.toHaveBeenCalled();
+  });
+});
+
+describe('cartHasLines', () => {
+  it('is true while the cart still holds a line', () => {
+    getState.mockReturnValue(stateWith(1));
+
+    expect(cartHasLines()).toBe(true);
+  });
+
+  it('is false for an empty cart', () => {
+    getState.mockReturnValue(stateWith(0));
+
+    expect(cartHasLines()).toBe(false);
   });
 });

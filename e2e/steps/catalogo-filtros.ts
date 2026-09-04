@@ -126,6 +126,11 @@ When('filtra por productos en oferta', async ({ page }) => {
   await expect(page).toHaveURL(/onSale=true/, { timeout: 15_000 });
 });
 
+When('quita el filtro de ofertas', async ({ page }) => {
+  await page.getByRole('checkbox', { name: /productos en oferta/i }).click();
+  await expect(page).not.toHaveURL(/onSale=/, { timeout: 15_000 });
+});
+
 When('pasa a la segunda página', async ({ page }) => {
   await enlaceAPagina2(page).click();
   await expect(page).toHaveURL(/page=2/, { timeout: 15_000 });
@@ -165,6 +170,6 @@ const tarjetas = (page: import('@playwright/test').Page) =>
  * de lo que escribe nuqs en la URL: al pasar de pagina se perdia el filtro y el
  * cliente volvia al catalogo entero. Se comprueba aqui para que no vuelva.
  */
-Then("el filtro de departamento sigue puesto", async ({ page }) => {
+Then('el filtro de departamento sigue puesto', async ({ page }) => {
   await expect(page).toHaveURL(/department=/, { timeout: 15_000 });
 });

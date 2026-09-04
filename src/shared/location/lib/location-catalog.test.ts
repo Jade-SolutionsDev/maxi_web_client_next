@@ -136,8 +136,6 @@ describe('hasChangedProvince', () => {
   });
 
   it('is true when the previous municipality no longer resolves to a province', () => {
-    // A stale cookie prices the cart against a zone we can no longer name, so
-    // the safe answer is that the province is not the same one.
     expect(hasChangedProvince(catalog, 'not-a-real-id', plaza)).toBe(true);
   });
 });
