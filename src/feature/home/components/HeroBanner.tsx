@@ -6,8 +6,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/app/components/ui/carousel';
-import { BannerPicture } from '@/feature/home/components/BannerPicture';
 import { heroSpineClass } from '@/feature/home/components/hero-banner.styles';
+import { LinkedBannerPicture } from '@/feature/home/components/LinkedBannerPicture';
 import { getBanners } from '@/shared/cms/service/cms.service';
 
 async function HeroBanner() {
@@ -21,7 +21,7 @@ async function HeroBanner() {
         <CarouselContent>
           {banners.map((slide, index) => (
             <CarouselItem key={slide.id}>
-              <BannerPicture slide={slide} eager={index === 0} />
+              <LinkedBannerPicture slide={slide} eager={index === 0} />
             </CarouselItem>
           ))}
         </CarouselContent>

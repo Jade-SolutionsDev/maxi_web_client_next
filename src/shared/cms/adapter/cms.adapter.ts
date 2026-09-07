@@ -19,6 +19,7 @@ export const toBannerSlide = (banner: CmsBannerResponse): BannerSlide => ({
   desktop: banner.desktop,
   tablet: banner.tablet,
   mobile: banner.mobile,
+  target: banner.target,
 });
 
 export const toServiceItem = (service: CmsServiceResponse): ServiceItem => ({
