@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { EMPTY_CART } from '../type/cart.interface';
 
 const clearCart = vi.fn();
-const notifyCartClearedForNewProvince = vi.fn();
+const notifyCartClearedForNewMunicipality = vi.fn();
 const getState = vi.fn();
 
 vi.mock('../store/cart.store', () => ({
@@ -10,10 +10,11 @@ vi.mock('../store/cart.store', () => ({
 }));
 
 vi.mock('../feedback/cart.notify', () => ({
-  notifyCartClearedForNewProvince: () => notifyCartClearedForNewProvince(),
+  notifyCartClearedForNewMunicipality: () =>
+    notifyCartClearedForNewMunicipality(),
 }));
 
-const { cartHasLines, clearCartForNewProvince } = await import(
+const { cartHasLines, clearCartForNewMunicipality } = await import(
   './cart-zone-reset'
 );
 
@@ -27,28 +28,28 @@ const stateWith = (lines: number) => ({
   actions: { clearCart },
 });
 
-describe('clearCartForNewProvince', () => {
+describe('clearCartForNewMunicipality', () => {
   beforeEach(() => {
     clearCart.mockClear();
-    notifyCartClearedForNewProvince.mockClear();
+    notifyCartClearedForNewMunicipality.mockClear();
   });
 
   it('empties the cart and tells the customer why', () => {
     getState.mockReturnValue(stateWith(2));
 
-    clearCartForNewProvince();
+    clearCartForNewMunicipality();
 
     expect(clearCart).toHaveBeenCalledTimes(1);
-    expect(notifyCartClearedForNewProvince).toHaveBeenCalledTimes(1);
+    expect(notifyCartClearedForNewMunicipality).toHaveBeenCalledTimes(1);
   });
 
   it('stays silent when the cart was already empty', () => {
     getState.mockReturnValue(stateWith(0));
 
-    clearCartForNewProvince();
+    clearCartForNewMunicipality();
 
     expect(clearCart).not.toHaveBeenCalled();
-    expect(notifyCartClearedForNewProvince).not.toHaveBeenCalled();
+    expect(notifyCartClearedForNewMunicipality).not.toHaveBeenCalled();
   });
 });
 

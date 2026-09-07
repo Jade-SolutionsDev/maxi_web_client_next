@@ -13,7 +13,7 @@ import {
 } from '@/app/components/ui/dialog';
 import {
   cartHasLines,
-  clearCartForNewProvince,
+  clearCartForNewMunicipality,
 } from '@/feature/cart/lib/cart-zone-reset';
 import type { LocationFormSchemaType } from '@/shared/location/schema/location.schema';
 import type {
@@ -48,8 +48,10 @@ export const LocationPicker = ({
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const answerConfirm = useRef<((accepted: boolean) => void) | null>(null);
 
-  const leavesProvinceWithCart = (provinceId: string) =>
-    selected !== null && provinceId !== selected.provinceId && cartHasLines();
+  const changesMunicipalityWithCart = (municipalityId: string) =>
+    selected !== null &&
+    municipalityId !== selected.municipalityId &&
+    cartHasLines();
 
   const askToDiscardCart = () =>
     new Promise<boolean>((accept) => {
@@ -63,11 +65,14 @@ export const LocationPicker = ({
     answerConfirm.current = null;
   };
 
-  const handleSubmit = async ({
-    provinceId,
-    municipalityId,
-  }: LocationFormSchemaType) => {
-    if (leavesProvinceWithCart(provinceId) && !(await askToDiscardCart())) {
+  const handleSubmit = async ({ municipalityId }: LocationFormSchemaType) => {
+    const municipalityChanged =
+      selected !== null && municipalityId !== selected.municipalityId;
+
+    if (
+      changesMunicipalityWithCart(municipalityId) &&
+      !(await askToDiscardCart())
+    ) {
       return {};
     }
 
@@ -75,7 +80,7 @@ export const LocationPicker = ({
 
     if (result.error) return result;
 
-    if (result.provinceChanged) clearCartForNewProvince();
+    if (municipalityChanged) clearCartForNewMunicipality();
 
     setIsOpen(false);
 
