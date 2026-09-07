@@ -4,6 +4,12 @@ export interface BannerAsset {
   height: number;
 }
 
+export interface CmsBannerTarget {
+  type: 'department' | 'category' | 'product';
+  id: string;
+  slug: string;
+}
+
 export interface CmsBannerResponse {
   id: string;
   alt: string;
@@ -12,6 +18,7 @@ export interface CmsBannerResponse {
   mobile: BannerAsset;
   sortOrder: number;
   isActive: boolean;
+  target: CmsBannerTarget | null;
 }
 
 export interface BannerSlide {
@@ -20,6 +27,7 @@ export interface BannerSlide {
   desktop: BannerAsset;
   tablet: BannerAsset;
   mobile: BannerAsset;
+  target: CmsBannerTarget | null;
 }
 
 export interface CmsServiceResponse {
