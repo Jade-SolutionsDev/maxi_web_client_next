@@ -13,11 +13,11 @@ vi.stubGlobal(
 );
 
 const cartHasLines = vi.fn(() => true);
-const clearCartForNewProvince = vi.fn();
+const clearCartForNewMunicipality = vi.fn();
 
 vi.mock('@/feature/cart/lib/cart-zone-reset', () => ({
   cartHasLines: () => cartHasLines(),
-  clearCartForNewProvince: () => clearCartForNewProvince(),
+  clearCartForNewMunicipality: () => clearCartForNewMunicipality(),
 }));
 
 const { LocationPicker } = await import('./LocationPicker');
@@ -76,7 +76,7 @@ describe('LocationPicker', () => {
   beforeEach(() => {
     onSubmit.mockClear();
     cartHasLines.mockClear().mockReturnValue(true);
-    clearCartForNewProvince.mockClear();
+    clearCartForNewMunicipality.mockClear();
   });
 
   afterEach(() => {
@@ -104,7 +104,7 @@ describe('LocationPicker', () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({ municipalityId: vinales });
     });
-    expect(clearCartForNewProvince).toHaveBeenCalledTimes(1);
+    expect(clearCartForNewMunicipality).toHaveBeenCalledTimes(1);
   });
 
   it('keeps the location and the cart untouched when the warning is dismissed', async () => {
@@ -121,20 +121,27 @@ describe('LocationPicker', () => {
       expect(screen.queryByText(/¿Deseas cambiar tu ubicación\?/)).toBeNull();
     });
     expect(onSubmit).not.toHaveBeenCalled();
-    expect(clearCartForNewProvince).not.toHaveBeenCalled();
+    expect(clearCartForNewMunicipality).not.toHaveBeenCalled();
   });
 
-  it('does not warn when the municipality changes inside the same province', async () => {
+  it('warns before changing municipality inside the same province and clears the cart once accepted', async () => {
     const user = userEvent.setup();
     await openPicker(user);
 
     await chooseOption(user, /Municipio/, /Habana Vieja/);
     await user.click(screen.getByRole('button', { name: /Confirmar/ }));
 
+    expect(
+      await screen.findByText(/¿Deseas cambiar tu ubicación\?/),
+    ).toBeTruthy();
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: 'Cambiar ubicación' }));
+
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({ municipalityId: habanaVieja });
     });
-    expect(screen.queryByText(/¿Deseas cambiar tu ubicación\?/)).toBeNull();
+    expect(clearCartForNewMunicipality).toHaveBeenCalledTimes(1);
   });
 
   it('does not warn when there is nothing in the cart to lose', async () => {
