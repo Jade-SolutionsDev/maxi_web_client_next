@@ -26,6 +26,7 @@ import { DeliveryOptionSelector } from './DeliveryOptionSelector';
 import { FulfillmentMethodTabs } from './FulfillmentMethodTabs';
 import { FulfillmentUnavailable } from './FulfillmentUnavailable';
 import { PaymentMethodSelector } from './PaymentMethodSelector';
+import { RecipientFields } from './RecipientFields';
 import { PickupPointSelector } from './PickupPointSelector';
 
 interface CheckoutFormProps {
@@ -83,6 +84,12 @@ export const CheckoutForm = ({
       deliveryOptionId: offer.deliveryOptions[0]?.id ?? '',
       pickupAddressId: offer.pickupPoints[0]?.id ?? '',
       addressId: defaultAddress?.id ?? addresses[0]?.id ?? '',
+      // Traídos de la dirección predeterminada, que es para lo que sirve
+      // «Guardar en mis direcciones»: quien ya los guardó una vez no debería
+      // volver a teclear su carnet en cada compra.
+      recipientName: defaultAddress?.recipientName ?? '',
+      idCard: defaultAddress?.idCard ?? '',
+      contactPhone: defaultAddress?.contactPhone ?? '',
       saveAddress: false,
       notas: '',
       paymentMethod: paymentMethods[0]?.code ?? '',
@@ -166,6 +173,8 @@ export const CheckoutForm = ({
         onChange={(value) => form.setValue('fulfillmentType', value)}
         disabled={busy}
       />
+
+      <RecipientFields disabled={busy} />
 
       {fulfillmentType === 'pickup' ? (
         <PickupPointSelector
