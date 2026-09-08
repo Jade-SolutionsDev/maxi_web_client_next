@@ -474,7 +474,28 @@ describe('CheckoutForm', () => {
 
     await userEvent.click(screen.getByText(/Usar otra dirección/));
 
-    expect(screen.getByText(/Entrega en/)).toBeTruthy();
+    // Lo que importa: con zona no se pregunta el municipio.
     expect(screen.queryByLabelText(/Provincia/)).toBeNull();
+    // Y ya no se repite en una píldora lo que el texto de arriba explica.
+    expect(screen.queryByText(/Entrega en/)).toBeNull();
+  });
+
+  it('no ofrece «agregar dirección» cuando no hay ninguna guardada', async () => {
+    // El formulario ya sale abierto; esa fila era un botón aparente que no
+    // hacía nada.
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={[]}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.queryByText(/agregar una direcci[oó]n/i)).toBeNull();
+    expect(screen.queryByText(/usar otra direcci[oó]n/i)).toBeNull();
+    // Pero los campos sí están, que es de lo que se trata.
+    expect(screen.getByLabelText(/calle y n[uú]mero/i)).toBeTruthy();
   });
 });
