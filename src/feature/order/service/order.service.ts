@@ -15,6 +15,8 @@ interface OrdersPage {
 }
 
 export interface CheckoutAddressPayload {
+  recipientName?: string;
+  idCard?: string;
   label?: string;
   street: string;
   betweenStreets?: string;
@@ -23,7 +25,14 @@ export interface CheckoutAddressPayload {
   contactPhone?: string;
 }
 
+export interface CheckoutContactPayload {
+  recipientName: string;
+  idCard: string;
+  contactPhone: string;
+}
+
 export interface CheckoutPayload {
+  contact?: CheckoutContactPayload;
   fulfillmentType?: 'delivery' | 'pickup';
   deliveryOptionId?: string;
   pickupAddressId?: string;

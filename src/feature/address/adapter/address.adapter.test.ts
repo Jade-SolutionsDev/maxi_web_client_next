@@ -12,6 +12,8 @@ const response: AddressResponse = {
   municipalityName: 'Plaza de la Revolución',
   provinceId: 'prov-1',
   provinceName: 'La Habana',
+  recipientName: null,
+  idCard: null,
   contactPhone: null,
   isDefault: true,
   createdAt: '2026-01-01T00:00:00.000Z',

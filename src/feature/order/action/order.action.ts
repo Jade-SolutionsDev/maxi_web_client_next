@@ -20,6 +20,8 @@ import type {
 } from '../type/order.type';
 
 const toAddressPayload = (input: {
+  recipientName?: string;
+  idCard?: string;
   label?: string;
   street?: string;
   betweenStreets?: string;
@@ -33,6 +35,10 @@ const toAddressPayload = (input: {
   }
 
   return {
+    // Van también en la dirección, no solo en `contact`: es lo que se guarda
+    // cuando el cliente marca «Guardar en mis direcciones».
+    recipientName: input.recipientName || undefined,
+    idCard: input.idCard || undefined,
     label: input.label || undefined,
     street: input.street,
     betweenStreets: input.betweenStreets || undefined,
@@ -67,6 +73,11 @@ export const checkoutAction = async (input: unknown): Promise<OrderResult> => {
       pickupAddressId: data.pickupAddressId || undefined,
       addressId: data.addressId || undefined,
       address: toAddressPayload(data),
+      contact: {
+        recipientName: data.recipientName,
+        idCard: data.idCard,
+        contactPhone: data.contactPhone,
+      },
       saveAddress: data.saveAddress,
       deliveryMunicipalityId:
         data.municipalityId || fallbackMunicipalityId || undefined,

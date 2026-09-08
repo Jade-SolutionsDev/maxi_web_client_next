@@ -1,9 +1,21 @@
 import { z } from 'zod';
+import { CUBAN_ID_MESSAGE, isCubanIdCard } from '@/feature/address/lib/cuban-id';
 import { AddressFormSchema } from '@/feature/address/schema/address.schema';
 
 export const CheckoutInputSchema = z
   .object({
     fulfillmentType: z.enum(['delivery', 'pickup']),
+    /**
+     * Quién recibe el pedido. Se pide siempre, también cuando se elige una
+     * dirección ya guardada: la dirección dice dónde, no a quién, y en una
+     * recogida no hay dirección ninguna de la que sacarlo.
+     */
+    recipientName: z.string().trim().min(1, 'Escribe el nombre y apellido').max(150),
+    idCard: z.string().trim().refine(isCubanIdCard, CUBAN_ID_MESSAGE),
+    contactPhone: z
+      .string()
+      .trim()
+      .regex(/^[0-9+][0-9+\s-]{5,19}$/, 'Teléfono no válido'),
     deliveryOptionId: z.string().optional(),
     pickupAddressId: z.string().optional(),
     addressId: z.string().optional(),
@@ -16,7 +28,6 @@ export const CheckoutInputSchema = z
     reference: z.string().optional(),
     provinceId: z.string().optional(),
     municipalityId: z.string().optional(),
-    contactPhone: z.string().optional(),
   })
   .superRefine((value, ctx) => {
     if (value.fulfillmentType === 'pickup') {

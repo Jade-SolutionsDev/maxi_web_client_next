@@ -104,8 +104,17 @@ const methods = [
   },
 ];
 
+// Los datos de quien recibe son obligatorios desde MxH-0104, así que sin
+// rellenarlos ningún envío pasa de la validación.
+const fillRecipient = async (user: ReturnType<typeof userEvent.setup>) => {
+  await user.type(screen.getByLabelText(/nombre y apellido/i), 'Daniel Smith');
+  await user.type(screen.getByLabelText(/carnet de identidad/i), '91031512345');
+  await user.type(screen.getByLabelText(/tel[eé]fono de contacto/i), '55512345');
+};
+
 const submit = async () => {
   const user = userEvent.setup();
+  await fillRecipient(user);
   await user.click(screen.getByRole('button', { name: /Confirmar pedido/ }));
 };
 
@@ -277,6 +286,7 @@ describe('CheckoutForm', () => {
     );
 
     await user.click(screen.getByText(/Recoger en tienda/));
+    await fillRecipient(user);
     await user.click(screen.getByRole('button', { name: /Confirmar pedido/ }));
 
     await waitFor(() =>
@@ -284,9 +294,53 @@ describe('CheckoutForm', () => {
         expect.objectContaining({
           fulfillmentType: 'pickup',
           pickupAddressId: offer.pickupPoints[0].id,
+          // Lo que en una recogida no puede salir de ninguna dirección.
+          recipientName: 'Daniel Smith',
+          idCard: '91031512345',
+          contactPhone: '55512345',
         }),
       ),
     );
+  });
+
+  it('no deja confirmar sin los datos de quien recibe', async () => {
+    const user = userEvent.setup();
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /Confirmar pedido/ }));
+
+    await waitFor(() => expect(checkoutAction).not.toHaveBeenCalled());
+    expect(screen.getByText(/escribe el nombre y apellido/i)).toBeTruthy();
+  });
+
+  it('rechaza un carnet con una fecha que no existe', async () => {
+    const user = userEvent.setup();
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    await user.type(screen.getByLabelText(/nombre y apellido/i), 'Daniel Smith');
+    // 30 de febrero: once dígitos, y aun así imposible.
+    await user.type(screen.getByLabelText(/carnet de identidad/i), '99023012345');
+    await user.type(screen.getByLabelText(/tel[eé]fono de contacto/i), '55512345');
+    await user.click(screen.getByRole('button', { name: /Confirmar pedido/ }));
+
+    await waitFor(() => expect(checkoutAction).not.toHaveBeenCalled());
+    expect(screen.getByText(/fecha de nacimiento v[aá]lida/i)).toBeTruthy();
   });
 
   it('sends the preselected default address for a delivery', async () => {
