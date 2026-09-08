@@ -31,6 +31,72 @@ When('elige su dirección guardada', async ({ page }) => {
   await expect(elegida).toBeChecked({ timeout: 20_000 });
 });
 
+/**
+ * Desde MxH-0104 el checkout no deja pasar sin saber a quién se entrega. Una
+ * dirección guardada los trae, así que este paso comprueba justo eso: que
+ * vienen puestos sin teclear nada.
+ */
+Then('los datos de quien recibe vienen puestos', async ({ page }) => {
+  await expect(page.getByLabel(/nombre y apellido/i)).toHaveValue(
+    'Merlinda Vargas',
+    { timeout: 20_000 },
+  );
+  await expect(page.getByLabel(/carnet de identidad/i)).toHaveValue(
+    '85072045678',
+  );
+});
+
+When('escribe los datos de quien recibe', async ({ page }) => {
+  await page.getByLabel(/nombre y apellido/i).fill('Daniel Smith');
+  await page.getByLabel(/carnet de identidad/i).fill('91031512345');
+  await page.getByLabel(/tel[eé]fono de contacto/i).fill('55512345');
+});
+
+When('escribe un carnet imposible', async ({ page }) => {
+  await page.getByLabel(/nombre y apellido/i).fill('Daniel Smith');
+  // 30 de febrero: once dígitos y aun así no existe.
+  await page.getByLabel(/carnet de identidad/i).fill('99023012345');
+  await page.getByLabel(/tel[eé]fono de contacto/i).fill('55512345');
+});
+
+When('borra los datos de quien recibe', async ({ page }) => {
+  await page.getByLabel(/nombre y apellido/i).fill('');
+  await page.getByLabel(/carnet de identidad/i).fill('');
+  await page.getByLabel(/tel[eé]fono de contacto/i).fill('');
+});
+
+When('pulsa confirmar el pedido', async ({ page }) => {
+  await page.getByRole('button', { name: /confirmar pedido/i }).click();
+});
+
+Then('el pedido no se crea', async ({ page }) => {
+  await page.waitForTimeout(3000);
+  expect(page.url()).not.toMatch(/\/pedidos\/[0-9a-f-]{36}/);
+});
+
+Then('se le dice que falta el carnet', async ({ page }) => {
+  await expect(
+    page.getByText(/11 d[ií]gitos y una fecha de nacimiento v[aá]lida/i).first(),
+  ).toBeVisible({ timeout: 15_000 });
+});
+
+Then('se le dice que falta el nombre', async ({ page }) => {
+  await expect(
+    page.getByText(/escribe el nombre y apellido/i).first(),
+  ).toBeVisible({ timeout: 15_000 });
+});
+
+When('elige recoger en tienda', async ({ page }) => {
+  await page.getByText(/recoger en tienda/i).first().click();
+});
+
+Then('también le piden quién recoge', async ({ page }) => {
+  await expect(page.getByText(/datos del cliente/i).first()).toBeVisible({
+    timeout: 15_000,
+  });
+  await expect(page.getByLabel(/carnet de identidad/i)).toBeVisible();
+});
+
 When('confirma el pedido', async ({ page }) => {
   await page.getByRole('button', { name: /confirmar pedido/i }).click();
   // Al crearse, el pedido tiene pagina propia.

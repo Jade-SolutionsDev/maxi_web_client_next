@@ -202,7 +202,9 @@ export function sembrarDireccion(
   );
   sql(`DELETE FROM client_addresses WHERE client_id = '${cliente}'`);
   return sql(`
-    INSERT INTO client_addresses (client_id, label, street, municipality_id, is_default)
-    VALUES ('${cliente}', '${etiqueta}', 'Calle 23 #456', '${municipioConCobertura()}', true)
+    INSERT INTO client_addresses (client_id, label, street, municipality_id, is_default,
+                                  recipient_name, id_card, contact_phone)
+    VALUES ('${cliente}', '${etiqueta}', 'Calle 23 #456', '${municipioConCobertura()}', true,
+            'Merlinda Vargas', '85072045678', '55512345')
     RETURNING id`);
 }

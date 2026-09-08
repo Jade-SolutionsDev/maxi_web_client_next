@@ -18,6 +18,41 @@ Característica: Comprar con la sesión iniciada
     Y recarga la página
     Entonces el carrito contiene 1 artículo
 
+  Escenario: Una dirección guardada trae ya los datos de quien recibe
+    Cuando el cliente abre el catálogo
+    Y añade el primer producto al carrito
+    Y abre el carrito
+    Y pulsa proceder al pago
+    Entonces los datos de quien recibe vienen puestos
+
+  Escenario: No se puede comprar sin decir a quién se entrega
+    Cuando el cliente abre el catálogo
+    Y añade el primer producto al carrito
+    Y abre el carrito
+    Y pulsa proceder al pago
+    Y borra los datos de quien recibe
+    Y pulsa confirmar el pedido
+    Entonces el pedido no se crea
+    Y se le dice que falta el nombre
+
+  Escenario: Un carnet con una fecha que no existe no vale
+    Cuando el cliente abre el catálogo
+    Y añade el primer producto al carrito
+    Y abre el carrito
+    Y pulsa proceder al pago
+    Y escribe un carnet imposible
+    Y pulsa confirmar el pedido
+    Entonces el pedido no se crea
+    Y se le dice que falta el carnet
+
+  Escenario: Recoger en tienda también pide quién recoge
+    Cuando el cliente abre el catálogo
+    Y añade el primer producto al carrito
+    Y abre el carrito
+    Y pulsa proceder al pago
+    Y elige recoger en tienda
+    Entonces también le piden quién recoge
+
   Escenario: Comprar lo que hay en el carrito
     Cuando el cliente abre el catálogo
     Y añade el primer producto al carrito
