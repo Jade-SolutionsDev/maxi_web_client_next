@@ -23,11 +23,22 @@ cd ../maxi_api_nestjs && pnpm run docker:db:start && pnpm run start   # :4000
 bun run dev --port 3001                                              # :3001
 ```
 
-**Y almacenes sembrados**, o el catálogo sale vacío y no hay zona que elegir:
+**Y la base sembrada entera**, en este orden:
 
 ```bash
-cd ../maxi_api_nestjs && pnpm run seed:stock-locations
+cd ../maxi_api_nestjs
+pnpm run seed:stock-locations   # almacenes y su cobertura
+pnpm run seed:fulfillment       # opciones de entrega y puntos de recogida
+pnpm run seed:products          # catálogo
+pnpm run seed:inventory         # existencias
+pnpm run seed:client            # el cliente de QA
 ```
+
+**No basta con `seed:stock-locations`.** Sin `seed:fulfillment` no hay ninguna
+opción de entrega ni ningún punto de recogida, así que la tienda no puede
+ofrecer nada: el checkout enseña el mensaje de soporte en vez del formulario y
+**todos** los escenarios `@sesion` de `compra.feature` fallan sin decir por qué.
+Costó una tarde averiguarlo.
 
 ## Ejecutar
 
