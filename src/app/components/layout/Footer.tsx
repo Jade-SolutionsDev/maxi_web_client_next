@@ -6,7 +6,7 @@ import jade from '@/assets/jade.svg';
 import logo from '@/assets/logo.svg';
 import { toWhatsAppHref } from '@/helpers';
 import { getCmsPages, getSiteSettings } from '@/shared/cms/service/cms.service';
-import { paymentLogos, siteLinks } from './constants/footer.constants';
+import { siteLinks } from './constants/footer.constants';
 import { getFooterDepartmentLinks } from './constants/footer-departments';
 import { buildFooterLegalLinks } from './constants/footer-legal-links';
 import { FooterLinkColumn } from './FooterLinkColumn';
@@ -15,16 +15,11 @@ const contactClass =
   'flex items-center gap-3 text-sm text-white/80 transition-colors hover:text-white hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange rounded-sm';
 
 export const Footer = async () => {
-  const [{ footer, contact, payments }, departmentLinks, cmsPages] =
-    await Promise.all([
-      getSiteSettings(),
-      getFooterDepartmentLinks(),
-      getCmsPages(),
-    ]);
-
-  const enabledMethods = (
-    Object.keys(paymentLogos) as (keyof typeof paymentLogos)[]
-  ).filter((method) => payments[method]);
+  const [{ footer, contact }, departmentLinks, cmsPages] = await Promise.all([
+    getSiteSettings(),
+    getFooterDepartmentLinks(),
+    getCmsPages(),
+  ]);
 
   const legalLinks = buildFooterLegalLinks(footer.legalLinks, cmsPages);
 
@@ -73,33 +68,14 @@ export const Footer = async () => {
           <FooterLinkColumn title='Legal' label='Legal' links={legalLinks} />
         </div>
 
-        {/* Métodos de pago */}
-        {enabledMethods.length > 0 && (
-          <div className='mt-10 flex flex-wrap items-center gap-4'>
-            <span className='text-xs font-semibold tracking-wider text-white/60'>
-              MÉTODOS DE PAGO
-            </span>
-            <ul className='flex flex-wrap items-center gap-3'>
-              {enabledMethods.map((method) => {
-                const display = paymentLogos[method];
-                return (
-                  <li
-                    key={method}
-                    className='flex h-9 items-center justify-center rounded-md bg-white px-3'
-                  >
-                    {display.src ? (
-                      <Image src={display.src} alt={display.alt} height={16} />
-                    ) : (
-                      <span className='text-xs font-bold text-heading'>
-                        {display.alt}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
+        <div className='mt-10 flex flex-wrap items-center gap-4'>
+          <span className='text-xs font-semibold tracking-wider text-white/60'>
+            MÉTODOS DE PAGO
+          </span>
+          <span className='flex h-9 items-center justify-center rounded-md bg-white px-3 text-xs font-bold text-heading'>
+            Mi Billetera
+          </span>
+        </div>
       </Container>
 
       {/* Barra inferior */}
