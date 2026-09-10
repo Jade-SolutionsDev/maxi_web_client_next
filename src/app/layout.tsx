@@ -8,6 +8,7 @@ import { SiteStructuredData } from '@/shared/seo/components/SiteStructuredData';
 import { SITE_URL } from '@/shared/seo/site-url';
 import { Toaster } from './components/feedback/Toaster';
 import { BottomNav } from './components/layout/bottom-nav';
+import { CookieBoundary } from './components/layout/cookies/CookieBoundary';
 import { Footer } from './components/layout/Footer';
 import { Header } from './components/layout/Header';
 
@@ -78,6 +79,11 @@ export default function RootLayout({
             <main className='grow'>{children}</main>
             <Footer />
             <BottomNav />
+            {/*
+              Al final del arbol y en posicion fija: informa sin empujar el
+              contenido ni entrar en el orden de lectura antes de tiempo.
+            */}
+            <CookieBoundary />
           </NuqsAdapter>
         </ClerkProvider>
         <Toaster />

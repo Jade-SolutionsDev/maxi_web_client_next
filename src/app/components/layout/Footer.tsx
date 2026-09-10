@@ -9,6 +9,7 @@ import { getCmsPages, getSiteSettings } from '@/shared/cms/service/cms.service';
 import { siteLinks } from './constants/footer.constants';
 import { getFooterDepartmentLinks } from './constants/footer-departments';
 import { buildFooterLegalLinks } from './constants/footer-legal-links';
+import { CookiePreferencesLink } from './cookies/CookiePreferencesLink';
 import { FooterLinkColumn } from './FooterLinkColumn';
 
 const contactClass =
@@ -65,7 +66,14 @@ export const Footer = async () => {
             label='Departamentos'
             links={departmentLinks}
           />
-          <FooterLinkColumn title='Legal' label='Legal' links={legalLinks} />
+          <div className='flex flex-col gap-4'>
+            <FooterLinkColumn
+              title='Legal'
+              label='Legal'
+              links={legalLinks}
+            />
+            <CookiePreferencesLink />
+          </div>
         </div>
 
         <div className='mt-10 flex flex-wrap items-center gap-4'>
