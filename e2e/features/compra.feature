@@ -53,6 +53,15 @@ Característica: Comprar con la sesión iniciada
     Y elige recoger en tienda
     Entonces también le piden quién recoge
 
+  Escenario: Volver a por más cosas sin perder lo que ya se lleva
+    Cuando el cliente abre el catálogo
+    Y añade el primer producto al carrito
+    Y abre el carrito
+    Y pulsa proceder al pago
+    Y pulsa seguir comprando
+    Entonces acaba en el catálogo
+    Y el carrito contiene 1 artículo
+
   Escenario: Comprar lo que hay en el carrito
     Cuando el cliente abre el catálogo
     Y añade el primer producto al carrito

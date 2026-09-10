@@ -102,6 +102,17 @@ Then("también le piden quién recoge", async ({ page }) => {
   await expect(page.getByLabel(/carnet de identidad/i)).toBeVisible();
 });
 
+/**
+ * MxH-0099: desde el checkout se puede volver al catalogo a por mas cosas sin
+ * que la compra se pierda por el camino.
+ */
+When("pulsa seguir comprando", async ({ page }) => {
+  await page
+    .getByRole("link", { name: /seguir comprando/i })
+    .first()
+    .click();
+});
+
 When("confirma el pedido", async ({ page }) => {
   await page.getByRole("button", { name: /confirmar pedido/i }).click();
   // Al crearse, el pedido tiene pagina propia.
