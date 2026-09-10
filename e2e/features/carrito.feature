@@ -20,7 +20,7 @@ Característica: Carrito de quien todavía no ha iniciado sesión
     Y añade el primer producto al carrito
     Y abre el carrito
     Entonces el carrito muestra el producto "Cola"
-    Y el carrito muestra un total de "US$100.00"
+    Y el carrito muestra un total de "$100.00"
 
   Escenario: Añadir dos veces el mismo producto suma cantidades
     Cuando el cliente abre el catálogo

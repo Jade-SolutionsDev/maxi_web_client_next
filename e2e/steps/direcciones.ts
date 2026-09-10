@@ -55,13 +55,18 @@ async function elegirOpcion(
   });
 
   /**
-   * `tabindex="0"` no sobra: el popup del desplegable anterior sigue montado y
-   * sus opciones tambien responden a `[role=option]`, incluso a `:visible`
-   * mientras se cierra — pulsarlas fallaba de vez en cuando con "element is
-   * not visible". Base UI deja enfocable una sola opcion por popup, y la del
-   * que acaba de abrirse es la primera.
+   * Se busca dentro del listbox que esta abierto, no por toda la pagina.
+   *
+   * Antes esto se apoyaba en `[role=option][tabindex="0"]`, porque el popup
+   * anterior seguia montado y sus opciones tambien respondian a
+   * `[role=option]`. Base UI ya desmonta el popup al cerrarlo —solo hay un
+   * listbox a la vez— y ha dejado de marcar ninguna opcion con `tabindex="0"`:
+   * hoy todas llevan `-1`, asi que aquel selector no encontraba nada y el paso
+   * moria por tiempo de espera.
    */
-  const opcion = dialogo.page().locator('[role=option][tabindex="0"]').last();
+  const listbox = dialogo.page().getByRole('listbox').last();
+  await listbox.waitFor({ state: 'visible', timeout: 10_000 });
+  const opcion = listbox.getByRole('option').first();
   await opcion.waitFor({ state: 'visible', timeout: 10_000 });
   await opcion.click();
 

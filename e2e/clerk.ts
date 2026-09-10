@@ -38,23 +38,53 @@ function claveSecreta(): string {
   return clave;
 }
 
-async function pedir(ruta: string, init: RequestInit) {
-  const res = await fetch(`${API_CLERK}${ruta}`, {
-    ...init,
-    headers: {
-      Authorization: `Bearer ${claveSecreta()}`,
-      'Content-Type': 'application/json',
-      ...(init.headers ?? {}),
-    },
-  });
+const INTENTOS = 3;
+const ESPERA_MS = 1500;
 
-  if (!res.ok) {
-    throw new Error(
-      `Clerk ${init.method} ${ruta}: ${res.status} ${await res.text()}`,
-    );
+/**
+ * Con reintentos porque la API de Clerk se alcanza por internet y desde aqui
+ * la conexion se cae a ratos: `ConnectTimeout` a los 10 s, una de cada tres
+ * veces. Un fallo de red no es un fallo de la tienda, y hacia que un escenario
+ * perfectamente sano diera rojo.
+ *
+ * Solo se reintenta lo que puede ser pasajero —la conexion— y nunca una
+ * respuesta del servidor: un 4xx significa que la peticion estaba mal y
+ * repetirla solo tarda mas en decirlo.
+ */
+async function pedir(ruta: string, init: RequestInit) {
+  let ultimoError: unknown;
+
+  for (let intento = 1; intento <= INTENTOS; intento++) {
+    let res: Response;
+    try {
+      res = await fetch(`${API_CLERK}${ruta}`, {
+        ...init,
+        headers: {
+          Authorization: `Bearer ${claveSecreta()}`,
+          'Content-Type': 'application/json',
+          ...(init.headers ?? {}),
+        },
+      });
+    } catch (err) {
+      ultimoError = err;
+      if (intento === INTENTOS) break;
+      await new Promise((sigue) => setTimeout(sigue, ESPERA_MS * intento));
+      continue;
+    }
+
+    if (!res.ok) {
+      throw new Error(
+        `Clerk ${init.method} ${ruta}: ${res.status} ${await res.text()}`,
+      );
+    }
+
+    return res.json();
   }
 
-  return res.json();
+  throw new Error(
+    `Clerk ${init.method} ${ruta}: sin respuesta tras ${INTENTOS} intentos. ` +
+      `Ultimo error: ${ultimoError instanceof Error ? ultimoError.message : String(ultimoError)}`,
+  );
 }
 
 export function correoDePrueba(prefijo: string): string {
@@ -75,7 +105,27 @@ export async function crearCuenta(
       skip_password_checks: true,
     }),
   });
+
+  /**
+   * No basta con que la peticion responda: hasta que Clerk no devuelve la
+   * cuenta al buscarla, un registro con ese mismo correo puede colarse como si
+   * estuviera libre. Es justo lo que hacia fallar «Un correo ya registrado no
+   * crea otra cuenta» una de cada dos veces.
+   */
+  await esperarACuenta(correo);
   return usuario.id as string;
+}
+
+async function esperarACuenta(correo: string, intentos = 10): Promise<void> {
+  for (let intento = 1; intento <= intentos; intento++) {
+    const encontrados = (await pedir(
+      `/users?email_address=${encodeURIComponent(correo)}`,
+      { method: 'GET' },
+    )) as unknown[];
+    if (encontrados.length > 0) return;
+    await new Promise((sigue) => setTimeout(sigue, 500));
+  }
+  throw new Error(`Clerk no reconoce la cuenta ${correo} tras crearla`);
 }
 
 export async function borrarCuenta(id: string) {

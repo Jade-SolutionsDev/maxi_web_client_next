@@ -202,7 +202,18 @@ Then('acaba en la pantalla de acceso', async ({ page }) => {
 
 Then('la respuesta es un 404', async ({ page }) => {
   expect(estado.ultimoEstadoHttp).toBe(404);
-  await expect(page.getByText('404').first()).toBeVisible();
+  /**
+   * Lo que se comprueba es que al cliente **se le diga**, no que en algun
+   * sitio ponga «404»: ese numero vive ahora dentro de la ilustracion, que es
+   * un SVG y no aporta texto. La pagina sigue siendo correcta —devuelve 404 y
+   * lo explica— y antes esto la daba por rota.
+   */
+  await expect(
+    page.getByText(/la p[aá]gina a la que intentas acceder no existe/i).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: /volver al inicio/i }).first(),
+  ).toBeVisible();
 });
 
 Then(
