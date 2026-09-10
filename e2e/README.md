@@ -50,6 +50,23 @@ bun run test:e2e:headed    # viendo el navegador
 Ambos ejecutan `bddgen` antes: traduce las features a specs. **Sin ese paso Playwright no
 encuentra nada.**
 
+## Contra otro entorno
+
+Por defecto todo apunta a la máquina de desarrollo. Estas variables lo mueven sin tocar código:
+
+| Variable | Para qué | Por defecto |
+|---|---|---|
+| `E2E_BASE_URL` | La tienda que se prueba. **También fija el dominio de la cookie de zona**, sin la cual el modal de ubicación tapa media pantalla | `http://localhost:3001` |
+| `E2E_TIENDA` / `E2E_API` | URLs que usan los pasos y la invalidación de caché | los locales |
+| `E2E_DB_CONTENEDOR` | Prefijo del contenedor de Postgres; el sufijo de tarea se resuelve solo | `maxihabana-postgres-dev` |
+| `E2E_DB_SUDO` / `E2E_DB_CLAVE_SUDO` | Cuando `docker` necesita sudo. La clave va por entrada estándar, nunca por la línea de comandos | sin sudo |
+| `E2E_REVALIDATE_SECRET` | El de ese entorno. Si no coincide, la invalidación devuelve 401 **en silencio** y el catálogo se queda cacheado un día | `change-me-in-production` |
+| `E2E_CANAL` | `chromium` en un servidor sin Chrome del sistema | `chrome` |
+| `E2E_TIMEOUT`, `E2E_TIMEOUT_EXPECT`, `E2E_TIMEOUT_ACCION` | Un entorno desplegado hidrata más lento que un servidor de desarrollo | 60s / 10s / 15s |
+
+**Aviso: la suite escribe en la base del entorno que apuntes.** Siembra productos y borra pedidos
+y direcciones del cliente de QA. Contra algo que no sea desechable, piénsalo dos veces.
+
 Al fallar guarda **captura, vídeo y traza** en `test-results/`. La traza se recorre paso a paso
 con `npx playwright show-trace <ruta>`.
 

@@ -1,5 +1,5 @@
-import { expect } from '@playwright/test';
-import { createBdd } from 'playwright-bdd';
+import { expect } from "@playwright/test";
+import { createBdd } from "playwright-bdd";
 import {
   API,
   invalidarCatalogo,
@@ -8,19 +8,19 @@ import {
   registrarProducto,
   sembrarProducto,
   sql,
-} from '../helpers';
+} from "../helpers";
 
 const { Given, When, Then } = createBdd();
 
 Given(
-  'que existe un producto {string} de US${int} con {int} unidades',
+  "que existe un producto {string} de US${int} con {int} unidades",
   async ({}, nombre: string, precio: number, unidades: number) => {
     sembrarConExistencias(nombre, precio, 0, unidades);
   },
 );
 
 Given(
-  'que existe un producto {string} de US${int} con {int} unidades y un {int}% de rebaja',
+  "que existe un producto {string} de US${int} con {int} unidades y un {int}% de rebaja",
   async (
     {},
     nombre: string,
@@ -33,10 +33,10 @@ Given(
 );
 
 Given(
-  'que existen {int} productos con existencias',
+  "que existen {int} productos con existencias",
   async ({}, cuantos: number) => {
     for (let i = 1; i <= cuantos; i++) {
-      sembrarConExistencias(`Fila ${String(i).padStart(2, '0')}`, 100, 0, 5);
+      sembrarConExistencias(`Fila ${String(i).padStart(2, "0")}`, 100, 0, 5);
     }
     await invalidarCatalogo();
   },
@@ -47,14 +47,14 @@ function sembrarConExistencias(
   precio: number,
   rebaja: number,
   unidades: number,
-  grupo = '',
+  grupo = "",
 ) {
   const sembrado = registrarProducto(
     nombre,
     sembrarProducto(nombre, rebaja, precio, grupo),
   );
   const almacen = sql(
-    'SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1',
+    "SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1",
   );
   sql(
     `INSERT INTO inventory (location_id, product_id, quantity) VALUES ('${almacen}', '${sembrado.id}', ${unidades})`,
@@ -63,7 +63,7 @@ function sembrarConExistencias(
 }
 
 Given(
-  'que existe un producto {string} de US${int} con {int} unidades en el departamento {string}',
+  "que existe un producto {string} de US${int} con {int} unidades en el departamento {string}",
   async (
     {},
     nombre: string,
@@ -79,11 +79,11 @@ Given(
 );
 
 When(
-  'filtra por el departamento de {string}',
+  "filtra por el departamento de {string}",
   async ({ page }, nombre: string) => {
     const producto = productoSembrado(nombre);
     await page
-      .getByRole('checkbox', { name: producto.departamentoNombre })
+      .getByRole("checkbox", { name: producto.departamentoNombre })
       .first()
       .click();
     await expect(page).toHaveURL(/department=/, { timeout: 15_000 });
@@ -96,11 +96,11 @@ When(
  * para llegar a la mitad—, mientras que un arrastre es un gesto y una sola
  * escritura en la URL, que es cuando el filtro se aplica.
  */
-When('baja el precio máximo a la mitad', async ({ page }) => {
-  const tope = page.getByRole('slider').last();
+When("baja el precio máximo a la mitad", async ({ page }) => {
+  const tope = page.getByRole("slider").last();
   const marco = await tope.boundingBox();
-  const barra = await page.getByRole('group').first().boundingBox();
-  if (!marco || !barra) throw new Error('No se encontro la barra de precio');
+  const barra = await page.getByRole("group").first().boundingBox();
+  if (!marco || !barra) throw new Error("No se encontro la barra de precio");
 
   await page.mouse.move(marco.x + marco.width / 2, marco.y + marco.height / 2);
   await page.mouse.down();
@@ -112,32 +112,32 @@ When('baja el precio máximo a la mitad', async ({ page }) => {
   await expect(page).toHaveURL(/maxPrice=5\d0/, { timeout: 15_000 });
 });
 
-When('ordena por {string}', async ({ page }, criterio: string) => {
-  await page.getByRole('combobox', { name: /ordenar productos/i }).click();
+When("ordena por {string}", async ({ page }, criterio: string) => {
+  await page.getByRole("combobox", { name: /ordenar productos/i }).click();
   const opcion = page
-    .locator('[role=option]:visible')
+    .locator("[role=option]:visible")
     .filter({ hasText: criterio });
   await opcion.first().click();
   await expect(page).toHaveURL(/sortBy=/, { timeout: 15_000 });
 });
 
-When('filtra por productos en oferta', async ({ page }) => {
-  await page.getByRole('checkbox', { name: /productos en oferta/i }).click();
+When("filtra por productos en oferta", async ({ page }) => {
+  await page.getByRole("checkbox", { name: /productos en oferta/i }).click();
   await expect(page).toHaveURL(/onSale=true/, { timeout: 15_000 });
 });
 
-When('quita el filtro de ofertas', async ({ page }) => {
-  await page.getByRole('checkbox', { name: /productos en oferta/i }).click();
+When("quita el filtro de ofertas", async ({ page }) => {
+  await page.getByRole("checkbox", { name: /productos en oferta/i }).click();
   await expect(page).not.toHaveURL(/onSale=/, { timeout: 15_000 });
 });
 
-When('pasa a la segunda página', async ({ page }) => {
+When("pasa a la segunda página", async ({ page }) => {
   await enlaceAPagina2(page).click();
   await expect(page).toHaveURL(/page=2/, { timeout: 15_000 });
 });
 
 Then(
-  'el primer producto de la lista es {string}',
+  "el primer producto de la lista es {string}",
   async ({ page }, nombre: string) => {
     const primero = tarjetas(page).first();
     await expect(primero).toBeVisible({ timeout: 15_000 });
@@ -146,7 +146,7 @@ Then(
 );
 
 Then(
-  'la lista muestra {int} producto(s)',
+  "la lista muestra {int} producto(s)",
   async ({ page }, cuantos: number) => {
     await expect
       .poll(() => tarjetas(page).count(), { timeout: 15_000 })
@@ -154,22 +154,22 @@ Then(
   },
 );
 
-Then('hay una segunda página', async ({ page }) => {
+Then("hay una segunda página", async ({ page }) => {
   await expect(enlaceAPagina2(page)).toBeVisible({ timeout: 15_000 });
 });
 
 /** Por su destino, que no depende de como se llame el enlace. */
-const enlaceAPagina2 = (page: import('@playwright/test').Page) =>
+const enlaceAPagina2 = (page: import("@playwright/test").Page) =>
   page.locator('main a[href*="page=2"]').first();
 
-const tarjetas = (page: import('@playwright/test').Page) =>
-  page.getByRole('listitem').filter({ has: page.locator('article') });
+const tarjetas = (page: import("@playwright/test").Page) =>
+  page.getByRole("listitem").filter({ has: page.locator("article") });
 
 /**
  * El enlace de pagina se construia desde `useSearchParams()`, que no se entera
  * de lo que escribe nuqs en la URL: al pasar de pagina se perdia el filtro y el
  * cliente volvia al catalogo entero. Se comprueba aqui para que no vuelva.
  */
-Then('el filtro de departamento sigue puesto', async ({ page }) => {
+Then("el filtro de departamento sigue puesto", async ({ page }) => {
   await expect(page).toHaveURL(/department=/, { timeout: 15_000 });
 });

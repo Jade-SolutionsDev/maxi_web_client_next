@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync } from "node:fs";
 
 /**
  * Clerk, por la puerta de atras. Sirve para dos cosas que el navegador no
@@ -8,9 +8,9 @@ import { readFileSync } from 'node:fs';
  * Los correos con `+clerk_test` son cuentas de prueba de Clerk: no se envia
  * ningun correo y el codigo de verificacion es siempre `424242`.
  */
-export const CODIGO_DE_PRUEBA = '424242';
+export const CODIGO_DE_PRUEBA = "424242";
 
-const API_CLERK = 'https://api.clerk.com/v1';
+const API_CLERK = "https://api.clerk.com/v1";
 
 /**
  * La suite se lanza sin el entorno de la tienda, asi que lo lee de su
@@ -19,9 +19,9 @@ const API_CLERK = 'https://api.clerk.com/v1';
  * otra instancia sin enterarse.
  */
 export function cargarEntornoDeLaTienda() {
-  for (const linea of readFileSync('.env.local', 'utf8').split('\n')) {
-    const corte = linea.indexOf('=');
-    if (corte < 1 || linea.startsWith('#')) continue;
+  for (const linea of readFileSync(".env.local", "utf8").split("\n")) {
+    const corte = linea.indexOf("=");
+    if (corte < 1 || linea.startsWith("#")) continue;
     const nombre = linea.slice(0, corte).trim();
     if (!process.env[nombre])
       process.env[nombre] = linea.slice(corte + 1).trim();
@@ -34,7 +34,7 @@ export function cargarEntornoDeLaTienda() {
 function claveSecreta(): string {
   if (!process.env.CLERK_SECRET_KEY) cargarEntornoDeLaTienda();
   const clave = process.env.CLERK_SECRET_KEY;
-  if (!clave) throw new Error('Falta CLERK_SECRET_KEY en .env.local');
+  if (!clave) throw new Error("Falta CLERK_SECRET_KEY en .env.local");
   return clave;
 }
 
@@ -61,7 +61,7 @@ async function pedir(ruta: string, init: RequestInit) {
         ...init,
         headers: {
           Authorization: `Bearer ${claveSecreta()}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...(init.headers ?? {}),
         },
       });
@@ -95,13 +95,13 @@ export async function crearCuenta(
   correo: string,
   clave: string,
 ): Promise<string> {
-  const usuario = await pedir('/users', {
-    method: 'POST',
+  const usuario = await pedir("/users", {
+    method: "POST",
     body: JSON.stringify({
       email_address: [correo],
       password: clave,
-      first_name: 'QA',
-      last_name: 'Temporal',
+      first_name: "QA",
+      last_name: "Temporal",
       skip_password_checks: true,
     }),
   });
@@ -120,7 +120,7 @@ async function esperarACuenta(correo: string, intentos = 10): Promise<void> {
   for (let intento = 1; intento <= intentos; intento++) {
     const encontrados = (await pedir(
       `/users?email_address=${encodeURIComponent(correo)}`,
-      { method: 'GET' },
+      { method: "GET" },
     )) as unknown[];
     if (encontrados.length > 0) return;
     await new Promise((sigue) => setTimeout(sigue, 500));
@@ -129,14 +129,14 @@ async function esperarACuenta(correo: string, intentos = 10): Promise<void> {
 }
 
 export async function borrarCuenta(id: string) {
-  await pedir(`/users/${id}`, { method: 'DELETE' });
+  await pedir(`/users/${id}`, { method: "DELETE" });
 }
 
 /** Todas las cuentas de prueba que quedaron de un escenario. */
 export async function borrarCuentaPorCorreo(correo: string) {
   const encontrados = await pedir(
     `/users?email_address=${encodeURIComponent(correo)}`,
-    { method: 'GET' },
+    { method: "GET" },
   );
   for (const usuario of encontrados as { id: string }[]) {
     await borrarCuenta(usuario.id);

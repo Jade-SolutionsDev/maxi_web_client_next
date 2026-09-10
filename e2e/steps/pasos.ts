@@ -1,5 +1,5 @@
-import { expect } from '@playwright/test';
-import { createBdd } from 'playwright-bdd';
+import { expect } from "@playwright/test";
+import { createBdd } from "playwright-bdd";
 import {
   API,
   invalidarCatalogo,
@@ -11,12 +11,12 @@ import {
   registrarProducto,
   sembrarProducto,
   sql,
-} from '../helpers';
+} from "../helpers";
 
 const { Given, When, Then, Before, After } = createBdd();
 
 /** El cliente con el que se inicia sesion en las pruebas con sesion. */
-const CORREO_CLIENTE = 'qa.direcciones@maxihabana.com';
+const CORREO_CLIENTE = "qa.direcciones@maxihabana.com";
 
 /**
  * Estado compartido entre los pasos de un escenario. Es seguro tenerlo en el
@@ -67,27 +67,30 @@ After(async () => {
 
 // ---------------------------------------------------------------- Antecedentes
 
-Given('que el cliente ha elegido una zona con entrega', async ({ context }) => {
+Given("que el cliente ha elegido una zona con entrega", async ({ context }) => {
   await context.addCookies([
     {
-      name: 'maxi_location',
+      name: "maxi_location",
       value: municipioConCobertura(),
-      domain: 'localhost',
-      path: '/',
+      // Del entorno, no fijo: contra un dominio real 'localhost' no aplica y
+      // reaparece el modal de ubicacion, que tapa media pagina.
+      domain: new URL(process.env.E2E_BASE_URL ?? "http://localhost:3001")
+        .hostname,
+      path: "/",
     },
   ]);
 });
 
-Given('que el cliente no ha elegido zona', async ({ context }) => {
+Given("que el cliente no ha elegido zona", async ({ context }) => {
   await context.clearCookies();
 });
 
 Given(
-  'que existe un producto {string} con {int} unidades y un {int}% de rebaja',
+  "que existe un producto {string} con {int} unidades y un {int}% de rebaja",
   async ({}, nombre: string, unidades: number, rebaja: number) => {
     const sembrado = sembrarProducto(nombre, rebaja);
     const almacen = sql(
-      'SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1',
+      "SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1",
     );
     sql(
       `INSERT INTO inventory (location_id, product_id, quantity) VALUES ('${almacen}', '${sembrado.id}', ${unidades})`,
@@ -98,7 +101,7 @@ Given(
 );
 
 Given(
-  'que existe un producto {string} sin existencias',
+  "que existe un producto {string} sin existencias",
   async ({}, nombre: string) => {
     registrarProducto(nombre, sembrarProducto(nombre, 0));
     await invalidarCatalogo();
@@ -107,22 +110,22 @@ Given(
 
 // ------------------------------------------------------------------- Acciones
 
-When('el cliente abre el catálogo', async ({ page }) => {
-  await page.goto('/catalog');
+When("el cliente abre el catálogo", async ({ page }) => {
+  await page.goto("/catalog");
 });
 
-When('el cliente abre {string}', async ({ page }, ruta: string) => {
+When("el cliente abre {string}", async ({ page }, ruta: string) => {
   const res = await page.goto(ruta);
   estado.ultimoEstadoHttp = res?.status();
 });
 
-When('pulsa sobre el producto {string}', async ({ page }, nombre: string) => {
+When("pulsa sobre el producto {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
   await page.getByText(producto!.nombreReal).first().click();
 });
 
 When(
-  'el cliente busca {string} en el catálogo',
+  "el cliente busca {string} en el catálogo",
   async ({ page }, termino: string) => {
     // El termino puede no ser un producto: hay un escenario que busca algo
     // que no existe justo para ver que la pagina lo dice.
@@ -131,7 +134,7 @@ When(
   },
 );
 
-When('se consultan los productos públicos de la API', async ({ request }) => {
+When("se consultan los productos públicos de la API", async ({ request }) => {
   const res = await request.get(`${API}/api/public/products`);
   expect(res.status()).toBe(200);
   estado.respuestaApi = (await res.json()).data;
@@ -139,39 +142,39 @@ When('se consultan los productos públicos de la API', async ({ request }) => {
 
 // ---------------------------------------------------------- Comprobaciones
 
-Then('ve el producto {string}', async ({ page }, nombre: string) => {
+Then("ve el producto {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
   await expect(page.getByText(producto!.nombreReal).first()).toBeVisible();
 });
 
-Then('no ve el producto {string}', async ({ page }, nombre: string) => {
+Then("no ve el producto {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
   await expect(page.getByText(producto!.nombreReal)).toHaveCount(0);
 });
 
-Then('ve el precio {string}', async ({ page }, precio: string) => {
+Then("ve el precio {string}", async ({ page }, precio: string) => {
   await expect(page.getByText(precio, { exact: false }).first()).toBeVisible();
 });
 
-Then('la página sigue funcionando', async ({ page }) => {
-  await expect(page.locator('h1').first()).toBeVisible();
-  await expect(page.getByText('Algo salió mal')).toHaveCount(0);
+Then("la página sigue funcionando", async ({ page }) => {
+  await expect(page.locator("h1").first()).toBeVisible();
+  await expect(page.getByText("Algo salió mal")).toHaveCount(0);
 });
 
-Then('la respuesta incluye {string}', async ({}, nombre: string) => {
+Then("la respuesta incluye {string}", async ({}, nombre: string) => {
   const producto = productoSembrado(nombre);
   const nombres = estado.respuestaApi!.items.map((p) => p.name);
   expect(nombres).toContain(producto!.nombreReal);
 });
 
-Then('la respuesta no incluye {string}', async ({}, nombre: string) => {
+Then("la respuesta no incluye {string}", async ({}, nombre: string) => {
   const producto = productoSembrado(nombre);
   const nombres = estado.respuestaApi!.items.map((p) => p.name);
   expect(nombres).not.toContain(producto!.nombreReal);
 });
 
 Then(
-  '{string} tiene precio base {int}, rebaja {int} y precio final {int}',
+  "{string} tiene precio base {int}, rebaja {int} y precio final {int}",
   async ({}, nombre: string, base: number, rebaja: number, final: number) => {
     const producto = productoSembrado(nombre);
     const item = estado.respuestaApi!.items.find(
@@ -185,22 +188,22 @@ Then(
 );
 
 Then(
-  'la página muestra el título {string}',
+  "la página muestra el título {string}",
   async ({ page }, titulo: string) => {
     await expect(
-      page.getByRole('heading', { name: titulo, level: 1 }),
+      page.getByRole("heading", { name: titulo, level: 1 }),
     ).toBeVisible();
   },
 );
 
-Then('acaba en la pantalla de acceso', async ({ page }) => {
+Then("acaba en la pantalla de acceso", async ({ page }) => {
   await expect(page).toHaveURL(/\/login/);
   await expect(
-    page.getByRole('heading', { name: 'Iniciar sesión' }),
+    page.getByRole("heading", { name: "Iniciar sesión" }),
   ).toBeVisible();
 });
 
-Then('la respuesta es un 404', async ({ page }) => {
+Then("la respuesta es un 404", async ({ page }) => {
   expect(estado.ultimoEstadoHttp).toBe(404);
   /**
    * Lo que se comprueba es que al cliente **se le diga**, no que en algun
@@ -212,48 +215,48 @@ Then('la respuesta es un 404', async ({ page }) => {
     page.getByText(/la p[aá]gina a la que intentas acceder no existe/i).first(),
   ).toBeVisible();
   await expect(
-    page.getByRole('link', { name: /volver al inicio/i }).first(),
+    page.getByRole("link", { name: /volver al inicio/i }).first(),
   ).toBeVisible();
 });
 
 Then(
-  'la portada muestra las secciones de destacados, ofertas y recientes',
+  "la portada muestra las secciones de destacados, ofertas y recientes",
   async ({ page }) => {
     await expect(
-      page.getByRole('heading', { name: 'Productos destacados' }),
+      page.getByRole("heading", { name: "Productos destacados" }),
     ).toBeVisible();
     await expect(
-      page.getByRole('heading', { name: 'En oferta' }),
+      page.getByRole("heading", { name: "En oferta" }),
     ).toBeVisible();
     await expect(
-      page.getByRole('heading', { name: 'Nuestros productos más recientes' }),
+      page.getByRole("heading", { name: "Nuestros productos más recientes" }),
     ).toBeVisible();
   },
 );
 
-Then('se le pide que elija su zona', async ({ page }) => {
-  await expect(page.getByText('¿Dónde estás?')).toBeVisible();
+Then("se le pide que elija su zona", async ({ page }) => {
+  await expect(page.getByText("¿Dónde estás?")).toBeVisible();
 });
 
-Then('no se le pide que elija su zona', async ({ page }) => {
-  await expect(page.getByText('¿Dónde estás?')).toHaveCount(0);
+Then("no se le pide que elija su zona", async ({ page }) => {
+  await expect(page.getByText("¿Dónde estás?")).toHaveCount(0);
 });
 
-Then('la cabecera muestra su zona', async ({ page }) => {
-  await expect(page.getByText('Disponible en:')).toBeVisible();
+Then("la cabecera muestra su zona", async ({ page }) => {
+  await expect(page.getByText("Disponible en:")).toBeVisible();
 });
 
 // ---------------------------------------------------------------- El carrito
 
-When('añade el primer producto al carrito', async ({ page }) => {
+When("añade el primer producto al carrito", async ({ page }) => {
   // Cuantas unidades hay antes, para esperar a que suban de verdad.
   const antes = await unidadesEnCarrito(page);
   const lineasAntes = await lineasEnCabecera(page);
 
-  const boton = page.getByRole('button', { name: /^a[ñn]adir/i }).first();
+  const boton = page.getByRole("button", { name: /^a[ñn]adir/i }).first();
   // El catalogo puede tardar en pintar sus tarjetas; sin esta espera el aviso
   // se pierde entre la carga y el clic.
-  await boton.waitFor({ state: 'visible', timeout: 15_000 });
+  await boton.waitFor({ state: "visible", timeout: 15_000 });
   await boton.scrollIntoViewIfNeeded();
   await boton.hover();
   /**
@@ -264,7 +267,7 @@ When('añade el primer producto al carrito', async ({ page }) => {
    */
   await page
     .waitForFunction(
-      () => localStorage.getItem('cart-storage') !== null,
+      () => localStorage.getItem("cart-storage") !== null,
       null,
       {
         timeout: 10_000,
@@ -283,7 +286,7 @@ When('añade el primer producto al carrito', async ({ page }) => {
   estado.avisoDeAñadido = await page
     .getByText(/producto añadido al carrito/i)
     .first()
-    .waitFor({ state: 'visible', timeout: 8_000 })
+    .waitFor({ state: "visible", timeout: 8_000 })
     .then(() => true)
     .catch(() => false);
 
@@ -308,19 +311,19 @@ When('añade el primer producto al carrito', async ({ page }) => {
 });
 
 /** Lineas que declara la cabecera, con sesion o sin ella. */
-async function lineasEnCabecera(page: import('@playwright/test').Page) {
+async function lineasEnCabecera(page: import("@playwright/test").Page) {
   const etiqueta = await page
-    .getByRole('button', { name: /carrito de compra/i })
+    .getByRole("button", { name: /carrito de compra/i })
     .first()
-    .getAttribute('aria-label');
+    .getAttribute("aria-label");
   return Number(etiqueta?.match(/(\d+)/)?.[1] ?? 0);
 }
 
 /** Unidades guardadas hoy en el carrito de invitado (localStorage). */
-async function unidadesEnCarrito(page: import('@playwright/test').Page) {
+async function unidadesEnCarrito(page: import("@playwright/test").Page) {
   return page.evaluate(() => {
     try {
-      const crudo = localStorage.getItem('cart-storage');
+      const crudo = localStorage.getItem("cart-storage");
       if (!crudo) return 0;
       const datos = JSON.parse(crudo);
       const lineas =
@@ -335,30 +338,30 @@ async function unidadesEnCarrito(page: import('@playwright/test').Page) {
   });
 }
 
-When('abre el carrito', async ({ page }) => {
+When("abre el carrito", async ({ page }) => {
   await page
-    .getByRole('button', { name: /carrito/i })
+    .getByRole("button", { name: /carrito/i })
     .first()
     .click();
-  await expect(page.getByText('Mi carrito')).toBeVisible();
+  await expect(page.getByText("Mi carrito")).toBeVisible();
 });
 
-When('recarga la página', async ({ page }) => {
+When("recarga la página", async ({ page }) => {
   await page.reload();
 });
 
-When('vacía el carrito', async ({ page }) => {
-  await page.getByRole('button', { name: /vaciar carrito/i }).click();
+When("vacía el carrito", async ({ page }) => {
+  await page.getByRole("button", { name: /vaciar carrito/i }).click();
   // Puede pedir confirmacion; si aparece, se confirma.
   const confirmar = page
-    .getByRole('button', { name: /^(vaciar|confirmar|sí)/i })
+    .getByRole("button", { name: /^(vaciar|confirmar|sí)/i })
     .last();
   if (await confirmar.count()) await confirmar.click();
 });
 
-When('pulsa proceder al pago', async ({ page }) => {
+When("pulsa proceder al pago", async ({ page }) => {
   await esperarCarritoEnServidor();
-  await page.getByRole('button', { name: /proceder al pago/i }).click();
+  await page.getByRole("button", { name: /proceder al pago/i }).click();
 });
 
 /**
@@ -381,28 +384,28 @@ async function esperarCarritoEnServidor() {
   }
 }
 
-Then('se le confirma que el producto se añadió', async () => {
+Then("se le confirma que el producto se añadió", async () => {
   expect(
     estado.avisoDeAñadido,
-    'no apareció el aviso de producto añadido',
+    "no apareció el aviso de producto añadido",
   ).toBe(true);
 });
 
 Then(
-  'el carrito contiene {int} artículo(s)',
+  "el carrito contiene {int} artículo(s)",
   async ({ page }, cantidad: number) => {
     await page
-      .getByRole('button', { name: /carrito/i })
+      .getByRole("button", { name: /carrito/i })
       .first()
       .click();
     await expect(
-      page.getByText(new RegExp(`${cantidad}\\s+art[íi]culo`, 'i')).first(),
+      page.getByText(new RegExp(`${cantidad}\\s+art[íi]culo`, "i")).first(),
     ).toBeVisible();
   },
 );
 
 Then(
-  'el carrito muestra el producto {string}',
+  "el carrito muestra el producto {string}",
   async ({ page }, nombre: string) => {
     const producto = productoSembrado(nombre);
     await expect(page.getByText(producto!.nombreReal).first()).toBeVisible();
@@ -410,13 +413,13 @@ Then(
 );
 
 Then(
-  'el carrito muestra un total de {string}',
+  "el carrito muestra un total de {string}",
   async ({ page }, total: string) => {
     await expect(page.getByText(total).first()).toBeVisible();
   },
 );
 
-Then('el carrito queda vacío', async ({ page }) => {
+Then("el carrito queda vacío", async ({ page }) => {
   await expect(
     page
       .getByText(/carrito est[áa] vac[íi]o|no hay productos|agrega productos/i)
@@ -427,7 +430,7 @@ Then('el carrito queda vacío', async ({ page }) => {
 // ------------------------------------------------- Categorias y contenido
 
 When(
-  'el cliente abre el catálogo filtrando por la categoría de {string}',
+  "el cliente abre el catálogo filtrando por la categoría de {string}",
   async ({ page }, nombre: string) => {
     const producto = productoSembrado(nombre);
     await page.goto(`/catalog?categorySlug=${producto!.categoriaSlug}`);
@@ -435,7 +438,7 @@ When(
 );
 
 Then(
-  've el departamento del producto {string}',
+  "ve el departamento del producto {string}",
   async ({ page }, nombre: string) => {
     const producto = productoSembrado(nombre);
     await expect(
@@ -445,7 +448,7 @@ Then(
 );
 
 Then(
-  've la categoría del producto {string}',
+  "ve la categoría del producto {string}",
   async ({ page }, nombre: string) => {
     const producto = productoSembrado(nombre);
     await expect(
@@ -454,16 +457,16 @@ Then(
   },
 );
 
-Then('ve el correo de contacto', async ({ page }) => {
+Then("ve el correo de contacto", async ({ page }) => {
   await expect(page.getByText(/@/).first()).toBeVisible();
 });
 
-Then('ve el teléfono de contacto', async ({ page }) => {
+Then("ve el teléfono de contacto", async ({ page }) => {
   await expect(page.getByText(/\+53/).first()).toBeVisible();
 });
 
 Given(
-  'que existe una página publicada llamada {string}',
+  "que existe una página publicada llamada {string}",
   async ({}, titulo: string) => {
     estado.paginaCms = sembrarPagina(titulo, true);
     await invalidarCatalogo();
@@ -471,7 +474,7 @@ Given(
 );
 
 Given(
-  'que existe una página desactivada llamada {string}',
+  "que existe una página desactivada llamada {string}",
   async ({}, titulo: string) => {
     estado.paginaCms = sembrarPagina(titulo, false);
     await invalidarCatalogo();
@@ -487,35 +490,35 @@ function sembrarPagina(titulo: string, activa: boolean) {
   return { slug, titulo, contenido };
 }
 
-When('el cliente abre esa página', async ({ page }) => {
+When("el cliente abre esa página", async ({ page }) => {
   const res = await page.goto(`/paginas/${estado.paginaCms!.slug}`);
   estado.ultimoEstadoHttp = res?.status();
 });
 
-Then('ve su contenido', async ({ page }) => {
+Then("ve su contenido", async ({ page }) => {
   await expect(
     page.getByText(estado.paginaCms!.contenido).first(),
   ).toBeVisible();
 });
 
-Then('no ve su contenido', async ({ page }) => {
+Then("no ve su contenido", async ({ page }) => {
   await expect(page.getByText(estado.paginaCms!.contenido)).toHaveCount(0);
 });
 
-When('agrega una unidad de {string}', async ({ page }, nombre: string) => {
+When("agrega una unidad de {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
   await page
-    .getByRole('button', {
+    .getByRole("button", {
       name: `Agregar una unidad de ${producto.nombreReal}`,
     })
     .last()
     .click();
 });
 
-When('elimina {string} del carrito', async ({ page }, nombre: string) => {
+When("elimina {string} del carrito", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
   await page
-    .getByRole('button', {
+    .getByRole("button", {
       name: `Eliminar ${producto.nombreReal} del carrito`,
     })
     .click();

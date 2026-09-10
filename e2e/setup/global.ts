@@ -1,5 +1,5 @@
-import { clerkSetup } from '@clerk/testing/playwright';
-import { cargarEntornoDeLaTienda } from '../clerk';
+import { clerkSetup } from "@clerk/testing/playwright";
+import { cargarEntornoDeLaTienda } from "../clerk";
 
 /**
  * Clerk protege el registro con un captcha, que en una instancia de desarrollo
