@@ -6,6 +6,7 @@ import {
   toBannerSlide,
   toCmsPage,
   toCmsPageLink,
+  toFaqCategory,
   toServiceItem,
   toSiteSettings,
   toStaffMember,
@@ -14,16 +15,32 @@ import { DEFAULT_SITE_SETTINGS } from '../constants/site-settings.constants';
 import type {
   BannerSlide,
   CmsBannerResponse,
+  CmsFaqCategoryResponse,
   CmsPage,
   CmsPageLink,
   CmsPageResponse,
   CmsServiceResponse,
   CmsStaffMemberResponse,
+  FaqCategory,
   ServiceItem,
   SiteSettings,
   SiteSettingsResponse,
   StaffMember,
 } from '../type/cms.interface';
+
+export const getFaqCategories = async (): Promise<FaqCategory[]> => {
+  'use cache';
+  cacheLife('hours');
+  cacheTag('cms');
+
+  try {
+    const { data } =
+      await api<ApiResponse<CmsFaqCategoryResponse[]>>('/public/cms/faqs');
+    return data.map(toFaqCategory);
+  } catch {
+    return [];
+  }
+};
 
 export const getSiteSettings = async (): Promise<SiteSettings> => {
   'use cache';

@@ -88,6 +88,34 @@ export interface CmsPageLink {
   title: string;
 }
 
+export interface CmsFaqQuestionResponse {
+  id: string;
+  question: string;
+  answer: string;
+  sortOrder: number;
+  link: { label: string; href: string } | null;
+}
+
+export interface CmsFaqCategoryResponse {
+  id: string;
+  title: string;
+  sortOrder: number;
+  questions: CmsFaqQuestionResponse[];
+}
+
+export interface FaqQuestion {
+  id: string;
+  question: string;
+  answer: string;
+  link?: { label: string; href: string };
+}
+
+export interface FaqCategory {
+  id: string;
+  title: string;
+  questions: FaqQuestion[];
+}
+
 export interface SiteLegalLink {
   label: string;
   slug: string;
