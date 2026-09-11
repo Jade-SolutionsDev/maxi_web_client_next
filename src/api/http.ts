@@ -52,13 +52,16 @@ export async function api<T>(
 
   let res: Response;
   try {
+    const isMultipart = body instanceof FormData;
     res = await fetch(url, {
       ...init,
       headers: {
-        'Content-Type': 'application/json',
+        // Con FormData el navegador pone su propio Content-Type con el
+        // boundary; fijarlo a mano rompe el parseo en el servidor.
+        ...(isMultipart ? {} : { 'Content-Type': 'application/json' }),
         ...headers,
       },
-      body: body ? JSON.stringify(body) : undefined,
+      body: isMultipart ? body : body ? JSON.stringify(body) : undefined,
       signal: AbortSignal.timeout(8000),
     });
   } catch (err) {

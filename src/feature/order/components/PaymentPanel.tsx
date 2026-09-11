@@ -31,7 +31,9 @@ import {
 } from '../type/order.type';
 import { CopyButton } from './CopyButton';
 import { PaymentCountdown } from './PaymentCountdown';
+import { PaymentInstructions } from './PaymentInstructions';
 import { PaymentMethodSelector } from './PaymentMethodSelector';
+import { PaymentProofForm } from './PaymentProofForm';
 
 const POLL_INTERVAL_MS = 8000;
 
@@ -51,10 +53,7 @@ type PanelMode =
   | 'manual-pending'
   | 'start';
 
-const resolveMode = (
-  order: Order,
-  charge: PaymentCharge | null,
-): PanelMode => {
+const resolveMode = (order: Order, charge: PaymentCharge | null): PanelMode => {
   if (order.paymentStatus === 'paid' || charge?.status === 'SUCCEEDED') {
     return 'paid';
   }
@@ -458,12 +457,26 @@ export const PaymentPanel = ({
       )}
 
       {mode === 'manual-pending' && (
-        <PanelState
-          tone='progress'
-          icon={<HandCoins className='size-8' aria-hidden='true' />}
-          title='Pago pendiente de confirmación'
-          description='Tu pedido queda registrado. Nos pondremos en contacto contigo para coordinar el pago y lo confirmaremos a mano.'
-        />
+        <div className='flex flex-col gap-4'>
+          {charge?.instructions ? (
+            <PaymentInstructions instructions={charge.instructions} />
+          ) : (
+            <PanelState
+              tone='progress'
+              icon={<HandCoins className='size-8' aria-hidden='true' />}
+              title='Pago pendiente de confirmación'
+              description='Tu pedido queda registrado. Nos pondremos en contacto contigo para coordinar el pago y lo confirmaremos a mano.'
+            />
+          )}
+
+          {charge && (
+            <PaymentProofForm
+              orderId={order.id}
+              charge={charge}
+              onSubmitted={setCharge}
+            />
+          )}
+        </div>
       )}
     </section>
   );

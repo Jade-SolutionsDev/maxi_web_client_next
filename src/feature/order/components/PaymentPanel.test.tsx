@@ -1,8 +1,8 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { Order, PaymentCharge, PaymentMethod } from '../type/order.type';
 import { startPaymentAttempt } from '../action/order.action';
+import type { Order, PaymentCharge, PaymentMethod } from '../type/order.type';
 import { PaymentPanel } from './PaymentPanel';
 
 const refresh = vi.fn();
@@ -79,6 +79,9 @@ const charge = (overrides: Partial<PaymentCharge>): PaymentCharge => ({
   feeAmount: null,
   settlementAmount: null,
   errorMessage: null,
+  instructions: null,
+  customerReference: null,
+  receiptUrl: null,
   createdAt: '2026-09-03T10:00:00.000Z',
   ...overrides,
 });
