@@ -178,6 +178,31 @@ export const startPaymentAttempt = async (
   }
 };
 
+/**
+ * El comprobante viaja como FormData, así que la acción recibe el formulario
+ * entero en vez de un objeto ya validado.
+ */
+export const submitPaymentProofAction = async (
+  orderId: string,
+  formData: FormData,
+): Promise<PaymentResult> => {
+  const reference = String(formData.get('reference') ?? '').trim();
+  if (reference.length < 3) {
+    return { failure: { kind: 'unknown' } };
+  }
+
+  const receipt = formData.get('receipt');
+  const file = receipt instanceof File && receipt.size > 0 ? receipt : null;
+
+  try {
+    const payment = await orders.submitPaymentProof(orderId, reference, file);
+    revalidatePath(`/pedidos/${orderId}`);
+    return { payment };
+  } catch (error) {
+    return { failure: toOrderFailure(error) };
+  }
+};
+
 export const fetchPaymentMethods = async (): Promise<PaymentMethod[]> => {
   try {
     return await orders.getPaymentMethods();

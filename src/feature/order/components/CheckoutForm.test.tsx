@@ -109,7 +109,10 @@ const methods = [
 const fillRecipient = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.type(screen.getByLabelText(/nombre y apellido/i), 'Daniel Smith');
   await user.type(screen.getByLabelText(/carnet de identidad/i), '91031512345');
-  await user.type(screen.getByLabelText(/tel[eé]fono de contacto/i), '55512345');
+  await user.type(
+    screen.getByLabelText(/tel[eé]fono de contacto/i),
+    '55512345',
+  );
 };
 
 const submit = async () => {
@@ -333,10 +336,19 @@ describe('CheckoutForm', () => {
       />,
     );
 
-    await user.type(screen.getByLabelText(/nombre y apellido/i), 'Daniel Smith');
+    await user.type(
+      screen.getByLabelText(/nombre y apellido/i),
+      'Daniel Smith',
+    );
     // 30 de febrero: once dígitos, y aun así imposible.
-    await user.type(screen.getByLabelText(/carnet de identidad/i), '99023012345');
-    await user.type(screen.getByLabelText(/tel[eé]fono de contacto/i), '55512345');
+    await user.type(
+      screen.getByLabelText(/carnet de identidad/i),
+      '99023012345',
+    );
+    await user.type(
+      screen.getByLabelText(/tel[eé]fono de contacto/i),
+      '55512345',
+    );
     await user.click(screen.getByRole('button', { name: /Confirmar pedido/ }));
 
     await waitFor(() => expect(checkoutAction).not.toHaveBeenCalled());

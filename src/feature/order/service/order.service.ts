@@ -72,6 +72,23 @@ export const checkout = async (payload: CheckoutPayload): Promise<Order> => {
   return response.data;
 };
 
+export const submitPaymentProof = async (
+  orderId: string,
+  reference: string,
+  receipt?: File | null,
+): Promise<PaymentCharge> => {
+  const form = new FormData();
+  form.append('reference', reference);
+  if (receipt) form.append('receipt', receipt);
+
+  const response = await apiAuth<ApiResponse<PaymentCharge>>(
+    `${orderPath(orderId)}/payment/proof`,
+    { method: 'POST', body: form },
+  );
+
+  return response.data;
+};
+
 export const getOrders = async (
   page: number,
   limit: number,

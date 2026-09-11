@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { CUBAN_ID_MESSAGE, isCubanIdCard } from '@/feature/address/lib/cuban-id';
+import {
+  CUBAN_ID_MESSAGE,
+  isCubanIdCard,
+} from '@/feature/address/lib/cuban-id';
 import { AddressFormSchema } from '@/feature/address/schema/address.schema';
 
 export const CheckoutInputSchema = z
@@ -10,7 +13,11 @@ export const CheckoutInputSchema = z
      * dirección ya guardada: la dirección dice dónde, no a quién, y en una
      * recogida no hay dirección ninguna de la que sacarlo.
      */
-    recipientName: z.string().trim().min(1, 'Escribe el nombre y apellido').max(150),
+    recipientName: z
+      .string()
+      .trim()
+      .min(1, 'Escribe el nombre y apellido')
+      .max(150),
     idCard: z.string().trim().refine(isCubanIdCard, CUBAN_ID_MESSAGE),
     contactPhone: z
       .string()
