@@ -60,8 +60,16 @@ describe('PaymentInstructions', () => {
     );
 
     expect(screen.getByText('0xabc123')).toBeTruthy();
-    expect(screen.getByText(/Usa únicamente la red/)).toBeTruthy();
-    expect(screen.getAllByText('BEP20').length).toBeGreaterThan(0);
+    // El aviso va en un solo elemento: dentro de un <p> flex, cada nodo suelto
+    // se convierte en un item y la frase acaba repartida en columnas.
+    const warning = screen.getByText(
+      (_, element) =>
+        element?.tagName === 'SPAN' &&
+        /Usa únicamente la red BEP20\. Un envío por otra red puede perder los fondos\./.test(
+          element.textContent?.replace(/\s+/g, ' ') ?? '',
+        ),
+    );
+    expect(warning).toBeTruthy();
   });
 
   it('pide el memo cuando la dirección lo lleva', () => {

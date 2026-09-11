@@ -99,8 +99,10 @@ export const PaymentInstructions = ({
       <Field label='Dirección' value={instructions.address} />
       <p className='flex items-start gap-2 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900'>
         <TriangleAlert className='mt-0.5 size-4 shrink-0' aria-hidden='true' />
-        Usa únicamente la red <strong>{instructions.network}</strong>. Un envío
-        por otra red puede perder los fondos.
+        <span>
+          Usa únicamente la red <strong>{instructions.network}</strong>. Un
+          envío por otra red puede perder los fondos.
+        </span>
       </p>
       {instructions.memo && (
         <>
