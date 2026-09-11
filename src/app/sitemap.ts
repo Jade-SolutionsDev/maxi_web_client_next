@@ -39,6 +39,11 @@ const staticEntries = (): Entry[] => [
     changeFrequency: 'monthly',
     priority: 0.5,
   },
+  {
+    url: absoluteUrl('/preguntas-frecuentes'),
+    changeFrequency: 'monthly',
+    priority: 0.5,
+  },
 ];
 
 const departmentEntries = async (): Promise<Entry[]> => {

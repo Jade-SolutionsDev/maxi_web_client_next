@@ -2,16 +2,36 @@ import { DEFAULT_SITE_SETTINGS } from '../constants/site-settings.constants';
 import type {
   BannerSlide,
   CmsBannerResponse,
+  CmsFaqCategoryResponse,
   CmsPage,
   CmsPageLink,
   CmsPageResponse,
   CmsServiceResponse,
   CmsStaffMemberResponse,
+  FaqCategory,
   ServiceItem,
   SiteSettings,
   SiteSettingsResponse,
   StaffMember,
 } from '../type/cms.interface';
+
+export const toFaqCategory = (
+  category: CmsFaqCategoryResponse,
+): FaqCategory => ({
+  id: category.id,
+  title: category.title.trim(),
+  questions: category.questions.map((question) => ({
+    id: question.id,
+    question: question.question.trim(),
+    answer: question.answer.trim(),
+    ...(question.link && {
+      link: {
+        label: question.link.label.trim(),
+        href: question.link.href,
+      },
+    }),
+  })),
+});
 
 export const toBannerSlide = (banner: CmsBannerResponse): BannerSlide => ({
   id: banner.id,

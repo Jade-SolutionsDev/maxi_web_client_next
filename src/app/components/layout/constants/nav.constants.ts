@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { House, Info, LayoutGrid, Mail, Tags } from 'lucide-react';
+import { CircleHelp, House, Info, LayoutGrid, Mail, Tags } from 'lucide-react';
 
 export interface NavItem {
   label: string;
@@ -12,6 +12,11 @@ export const navItems: NavItem[] = [
   { label: 'Inicio', href: '/', icon: House },
   { label: 'Catálogo', href: '/catalog', icon: LayoutGrid },
   { label: 'Categorías', href: '/categorias', icon: Tags },
+  {
+    label: 'Preguntas frecuentes',
+    href: '/preguntas-frecuentes',
+    icon: CircleHelp,
+  },
   { label: 'Sobre nosotros', href: '/sobre-nosotros', icon: Info },
   { label: 'Contacto', href: '/contacto', icon: Mail },
 ];
