@@ -1,7 +1,7 @@
-import 'server-only';
+import "server-only";
 
-import { cacheLife, cacheTag } from 'next/cache';
-import { type ApiResponse, api } from '@/api/http';
+import { cacheLife, cacheTag } from "next/cache";
+import { type ApiResponse, api } from "@/api/http";
 import {
   toBannerSlide,
   toCmsPage,
@@ -10,8 +10,8 @@ import {
   toServiceItem,
   toSiteSettings,
   toStaffMember,
-} from '../adapter/cms.adapter';
-import { DEFAULT_SITE_SETTINGS } from '../constants/site-settings.constants';
+} from "../adapter/cms.adapter";
+import { DEFAULT_SITE_SETTINGS } from "../constants/site-settings.constants";
 import type {
   BannerSlide,
   CmsBannerResponse,
@@ -26,16 +26,27 @@ import type {
   SiteSettings,
   SiteSettingsResponse,
   StaffMember,
-} from '../type/cms.interface';
+} from "../type/cms.interface";
+
+/**
+ * Whether the FAQ page has anything to show: at least one active category
+ * with at least one active question. The public endpoint already drops empty
+ * and inactive categories, so this is just «is the list non-empty». While it is
+ * false the storefront hides the FAQ link everywhere (nav, drawer, sitemap).
+ */
+export const hasFaqContent = async (): Promise<boolean> => {
+  const categories = await getFaqCategories();
+  return categories.some((category) => category.questions.length > 0);
+};
 
 export const getFaqCategories = async (): Promise<FaqCategory[]> => {
-  'use cache';
-  cacheLife('hours');
-  cacheTag('cms');
+  "use cache";
+  cacheLife("hours");
+  cacheTag("cms");
 
   try {
     const { data } =
-      await api<ApiResponse<CmsFaqCategoryResponse[]>>('/public/cms/faqs');
+      await api<ApiResponse<CmsFaqCategoryResponse[]>>("/public/cms/faqs");
     return data.map(toFaqCategory);
   } catch {
     return [];
@@ -43,13 +54,13 @@ export const getFaqCategories = async (): Promise<FaqCategory[]> => {
 };
 
 export const getSiteSettings = async (): Promise<SiteSettings> => {
-  'use cache';
-  cacheLife('hours');
-  cacheTag('cms');
+  "use cache";
+  cacheLife("hours");
+  cacheTag("cms");
 
   try {
     const { data } = await api<ApiResponse<SiteSettingsResponse>>(
-      '/public/cms/settings',
+      "/public/cms/settings",
     );
     return toSiteSettings(data);
   } catch {
@@ -58,13 +69,13 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
 };
 
 export const getBanners = async (): Promise<BannerSlide[]> => {
-  'use cache';
-  cacheLife('hours');
-  cacheTag('cms');
+  "use cache";
+  cacheLife("hours");
+  cacheTag("cms");
 
   try {
     const { data } = await api<ApiResponse<CmsBannerResponse[]>>(
-      '/public/cms/banners',
+      "/public/cms/banners",
     );
     return data.map(toBannerSlide);
   } catch {
@@ -73,13 +84,13 @@ export const getBanners = async (): Promise<BannerSlide[]> => {
 };
 
 export const getCmsServices = async (): Promise<ServiceItem[]> => {
-  'use cache';
-  cacheLife('hours');
-  cacheTag('cms');
+  "use cache";
+  cacheLife("hours");
+  cacheTag("cms");
 
   try {
     const { data } = await api<ApiResponse<CmsServiceResponse[]>>(
-      '/public/cms/services',
+      "/public/cms/services",
     );
     return data.map(toServiceItem);
   } catch {
@@ -88,13 +99,13 @@ export const getCmsServices = async (): Promise<ServiceItem[]> => {
 };
 
 export const getStaff = async (): Promise<StaffMember[]> => {
-  'use cache';
-  cacheLife('hours');
-  cacheTag('cms');
+  "use cache";
+  cacheLife("hours");
+  cacheTag("cms");
 
   try {
     const { data } =
-      await api<ApiResponse<CmsStaffMemberResponse[]>>('/public/cms/staff');
+      await api<ApiResponse<CmsStaffMemberResponse[]>>("/public/cms/staff");
     return data.map(toStaffMember);
   } catch {
     return [];
@@ -102,13 +113,13 @@ export const getStaff = async (): Promise<StaffMember[]> => {
 };
 
 export const getCmsPages = async (): Promise<CmsPageLink[]> => {
-  'use cache';
-  cacheLife('hours');
-  cacheTag('cms');
+  "use cache";
+  cacheLife("hours");
+  cacheTag("cms");
 
   try {
     const { data } =
-      await api<ApiResponse<CmsPageResponse[]>>('/public/cms/pages');
+      await api<ApiResponse<CmsPageResponse[]>>("/public/cms/pages");
     return data.map(toCmsPageLink);
   } catch {
     return [];
@@ -116,9 +127,9 @@ export const getCmsPages = async (): Promise<CmsPageLink[]> => {
 };
 
 export const getCmsPage = async (slug: string): Promise<CmsPage | null> => {
-  'use cache';
-  cacheLife('hours');
-  cacheTag('cms');
+  "use cache";
+  cacheLife("hours");
+  cacheTag("cms");
 
   try {
     const { data } = await api<ApiResponse<CmsPageResponse>>(

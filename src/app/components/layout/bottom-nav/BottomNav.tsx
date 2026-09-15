@@ -1,19 +1,25 @@
-import { Cart } from '@/feature/cart/components/Cart';
-import { CartTabTrigger } from '@/feature/cart/components/CartTabTrigger';
-import { getSiteSettings } from '@/shared/cms/service/cms.service';
-import { MobileNav } from '../mobile-nav';
-import { BottomNavBoundary } from './BottomNavBoundary';
-import { bottomNavBarClass, bottomNavClass } from './bottom-nav.styles';
+import { Cart } from "@/feature/cart/components/Cart";
+import { CartTabTrigger } from "@/feature/cart/components/CartTabTrigger";
+import {
+  getSiteSettings,
+  hasFaqContent,
+} from "@/shared/cms/service/cms.service";
+import { MobileNav } from "../mobile-nav";
+import { BottomNavBoundary } from "./BottomNavBoundary";
+import { bottomNavBarClass, bottomNavClass } from "./bottom-nav.styles";
 
 export const BottomNav = async () => {
-  const { contact } = await getSiteSettings();
+  const [{ contact }, showFaq] = await Promise.all([
+    getSiteSettings(),
+    hasFaqContent(),
+  ]);
 
   return (
     <div className={bottomNavClass}>
-      <nav aria-label='Navegación principal' className={bottomNavBarClass}>
+      <nav aria-label="Navegación principal" className={bottomNavBarClass}>
         <BottomNavBoundary />
         <Cart trigger={<CartTabTrigger />} />
-        <MobileNav phone={contact.phone} />
+        <MobileNav phone={contact.phone} showFaq={showFaq} />
       </nav>
     </div>
   );

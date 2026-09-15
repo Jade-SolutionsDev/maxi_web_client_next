@@ -1,12 +1,12 @@
-import type { MetadataRoute } from 'next';
-import { cmsPageHref } from '@/feature/cms-page/constants/cms-page.constants';
-import { departmentHref } from '@/feature/product/constants/catalog-taxonomy-href';
-import { buildProductDetailHref } from '@/feature/product/constants/product-detail-href';
-import { getProducts } from '@/feature/product/service/product.service';
-import type { Product } from '@/feature/product/type/product.interface';
-import { getCmsPages } from '@/shared/cms/service/cms.service';
-import { absoluteUrl } from '@/shared/seo/site-url';
-import { getDepartments } from '@/shared/taxonomy/service/taxonomy.service';
+import type { MetadataRoute } from "next";
+import { cmsPageHref } from "@/feature/cms-page/constants/cms-page.constants";
+import { departmentHref } from "@/feature/product/constants/catalog-taxonomy-href";
+import { buildProductDetailHref } from "@/feature/product/constants/product-detail-href";
+import { getProducts } from "@/feature/product/service/product.service";
+import type { Product } from "@/feature/product/type/product.interface";
+import { getCmsPages, hasFaqContent } from "@/shared/cms/service/cms.service";
+import { absoluteUrl } from "@/shared/seo/site-url";
+import { getDepartments } from "@/shared/taxonomy/service/taxonomy.service";
 
 const PRODUCT_PAGE_SIZE = 200;
 const PRODUCT_PAGE_CAP = 100;
@@ -15,33 +15,33 @@ type Entry = MetadataRoute.Sitemap[number];
 
 const staticEntries = (): Entry[] => [
   {
-    url: absoluteUrl('/'),
-    changeFrequency: 'daily',
+    url: absoluteUrl("/"),
+    changeFrequency: "daily",
     priority: 1,
   },
   {
-    url: absoluteUrl('/catalog'),
-    changeFrequency: 'daily',
+    url: absoluteUrl("/catalog"),
+    changeFrequency: "daily",
     priority: 0.9,
   },
   {
-    url: absoluteUrl('/categorias'),
-    changeFrequency: 'weekly',
+    url: absoluteUrl("/categorias"),
+    changeFrequency: "weekly",
     priority: 0.8,
   },
   {
-    url: absoluteUrl('/sobre-nosotros'),
-    changeFrequency: 'monthly',
+    url: absoluteUrl("/sobre-nosotros"),
+    changeFrequency: "monthly",
     priority: 0.5,
   },
   {
-    url: absoluteUrl('/contacto'),
-    changeFrequency: 'monthly',
+    url: absoluteUrl("/contacto"),
+    changeFrequency: "monthly",
     priority: 0.5,
   },
   {
-    url: absoluteUrl('/preguntas-frecuentes'),
-    changeFrequency: 'monthly',
+    url: absoluteUrl("/preguntas-frecuentes"),
+    changeFrequency: "monthly",
     priority: 0.5,
   },
 ];
@@ -51,7 +51,7 @@ const departmentEntries = async (): Promise<Entry[]> => {
     const departments = await getDepartments();
     return departments.map((department) => ({
       url: absoluteUrl(departmentHref(department.slug)),
-      changeFrequency: 'daily',
+      changeFrequency: "daily",
       priority: 0.7,
     }));
   } catch {
@@ -64,7 +64,7 @@ const cmsPageEntries = async (): Promise<Entry[]> => {
 
   return pages.map(({ slug }) => ({
     url: absoluteUrl(cmsPageHref(slug)),
-    changeFrequency: 'monthly',
+    changeFrequency: "monthly",
     priority: 0.4,
   }));
 };
@@ -92,7 +92,7 @@ const productEntries = async (): Promise<Entry[]> => {
     const products = await collectProducts();
     return products.map((product) => ({
       url: absoluteUrl(buildProductDetailHref(product)),
-      changeFrequency: 'weekly',
+      changeFrequency: "weekly",
       priority: 0.6,
     }));
   } catch {
@@ -107,5 +107,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     productEntries(),
   ]);
 
-  return [...staticEntries(), ...departments, ...cmsPages, ...products];
+  // Same rule as the navigation: no published questions, no FAQ URL.
+  const showFaq = await hasFaqContent();
+  const statics = staticEntries().filter(
+    (entry) => showFaq || !entry.url.endsWith("/preguntas-frecuentes"),
+  );
+  return [...statics, ...departments, ...cmsPages, ...products];
 }
