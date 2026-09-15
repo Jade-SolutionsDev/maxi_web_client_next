@@ -8,7 +8,7 @@ import { getFaqCategories } from "@/shared/cms/service/cms.service";
 export const metadata: Metadata = {
   title: "Preguntas frecuentes",
   description:
-    "Resuelve tus dudas sobre los pagos con Mi Billetera, el estado de tu pedido y cómo obtener ayuda en Maxi Habana.",
+    "Respuestas a las dudas más comunes sobre pedidos, pagos, entregas y cómo obtener ayuda en Maxi Habana.",
   alternates: { canonical: "/preguntas-frecuentes" },
 };
 
