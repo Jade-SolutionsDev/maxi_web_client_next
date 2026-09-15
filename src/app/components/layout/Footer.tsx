@@ -76,6 +76,8 @@ export const Footer = async () => {
           </div>
         </div>
 
+        {/* Métodos de pago — oculto por ahora a petición de Jade (15-sep-2026).
+            Para restaurarlo, descomentar este bloque.
         <div className='mt-10 flex flex-wrap items-center gap-4'>
           <span className='text-xs font-semibold tracking-wider text-white/60'>
             MÉTODOS DE PAGO
@@ -84,6 +86,7 @@ export const Footer = async () => {
             Mi Billetera
           </span>
         </div>
+        */}
       </Container>
 
       {/* Barra inferior */}
