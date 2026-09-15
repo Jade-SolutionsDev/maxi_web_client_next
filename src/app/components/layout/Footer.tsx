@@ -2,7 +2,7 @@ import { Clock, Mail, Phone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Container } from '@/app/components/layout/Container';
-import jade from '@/assets/jade.svg';
+// import jade from '@/assets/jade.svg'; // ver el bloque «Desarrollado por» abajo
 import logo from '@/assets/logo.svg';
 import { toWhatsAppHref } from '@/helpers';
 import { getCmsPages, getSiteSettings } from '@/shared/cms/service/cms.service';
@@ -106,10 +106,12 @@ export const Footer = async () => {
       <div className='border-t border-white/10'>
         <Container className='flex flex-wrap items-center gap-x-2 gap-y-1 py-6 text-sm text-white/70'>
           <span>{footer.copyright}</span>
-          <span className='flex items-center gap-2'>
+          {/* Oculto por ahora a petición de Jade (15-sep-2026). Para volver a
+              mostrarlo, descomentar este bloque y el import de `jade` arriba. */}
+          {/* <span className='flex items-center gap-2'>
             Desarrollado por
             <Image src={jade} alt='Jade' height={20} />
-          </span>
+          </span> */}
         </Container>
       </div>
     </footer>
