@@ -1,17 +1,23 @@
-'use client';
+"use client";
 
-import { Sheet, SheetContent } from '@/app/components/ui/sheet';
-import { SignOutConfirmDialog } from '../SignOutConfirmDialog';
-import { useSignOutConfirm } from '../useSignOutConfirm';
-import { MobileNavFooter } from './MobileNavFooter';
-import { MobileNavHeader } from './MobileNavHeader';
-import { MobileNavList } from './MobileNavList';
-import { MobileNavTrigger } from './MobileNavTrigger';
+import { Sheet, SheetContent } from "@/app/components/ui/sheet";
+import { SignOutConfirmDialog } from "../SignOutConfirmDialog";
+import { useSignOutConfirm } from "../useSignOutConfirm";
+import { MobileNavFooter } from "./MobileNavFooter";
+import { MobileNavHeader } from "./MobileNavHeader";
+import { MobileNavList } from "./MobileNavList";
+import { MobileNavTrigger } from "./MobileNavTrigger";
 
 const sheetContentClass =
-  'mb-[var(--bottom-nav-height)] max-h-[75svh] gap-0 overflow-hidden p-0';
+  "mb-[var(--bottom-nav-height)] max-h-[75svh] gap-0 overflow-hidden p-0";
 
-export const MobileNav = ({ phone }: { phone: string }) => {
+export const MobileNav = ({
+  phone,
+  showFaq,
+}: {
+  phone: string;
+  showFaq: boolean;
+}) => {
   const signOutConfirm = useSignOutConfirm();
 
   return (
@@ -20,12 +26,12 @@ export const MobileNav = ({ phone }: { phone: string }) => {
         <MobileNavTrigger />
 
         <SheetContent
-          side='bottom'
+          side="bottom"
           showCloseButton={false}
           className={sheetContentClass}
         >
           <MobileNavHeader />
-          <MobileNavList />
+          <MobileNavList showFaq={showFaq} />
           <MobileNavFooter phone={phone} onSignOut={signOutConfirm.open} />
         </SheetContent>
       </Sheet>
