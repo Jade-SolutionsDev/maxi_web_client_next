@@ -1,9 +1,9 @@
 import {
   categoryHref,
   departmentHref,
-} from '@/feature/product/constants/catalog-taxonomy-href';
-import { buildProductDetailHref } from '@/feature/product/constants/product-detail-href';
-import type { CmsBannerTarget } from '@/shared/cms/type/cms.interface';
+} from "@/feature/product/constants/catalog-taxonomy-href";
+import { buildProductDetailHref } from "@/feature/product/constants/product-detail-href";
+import type { CmsBannerTarget } from "@/shared/cms/type/cms.interface";
 
 /** Keeps banner navigation aligned with the catalog's canonical route helpers. */
 export const bannerTargetHref = (
@@ -12,11 +12,11 @@ export const bannerTargetHref = (
   if (!target) return null;
 
   switch (target.type) {
-    case 'product':
+    case "product":
       return buildProductDetailHref(target);
-    case 'category':
+    case "category":
       return categoryHref(target.slug);
-    case 'department':
+    case "department":
       return departmentHref(target.slug);
     default:
       return null;
