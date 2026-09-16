@@ -1,44 +1,44 @@
 export type OrderStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled';
+  | "pending"
+  | "confirmed"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 
-export type OrderPaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
+export type OrderPaymentStatus = "pending" | "paid" | "failed" | "refunded";
 
 export type ChargeStatus =
-  | 'PENDING'
-  | 'REQUIRES_ACTION'
-  | 'PROCESSING'
-  | 'SUCCEEDED'
-  | 'FAILED'
-  | 'EXPIRED'
-  | 'CANCELLED';
+  | "PENDING"
+  | "REQUIRES_ACTION"
+  | "PROCESSING"
+  | "SUCCEEDED"
+  | "FAILED"
+  | "EXPIRED"
+  | "CANCELLED";
 
 export const TERMINAL_CHARGE_STATUSES: ChargeStatus[] = [
-  'SUCCEEDED',
-  'FAILED',
-  'EXPIRED',
-  'CANCELLED',
+  "SUCCEEDED",
+  "FAILED",
+  "EXPIRED",
+  "CANCELLED",
 ];
 
-export type PaymentKind = 'redirect' | 'instructions' | 'manual';
+export type PaymentKind = "redirect" | "instructions" | "manual";
 
 export type PaymentInstructions =
   | {
-      type: 'bank';
+      type: "bank";
       bankName: string;
       accountHolder?: string | null;
       accountNumber?: string | null;
       cardNumber?: string | null;
       note?: string | null;
     }
-  | { type: 'qr'; imageUrl: string; note?: string | null }
-  | { type: 'link'; url: string; note?: string | null }
+  | { type: "qr"; imageUrl: string; note?: string | null }
+  | { type: "link"; url: string; note?: string | null }
   | {
-      type: 'crypto';
+      type: "crypto";
       address: string;
       network: string;
       asset?: string | null;
@@ -55,8 +55,7 @@ export interface PaymentMethod {
 }
 
 export type CancellationReason =
-  | 'payment_not_received'
-  | 'paid_after_expiry_out_of_stock';
+  "payment_not_received" | "paid_after_expiry_out_of_stock";
 
 export interface OrderPaymentMethod {
   code: string;
@@ -117,7 +116,7 @@ export interface Order {
   payment?: PaymentCharge;
   paymentMethod?: OrderPaymentMethod;
   cancellationReason: CancellationReason | null;
-  fulfillmentType: 'delivery' | 'pickup';
+  fulfillmentType: "delivery" | "pickup";
   deliveryOptionLabel: string | null;
   pickupAddress: OrderPickupAddress | null;
   pickupLocationId: string | null;
@@ -126,15 +125,15 @@ export interface Order {
 }
 
 export type OrderFailure =
-  | { kind: 'stale-cart'; lines: { name: string; available: number }[] }
-  | { kind: 'empty-cart' }
-  | { kind: 'unauthenticated' }
-  | { kind: 'not-found' }
-  | { kind: 'already-paid' }
-  | { kind: 'payment-conflict' }
-  | { kind: 'gateway-unavailable' }
-  | { kind: 'no-payment' }
-  | { kind: 'unknown' };
+  | { kind: "stale-cart"; lines: { name: string; available: number }[] }
+  | { kind: "empty-cart" }
+  | { kind: "unauthenticated" }
+  | { kind: "not-found" }
+  | { kind: "already-paid" }
+  | { kind: "payment-conflict" }
+  | { kind: "gateway-unavailable" }
+  | { kind: "no-payment" }
+  | { kind: "unknown" };
 
 export type OrderResult =
   | { order: Order; failure?: undefined }

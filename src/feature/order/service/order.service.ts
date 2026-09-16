@@ -1,10 +1,10 @@
-import 'server-only';
+import "server-only";
 
-import { type ApiResponse, apiAuth } from '@/api/http';
-import type { FulfillmentOffer } from '../type/fulfillment.type';
-import type { Order, PaymentCharge, PaymentMethod } from '../type/order.type';
+import { type ApiResponse, apiAuth } from "@/api/http";
+import type { FulfillmentOffer } from "../type/fulfillment.type";
+import type { Order, PaymentCharge, PaymentMethod } from "../type/order.type";
 
-const ORDERS_PATH = '/storefront/orders';
+const ORDERS_PATH = "/storefront/orders";
 
 const orderPath = (orderId: string) =>
   `${ORDERS_PATH}/${encodeURIComponent(orderId)}`;
@@ -24,7 +24,7 @@ export interface CheckoutAddressPayload {
 }
 
 export interface CheckoutPayload {
-  fulfillmentType?: 'delivery' | 'pickup';
+  fulfillmentType?: "delivery" | "pickup";
   deliveryOptionId?: string;
   pickupAddressId?: string;
   addressId?: string;
@@ -39,7 +39,7 @@ export const getFulfillmentOffer = async (
   municipalityId?: string,
 ): Promise<FulfillmentOffer> => {
   const response = await apiAuth<ApiResponse<FulfillmentOffer>>(
-    '/storefront/fulfillment',
+    "/storefront/fulfillment",
     municipalityId ? { params: { municipalityId } } : undefined,
   );
 
@@ -48,7 +48,7 @@ export const getFulfillmentOffer = async (
 
 export const getPaymentMethods = async (): Promise<PaymentMethod[]> => {
   const response = await apiAuth<ApiResponse<PaymentMethod[]>>(
-    '/storefront/payment-methods',
+    "/storefront/payment-methods",
   );
 
   return response.data;
@@ -56,7 +56,7 @@ export const getPaymentMethods = async (): Promise<PaymentMethod[]> => {
 
 export const checkout = async (payload: CheckoutPayload): Promise<Order> => {
   const response = await apiAuth<ApiResponse<Order>>(ORDERS_PATH, {
-    method: 'POST',
+    method: "POST",
     body: payload,
   });
 
@@ -69,12 +69,12 @@ export const submitPaymentProof = async (
   receipt?: File | null,
 ): Promise<PaymentCharge> => {
   const form = new FormData();
-  form.append('reference', reference);
-  if (receipt) form.append('receipt', receipt);
+  form.append("reference", reference);
+  if (receipt) form.append("receipt", receipt);
 
   const response = await apiAuth<ApiResponse<PaymentCharge>>(
     `${orderPath(orderId)}/payment/proof`,
-    { method: 'POST', body: form },
+    { method: "POST", body: form },
   );
 
   return response.data;
@@ -100,7 +100,7 @@ export const getOrder = async (orderId: string): Promise<Order> => {
 export const cancelOrder = async (orderId: string): Promise<Order> => {
   const response = await apiAuth<ApiResponse<Order>>(
     `${orderPath(orderId)}/cancel`,
-    { method: 'POST' },
+    { method: "POST" },
   );
 
   return response.data;
@@ -120,7 +120,7 @@ export const startPayment = async (
 ): Promise<PaymentCharge> => {
   const response = await apiAuth<ApiResponse<PaymentCharge>>(
     `${orderPath(orderId)}/payment`,
-    { method: 'POST', body: method ? { method } : {} },
+    { method: "POST", body: method ? { method } : {} },
   );
 
   return response.data;

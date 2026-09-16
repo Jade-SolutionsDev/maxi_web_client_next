@@ -1,17 +1,17 @@
-import 'server-only';
+import "server-only";
 
-import { ApiError, SessionRequiredError } from './error';
-import { getSessionToken } from './session';
+import { ApiError, SessionRequiredError } from "./error";
+import { getSessionToken } from "./session";
 
-export { ApiError, SessionRequiredError } from './error';
+export { ApiError, SessionRequiredError } from "./error";
 
 const BASE_URL = process.env.API_URL;
 
 if (!BASE_URL) {
-  throw new Error('Missing API_URL environment variable');
+  throw new Error("Missing API_URL environment variable");
 }
 
-const trimTrailingSlash = (url: string) => url.replace(/\/+$/, '');
+const trimTrailingSlash = (url: string) => url.replace(/\/+$/, "");
 
 const API_BASE = trimTrailingSlash(BASE_URL);
 
@@ -29,7 +29,7 @@ export type Paginated<T> = {
   totalPages: number;
 };
 
-export type ApiOptions = Omit<RequestInit, 'body'> & {
+export type ApiOptions = Omit<RequestInit, "body"> & {
   params?: Record<string, string | number | boolean | undefined>;
   body?: unknown;
   next?: NextFetchRequestConfig;
@@ -44,7 +44,7 @@ export async function api<T>(
   const { params, body, headers, ...init } = options;
   // An absolute URL escapes API_BASE: some resources live on a different host.
   const url = new URL(
-    isAbsolute(path) ? path : `${API_BASE}/${path.replace(/^\/+/, '')}`,
+    isAbsolute(path) ? path : `${API_BASE}/${path.replace(/^\/+/, "")}`,
   );
   for (const [k, v] of Object.entries(params ?? {})) {
     if (v !== undefined) url.searchParams.set(k, String(v));
@@ -58,7 +58,7 @@ export async function api<T>(
       headers: {
         // Con FormData el navegador pone su propio Content-Type con el
         // boundary; fijarlo a mano rompe el parseo en el servidor.
-        ...(isMultipart ? {} : { 'Content-Type': 'application/json' }),
+        ...(isMultipart ? {} : { "Content-Type": "application/json" }),
         ...headers,
       },
       body: isMultipart ? body : body ? JSON.stringify(body) : undefined,
@@ -71,11 +71,11 @@ export async function api<T>(
     // in an ApiError with a writable message; re-throw anything else untouched.
     if (
       err instanceof DOMException &&
-      (err.name === 'TimeoutError' || err.name === 'AbortError')
+      (err.name === "TimeoutError" || err.name === "AbortError")
     ) {
       const timeoutError = new ApiError(
         408,
-        `${init.method ?? 'GET'} ${path} → request timed out`,
+        `${init.method ?? "GET"} ${path} → request timed out`,
       );
       timeoutError.cause = err;
       throw timeoutError;
@@ -87,7 +87,7 @@ export async function api<T>(
     const errorBody = await res.json().catch(() => null);
     throw new ApiError(
       res.status,
-      `${init.method ?? 'GET'} ${path} → ${res.status}`,
+      `${init.method ?? "GET"} ${path} → ${res.status}`,
       errorBody,
     );
   }
@@ -119,7 +119,7 @@ export async function apiAuth<T>(
 
   return api<T>(path, {
     ...options,
-    cache: 'no-store',
+    cache: "no-store",
     headers: {
       Authorization: `Bearer ${token}`,
       ...options.headers,
