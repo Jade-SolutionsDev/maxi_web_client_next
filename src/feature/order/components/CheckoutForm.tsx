@@ -27,6 +27,7 @@ import { FulfillmentMethodTabs } from './FulfillmentMethodTabs';
 import { FulfillmentUnavailable } from './FulfillmentUnavailable';
 import { PaymentMethodSelector } from './PaymentMethodSelector';
 import { PickupPointSelector } from './PickupPointSelector';
+import { RecipientFields } from './RecipientFields';
 
 interface CheckoutFormProps {
   paymentMethods: PaymentMethod[];
@@ -142,7 +143,8 @@ export const CheckoutForm = ({
        * como si su clic no hubiera hecho nada. Se le pasa cuál falló para que
        * la ficha lo diga.
        */
-      const noSePudoCobrar = Boolean(values.paymentMethod) && !result.order.payment;
+      const noSePudoCobrar =
+        Boolean(values.paymentMethod) && !result.order.payment;
       const destino = noSePudoCobrar
         ? `/pedidos/${result.order.id}?pagoFallido=${encodeURIComponent(values.paymentMethod as string)}`
         : `/pedidos/${result.order.id}`;

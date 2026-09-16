@@ -26,6 +26,26 @@ export const TERMINAL_CHARGE_STATUSES: ChargeStatus[] = [
 
 export type PaymentKind = 'redirect' | 'instructions' | 'manual';
 
+export type PaymentInstructions =
+  | {
+      type: 'bank';
+      bankName: string;
+      accountHolder?: string | null;
+      accountNumber?: string | null;
+      cardNumber?: string | null;
+      note?: string | null;
+    }
+  | { type: 'qr'; imageUrl: string; note?: string | null }
+  | { type: 'link'; url: string; note?: string | null }
+  | {
+      type: 'crypto';
+      address: string;
+      network: string;
+      asset?: string | null;
+      memo?: string | null;
+      note?: string | null;
+    };
+
 export interface PaymentMethod {
   code: string;
   label: string;
@@ -61,6 +81,9 @@ export interface PaymentCharge {
   feeAmount: string | null;
   settlementAmount: string | null;
   errorMessage: string | null;
+  instructions: PaymentInstructions | null;
+  customerReference: string | null;
+  receiptUrl: string | null;
   createdAt: string;
 }
 

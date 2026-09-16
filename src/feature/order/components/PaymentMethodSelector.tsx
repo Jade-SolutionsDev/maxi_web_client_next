@@ -49,10 +49,7 @@ export const PaymentMethodSelector = ({
               </span>
             )}
           </span>
-          <Check
-            className='size-4 shrink-0 text-primary'
-            aria-hidden='true'
-          />
+          <Check className='size-4 shrink-0 text-primary' aria-hidden='true' />
         </div>
       </div>
     );
