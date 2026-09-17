@@ -67,6 +67,13 @@ export default function RootLayout({
       <body className='flex min-h-full flex-col pb-[var(--bottom-nav-height)]'>
         <ClerkProvider
           allowedRedirectOrigins={['http://localhost:3000', SITE_URL]}
+          /*
+            El captcha del registro lo pinta Cloudflare Turnstile a través de
+            Clerk, y su idioma NO sale del <html lang='es'>: Clerk lo toma de
+            appearance.captcha.language, y si no se dice nada cae en 'en-US'.
+            En una tienda cubana salía «Verify you are human».
+          */
+          appearance={{ captcha: { language: 'es-ES' } }}
         >
           {/*
             El adaptador envuelve todo, no solo <main>: el buscador de la
