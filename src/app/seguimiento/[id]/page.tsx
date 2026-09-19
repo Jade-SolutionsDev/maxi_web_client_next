@@ -138,7 +138,7 @@ export default function SeguimientoPage({
   params: Promise<{ id: string }>;
 }) {
   return (
-    <main>
+    <>
       <PageHero
         title='Seguimiento de tu pedido'
         titleId='seguimiento-title'
@@ -153,6 +153,6 @@ export default function SeguimientoPage({
       >
         <SeguimientoContenido params={params} />
       </Suspense>
-    </main>
+    </>
   );
 }
