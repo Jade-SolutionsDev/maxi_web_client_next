@@ -1,0 +1,43 @@
+# Comprobaciones en cada propuesta de cambios.
+#
+# Capa 1 de la integración continua: las 98 pruebas unitarias, que corren en
+# segundos y no necesitan nada levantado.
+#
+# Dos cosas quedan fuera a propósito:
+#  - `next build` necesita las claves de Clerk; entra cuando estén como
+#    secretos del repositorio.
+#  - Las pruebas de navegador (MxH-0085) necesitan la API y una base, y van
+#    en su propia capa.
+name: Comprobaciones
+
+on:
+  pull_request:
+  push:
+    branches: [development, main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  comprobar:
+    name: Pruebas unitarias
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Instalar dependencias
+        run: bun install --frozen-lockfile
+
+      - name: Pruebas
+        run: bun run vitest run
+
+      - name: Linter (informativo)
+        continue-on-error: true
+        run: bun run lint
