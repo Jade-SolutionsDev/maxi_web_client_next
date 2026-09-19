@@ -121,6 +121,12 @@ export interface Order {
   deliveryOptionLabel: string | null;
   pickupAddress: OrderPickupAddress | null;
   pickupLocationId: string | null;
+  /** Días comprometidos de entrega, según la opción elegida. */
+  promiseDays: number | null;
+  /** Fecha comprometida, que la API calcula al cobrarse el pedido. */
+  promisedAt: string | null;
+  /** Identificador del enlace público de seguimiento (MxH-0059). */
+  trackingId: string | null;
   createdAt: string;
   updatedAt: string;
 }

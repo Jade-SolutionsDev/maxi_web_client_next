@@ -15,6 +15,7 @@ import { CancellationNotice } from '@/feature/order/components/CancellationNotic
 import { CancelOrderButton } from '@/feature/order/components/CancelOrderButton';
 import { OrderDeliveryDetails } from '@/feature/order/components/OrderDeliveryDetails';
 import { OrderDetailSkeleton } from '@/feature/order/components/OrderDetailSkeleton';
+import { OrderPromiseAndTracking } from '@/feature/order/components/OrderPromiseAndTracking';
 import {
   OrderStatusPill,
   PaymentStatusPill,
@@ -79,6 +80,8 @@ async function OrderDetailContent({
       </header>
 
       <CancellationNotice order={order} />
+
+      <OrderPromiseAndTracking order={order} />
 
       <div className='grid gap-6 lg:grid-cols-[1fr_minmax(320px,420px)] lg:items-start'>
         <div className='flex flex-col gap-6'>

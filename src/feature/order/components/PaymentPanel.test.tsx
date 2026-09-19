@@ -57,6 +57,9 @@ const order: Order = {
   deliveryOptionLabel: 'Mensajería',
   pickupAddress: null,
   pickupLocationId: null,
+  promiseDays: null,
+  promisedAt: null,
+  trackingId: null,
   createdAt: '2026-09-03T10:00:00.000Z',
   updatedAt: '2026-09-03T10:00:00.000Z',
 };
