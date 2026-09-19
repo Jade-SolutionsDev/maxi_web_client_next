@@ -10,6 +10,7 @@ import {
   useState,
 } from 'react';
 import fallbackImage from '@/assets/fallback.jpeg';
+import { imagenPermitida } from '@/lib/image-hosts';
 import { cn } from '@/lib/utils';
 
 type SafeImageProps = Omit<ImageProps, 'src'> & {
@@ -58,7 +59,20 @@ export function SafeImage({
     [ref],
   );
 
-  const resolvedSrc = didError || !src ? fallbackSrc : src;
+  // Una URL de un host no autorizado no se le puede dar a next/image: lanza al
+  // renderizar y se lleva por delante la página entera, no solo esta imagen
+  // (MxH-0086). `onError` no llega a tiempo, así que se comprueba antes.
+  const hostRechazado = typeof src === 'string' && !imagenPermitida(src);
+
+  if (process.env.NODE_ENV === 'development' && hostRechazado) {
+    console.warn(
+      `[SafeImage] «${src}» no está entre los sitios de imagen permitidos; ` +
+        'se muestra la imagen de respaldo. Si el sitio es legítimo, añádelo en ' +
+        'src/lib/image-hosts.ts.',
+    );
+  }
+
+  const resolvedSrc = didError || !src || hostRechazado ? fallbackSrc : src;
 
   const showPreview = Boolean(fill) && !unoptimized;
 
