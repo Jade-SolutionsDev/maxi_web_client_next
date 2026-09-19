@@ -15,6 +15,9 @@ vi.stubGlobal(
 const cartHasLines = vi.fn(() => true);
 const clearCartForNewMunicipality = vi.fn();
 
+const usePathname = vi.fn(() => '/catalog');
+vi.mock('next/navigation', () => ({ usePathname: () => usePathname() }));
+
 vi.mock('@/feature/cart/lib/cart-zone-reset', () => ({
   cartHasLines: () => cartHasLines(),
   clearCartForNewMunicipality: () => clearCartForNewMunicipality(),
@@ -157,5 +160,39 @@ describe('LocationPicker', () => {
       expect(onSubmit).toHaveBeenCalledWith({ municipalityId: vinales });
     });
     expect(screen.queryByText(/¿Deseas cambiar tu ubicación\?/)).toBeNull();
+  });
+});
+
+describe('en la página de seguimiento', () => {
+  // El enlace de seguimiento se abre desde WhatsApp o un correo, y quien lo
+  // abre no viene a comprar: el selector de zona tapaba la pantalla entera.
+  it('no se abre solo, aunque no haya zona elegida', () => {
+    usePathname.mockReturnValue('/seguimiento/abc123');
+
+    render(
+      <LocationPicker
+        provinces={provinces}
+        municipalitiesByProvince={municipalitiesByProvince}
+        selected={null}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByText('¿Dónde estás?')).toBeNull();
+  });
+
+  it('en el resto de la tienda sigue abriéndose', () => {
+    usePathname.mockReturnValue('/catalog');
+
+    render(
+      <LocationPicker
+        provinces={provinces}
+        municipalitiesByProvince={municipalitiesByProvince}
+        selected={null}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('¿Dónde estás?')).toBeTruthy();
   });
 });

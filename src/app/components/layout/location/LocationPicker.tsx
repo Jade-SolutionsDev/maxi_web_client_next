@@ -1,6 +1,7 @@
 'use client';
 
 import { MapPin } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { ConfirmDialog } from '@/app/components/form/ConfirmDialog';
 import {
@@ -44,7 +45,17 @@ export const LocationPicker = ({
   onSubmit,
   className,
 }: LocationPickerProps) => {
-  const [isOpen, setIsOpen] = useState(selected === null);
+  /**
+   * Rutas donde no se pregunta la zona nada más entrar. El seguimiento de un
+   * pedido se abre desde un enlace reenviado —WhatsApp, un correo— y quien lo
+   * abre no viene a comprar: encontrarse un formulario de provincia y
+   * municipio tapando la pantalla es pedirle datos para algo que no pidió.
+   * El selector sigue estando en la cabecera por si quiere usarlo.
+   */
+  const ruta = usePathname();
+  const preguntarLaZona = !ruta?.startsWith('/seguimiento');
+
+  const [isOpen, setIsOpen] = useState(selected === null && preguntarLaZona);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const answerConfirm = useRef<((accepted: boolean) => void) | null>(null);
 
