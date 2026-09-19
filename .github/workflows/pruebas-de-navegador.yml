@@ -1,0 +1,155 @@
+# Pruebas de navegador (MxH-0085), en un entorno que se crea y se tira.
+#
+# Levanta Postgres, la API y la tienda dentro del propio runner, así que no
+# roza el servidor donde vive la tienda de verdad. Las pruebas siembran datos
+# atacando la base directamente: aquí esa base es la del runner y muere con
+# él, en vez de ser la de staging por `sudo docker exec`.
+#
+# Se dispara a mano y una vez al día. Cuando se demuestre estable, se añade a
+# las propuestas hacia `main` para que nada llegue a producción sin pasarla.
+#
+# Necesita cuatro secretos en el repositorio; sin ellos el trabajo se salta
+# solo, en vez de fallar en rojo todas las noches:
+#   E2E_REPO_TOKEN   — token con permiso de lectura sobre maxi_api_nestjs
+#   CLERK_PUBLISHABLE_KEY / CLERK_SECRET_KEY — las de prueba (pk_test/sk_test)
+#   E2E_EMAIL / E2E_PASSWORD — la cuenta con la que las pruebas inician sesión
+name: Pruebas de navegador
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 06:00 UTC = 01:00 en Cuba, con el servidor tranquilo.
+    - cron: '0 6 * * *'
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  navegador:
+    name: Tienda de extremo a extremo
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Sin secretos no hay nada que hacer: mejor saltarse el trabajo que
+    # acumular fallos rojos que nadie mira.
+    if: ${{ vars.E2E_LISTO == 'si' }}
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: maxi
+          POSTGRES_PASSWORD: maxi
+          POSTGRES_DB: maxi_e2e
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://maxi:maxi@localhost:5432/maxi_e2e
+      API_PORT: '4000'
+      TIENDA_PORT: '3001'
+
+    steps:
+      - name: Traer la tienda
+        uses: actions/checkout@v4
+
+      - name: Traer la API
+        uses: actions/checkout@v4
+        with:
+          repository: Jade-SolutionsDev/maxi_api_nestjs
+          ref: develop
+          token: ${{ secrets.E2E_REPO_TOKEN }}
+          path: api
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Arrancar la API
+        working-directory: api
+        env:
+          NODE_ENV: development
+          PORT: ${{ env.API_PORT }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+          CLERK_BACKOFFICE_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CORS_ORIGINS: http://localhost:3001
+          CRON_SECRET: e2e-cron
+          ALLOW_UNVERIFIED_WEBHOOKS: 'true'
+        run: |
+          pnpm install --frozen-lockfile
+          # Las migraciones corren al arrancar: si fallan, la API no levanta.
+          pnpm exec nest build
+          node dist/main.js &
+          echo "Esperando a la API…"
+          for i in $(seq 1 60); do
+            curl -sf "http://localhost:${API_PORT}/api/health" >/dev/null && break
+            sleep 2
+          done
+          curl -sf "http://localhost:${API_PORT}/api/health" || {
+            echo "La API no arrancó"; exit 1;
+          }
+
+      - name: Arrancar la tienda
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          NEXT_PUBLIC_API_URL: http://localhost:4000/api
+          PORT: ${{ env.TIENDA_PORT }}
+        run: |
+          bun install --frozen-lockfile
+          bun run build
+          bun run start --port "${TIENDA_PORT}" &
+          for i in $(seq 1 60); do
+            curl -sf "http://localhost:${TIENDA_PORT}" >/dev/null && break
+            sleep 2
+          done
+          curl -sf "http://localhost:${TIENDA_PORT}" || {
+            echo "La tienda no arrancó"; exit 1;
+          }
+
+      - name: Instalar el navegador
+        run: bunx playwright install --with-deps chromium
+
+      - name: Correr las pruebas
+        env:
+          # Chromium en vez del Chrome del sistema: el runner no lo trae.
+          E2E_CANAL: chromium
+          E2E_BASE_URL: http://localhost:3001
+          E2E_TIENDA: http://localhost:3001
+          E2E_API: http://localhost:4000/api
+          CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+          E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+          # La base es la del runner: se ataca directa, sin sudo ni contenedor.
+          E2E_DB_SUDO: 'false'
+          E2E_DB_NOMBRE: maxi_e2e
+          E2E_DB_USUARIO: maxi
+          PGPASSWORD: maxi
+          PGHOST: localhost
+          E2E_TIMEOUT: '90000'
+        run: bun run test:e2e
+
+      - name: Guardar el informe
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-pruebas-navegador
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
