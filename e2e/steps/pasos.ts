@@ -108,6 +108,24 @@ Given(
   },
 );
 
+/**
+ * MxH-0086. La imagen se cambia después de sembrar el producto, que es como
+ * ocurre de verdad: alguien pega a mano una URL de un sitio que la tienda no
+ * tiene autorizado. Antes bastaba con esto para dejar el catálogo entero en
+ * «Algo salió mal».
+ */
+Given(
+  "que el producto {string} tiene una imagen de un dominio no autorizado",
+  async ({}, nombre: string) => {
+    const producto = productoSembrado(nombre);
+    expect(producto, `el producto "${nombre}" no está sembrado`).toBeTruthy();
+    sql(
+      `UPDATE products SET image_url = 'https://x/p.png' WHERE slug = '${producto!.slug}'`,
+    );
+    await invalidarCatalogo();
+  },
+);
+
 // ------------------------------------------------------------------- Acciones
 
 When("el cliente abre el catálogo", async ({ page }) => {
