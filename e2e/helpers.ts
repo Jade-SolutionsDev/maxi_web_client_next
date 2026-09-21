@@ -67,7 +67,15 @@ function contenedor(): string {
 /** Ejecuta SQL contra la base y devuelve las filas en texto. */
 export function sql(consulta: string): string {
   if (COMANDO_PROPIO) {
-    return limpiar(ejecutar(COMANDO_PROPIO, ["-qtAc", consulta]));
+    // La variable trae el comando con sus opciones —"sudo -n /usr/local/..."—
+    // y execFile no parte cadenas: hay que separarlas o busca un programa que
+    // se llame igual que la linea entera.
+    const [programa, ...previos] = COMANDO_PROPIO.trim().split(/\s+/);
+    return limpiar(
+      execFileSync(programa, [...previos, "-qtAc", consulta], {
+        encoding: "utf8",
+      }),
+    );
   }
 
   const salida = ejecutar("docker", [
