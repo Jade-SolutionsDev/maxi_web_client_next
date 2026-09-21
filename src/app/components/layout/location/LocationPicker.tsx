@@ -124,9 +124,19 @@ export const LocationPicker = ({
           <DialogTitle className='text-lg font-bold text-heading'>
             ¿Dónde estás?
           </DialogTitle>
+          {/*
+            Este texto nació de una queja real: una clienta eligió Arroyo
+            Naranjo y escribió preguntando si repartíamos allí. «Tu zona»,
+            junto a un selector con las quince provincias, se lee como una
+            dirección de reparto aunque solo sirva para filtrar el catálogo.
+
+            OJO al activar la entrega a domicilio: la última frase deja de ser
+            cierta y hay que quitarla o condicionarla.
+          */}
           <DialogDescription className='text-muted'>
-            Elige tu provincia y municipio para ver los productos disponibles en
-            tu zona.
+            Lo usamos para mostrarte lo que hay disponible cerca de ti. No es
+            una dirección de entrega: hoy los pedidos se recogen en nuestros
+            locales.
           </DialogDescription>
         </DialogHeader>
 
