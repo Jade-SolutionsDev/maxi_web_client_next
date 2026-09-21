@@ -1,5 +1,13 @@
 import type { NextConfig } from 'next';
+import { revisarClaveDeClerk } from './src/lib/clerk-key';
 import { patronesDeImagen } from './src/lib/image-hosts';
+
+const problemaConClerk = revisarClaveDeClerk({
+  clave: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  sitio: process.env.NEXT_PUBLIC_SITE_URL,
+});
+
+if (problemaConClerk) throw new Error(problemaConClerk);
 
 // Los sitios permitidos viven en `src/lib/image-hosts.ts` porque los necesitan
 // dos lados: esta configuración, para autorizarlos, y `SafeImage`, para saber
