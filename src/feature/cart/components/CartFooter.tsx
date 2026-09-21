@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { SheetClose, SheetFooter } from '@/app/components/ui/sheet';
+import { CuentasNoDisponibles } from '@/feature/auth/components/CuentasNoDisponibles';
+import { useClerkDisponible } from '@/feature/auth/hook/useClerkDisponible';
 import { formatPrice } from '@/helpers';
 import { notify } from '@/lib/notify';
 import { useCartData } from '../hook/useCart';
@@ -18,6 +20,7 @@ interface CartFooterProps {
 export const CartFooter = ({ closeSheet }: CartFooterProps) => {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
+  const { caido } = useClerkDisponible();
   const mode = useCartStore((state) => state.mode);
   const adoptGuestCart = useCartStore((state) => state.actions.adoptGuestCart);
   const [isPreparing, setIsPreparing] = useState(false);
@@ -47,7 +50,7 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
   const handleCheckout = async () => {
     if (!isSignedIn) {
       closeSheet();
-      notify.info('Iniciá sesión para completar tu compra', {
+      notify.info('Inicia sesión para completar tu compra', {
         id: 'checkout-login',
         description: 'Tu carrito se conserva al iniciar sesión.',
       });
@@ -114,6 +117,13 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
         <p className='rounded-xl bg-destructive/10 px-3 py-2 text-sm font-semibold text-destructive'>
           Ajusta o quita los productos sin stock para continuar.
         </p>
+      )}
+
+      {caido && (
+        <CuentasNoDisponibles>
+          No podemos conectar con el servicio de cuentas y no se puede terminar
+          la compra aquí.
+        </CuentasNoDisponibles>
       )}
 
       <Button
