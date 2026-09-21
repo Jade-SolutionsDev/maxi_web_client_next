@@ -75,15 +75,18 @@ const chooseOption = async (
   await user.click(await screen.findByRole('option', { name: option }));
 };
 
+// El cleanup vivía dentro del primer describe, así que los bloques de abajo
+// heredaban el DOM del anterior y pasaban o fallaban según el orden. A nivel
+// de fichero cada prueba arranca con la pantalla vacía.
+afterEach(() => {
+  cleanup();
+});
+
 describe('LocationPicker', () => {
   beforeEach(() => {
     onSubmit.mockClear();
     cartHasLines.mockClear().mockReturnValue(true);
     clearCartForNewMunicipality.mockClear();
-  });
-
-  afterEach(() => {
-    cleanup();
   });
 
   it('warns before leaving the province with a cart, and saves once accepted', async () => {
@@ -160,6 +163,30 @@ describe('LocationPicker', () => {
       expect(onSubmit).toHaveBeenCalledWith({ municipalityId: vinales });
     });
     expect(screen.queryByText(/¿Deseas cambiar tu ubicación\?/)).toBeNull();
+  });
+});
+
+describe.each([
+  ['/login', 'entrar'],
+  ['/register', 'registrarse'],
+  ['/register/verify', 'confirmar el correo'],
+  ['/reset-password', 'recuperar la clave'],
+])('en %s', (ruta, loQueViene) => {
+  // El diálogo se abría encima del formulario y tapaba el botón: tres
+  // escenarios de navegador morían por timeout al pulsar «Enviar código».
+  it(`no tapa el formulario de ${loQueViene}`, () => {
+    usePathname.mockReturnValue(ruta);
+
+    render(
+      <LocationPicker
+        provinces={provinces}
+        municipalitiesByProvince={municipalitiesByProvince}
+        selected={null}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByText('¿Dónde estás?')).toBeNull();
   });
 });
 
