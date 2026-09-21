@@ -196,3 +196,26 @@ describe('en la página de seguimiento', () => {
     expect(screen.getByText('¿Dónde estás?')).toBeTruthy();
   });
 });
+
+describe('el texto del diálogo', () => {
+  // Una clienta eligió su municipio creyendo que pedía entrega a domicilio y
+  // escribió preguntando si repartíamos allí. El diálogo tiene que decir para
+  // qué sirve la zona. Cuando se active la entrega a domicilio, esta prueba
+  // falla a propósito: la frase deja de ser cierta y hay que rehacerla.
+  it('aclara que la zona no es una dirección de entrega', () => {
+    usePathname.mockReturnValue('/catalog');
+
+    render(
+      <LocationPicker
+        provinces={provinces}
+        municipalitiesByProvince={municipalitiesByProvince}
+        selected={null}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getAllByText(/No es una dirección de entrega/).length,
+    ).toBeGreaterThan(0);
+  });
+});
