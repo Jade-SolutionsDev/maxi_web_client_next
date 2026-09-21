@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
 import {
+  almacenDeLasPruebas,
   API,
   invalidarCatalogo,
   municipioConCobertura,
@@ -53,9 +54,7 @@ function sembrarConExistencias(
     nombre,
     sembrarProducto(nombre, rebaja, precio, grupo),
   );
-  const almacen = sql(
-    "SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1",
-  );
+  const almacen = almacenDeLasPruebas();
   sql(
     `INSERT INTO inventory (location_id, product_id, quantity) VALUES ('${almacen}', '${sembrado.id}', ${unidades})`,
   );

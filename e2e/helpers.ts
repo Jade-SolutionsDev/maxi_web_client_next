@@ -159,14 +159,34 @@ export function sqlFilas(consulta: string): string[] {
     .filter((l) => l && !/^(INSERT|UPDATE|DELETE|SELECT) \d/.test(l));
 }
 
-/** Municipio cualquiera de una provincia con cobertura, para la cookie de zona. */
+/**
+ * El almacen donde siembran las pruebas: el mas antiguo activo. Vive aqui, y no
+ * repetido en cada paso, porque la zona del escenario tiene que salir de este
+ * mismo almacen.
+ */
+export const ALMACEN_DE_LAS_PRUEBAS = `
+  SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1`;
+
+export function almacenDeLasPruebas(): string {
+  return sql(ALMACEN_DE_LAS_PRUEBAS);
+}
+
+/**
+ * Un municipio que cubra EL ALMACEN DONDE SE SIEMBRA, para la cookie de zona.
+ *
+ * Antes era «un municipio cualquiera de una provincia con cobertura», y con
+ * varios almacenes eso separaba las dos mitades del escenario: las existencias
+ * iban al mas antiguo —«Almacen Central La Habana», que solo cubre La Habana—
+ * y la cookie se plantaba en Antilla, Holguin, el primero por orden alfabetico.
+ * El escenario buscaba en Holguin un producto que solo existia en La Habana. En
+ * una base con un solo almacen las dos consultas coinciden y no se nota.
+ */
 export function municipioConCobertura(): string {
   return sql(`
     SELECT m.id FROM municipalities m
-     WHERE EXISTS (
-       SELECT 1 FROM stock_location_coverage c
-        JOIN stock_locations sl ON sl.id = c.location_id AND sl.is_active
-       WHERE c.province_id = m.province_id)
+     JOIN stock_location_coverage c ON c.province_id = m.province_id
+     JOIN stock_locations sl ON sl.id = c.location_id AND sl.is_active
+     WHERE sl.id = (${ALMACEN_DE_LAS_PRUEBAS})
      ORDER BY m.name LIMIT 1`);
 }
 
