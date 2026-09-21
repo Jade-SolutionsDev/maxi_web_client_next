@@ -13,6 +13,7 @@ import {
 } from '@/feature/order/action/order.action';
 import { CancellationNotice } from '@/feature/order/components/CancellationNotice';
 import { CancelOrderButton } from '@/feature/order/components/CancelOrderButton';
+import { CompraConfirmada } from '@/feature/order/components/CompraConfirmada';
 import { OrderDeliveryDetails } from '@/feature/order/components/OrderDeliveryDetails';
 import { OrderDetailSkeleton } from '@/feature/order/components/OrderDetailSkeleton';
 import { OrderPromiseAndTracking } from '@/feature/order/components/OrderPromiseAndTracking';
@@ -78,6 +79,11 @@ async function OrderDetailContent({
           )}
         </div>
       </header>
+
+      <CompraConfirmada
+        orderNumber={order.orderNumber ?? null}
+        esperandoPago={order.paymentStatus === 'pending'}
+      />
 
       <CancellationNotice order={order} />
 

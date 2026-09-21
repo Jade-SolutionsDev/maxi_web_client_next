@@ -32,3 +32,17 @@ export const formatCountdown = (totalSeconds: number): string => {
 
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 };
+
+export const plazoEnPalabras = (minutos: number): string => {
+  if (!Number.isFinite(minutos) || minutos <= 0) return '';
+
+  const horas = Math.floor(minutos / 60);
+  const resto = minutos % 60;
+  const enHoras = horas === 1 ? '1 hora' : `${horas} horas`;
+  const enMinutos = resto === 1 ? '1 minuto' : `${resto} minutos`;
+
+  if (horas === 0) return enMinutos;
+  if (resto === 0) return enHoras;
+
+  return `${enHoras} y ${enMinutos}`;
+};

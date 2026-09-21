@@ -94,6 +94,7 @@ const methods = [
     description: 'Paga con tarjeta.',
     icon: 'CreditCard',
     kind: 'redirect' as const,
+    holdMinutes: 30,
   },
   {
     code: 'manual',
@@ -101,6 +102,7 @@ const methods = [
     description: 'Coordinamos el pago.',
     icon: 'HandCoins',
     kind: 'manual' as const,
+    holdMinutes: 24 * 60,
   },
 ];
 
@@ -156,7 +158,7 @@ describe('CheckoutForm', () => {
     await waitFor(() => expect(markCheckedOut).toHaveBeenCalled());
   });
 
-  it('navigates to the order once the checkout succeeds', async () => {
+  it('navigates to the order once the checkout succeeds, saying the purchase went through', async () => {
     render(
       <CheckoutForm
         paymentMethods={methods}
@@ -169,7 +171,44 @@ describe('CheckoutForm', () => {
 
     await submit();
 
-    await waitFor(() => expect(push).toHaveBeenCalledWith('/pedidos/order-1'));
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith('/pedidos/order-1?compraConfirmada=1'),
+    );
+  });
+
+  it('dice cuánto se aparta el stock con el método elegido', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.getByText(/30 minutos/)).toBeTruthy();
+    expect(screen.getByText(/el pedido se cancela/)).toBeTruthy();
+  });
+
+  it('no promete ningún plazo si la API todavía no lo manda', () => {
+    const sinPlazo = methods.map((method) => ({
+      ...method,
+      holdMinutes: null,
+    }));
+
+    render(
+      <CheckoutForm
+        paymentMethods={sinPlazo}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.queryByText(/30 minutos/)).toBeNull();
+    expect(screen.getByText(/reservamos tu stock/)).toBeTruthy();
   });
 
   /**
