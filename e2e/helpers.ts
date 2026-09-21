@@ -66,19 +66,27 @@ function contenedor(): string {
 
 /** Ejecuta SQL contra la base y devuelve las filas en texto. */
 export function sql(consulta: string): string {
+  return limpiar(consultar(consulta));
+}
+
+/**
+ * Habla con la base, por el camino que toque. Todo lo que consulte tiene que
+ * pasar por aqui: cuando `sql` y `sqlFilas` tenian cada una su propia copia,
+ * adaptar una y olvidar la otra dejo media suite sin zona de entrega y con el
+ * catalogo vacio, sin un solo error que lo dijera.
+ */
+function consultar(consulta: string): string {
   if (COMANDO_PROPIO) {
     // La variable trae el comando con sus opciones —"sudo -n /usr/local/..."—
     // y execFile no parte cadenas: hay que separarlas o busca un programa que
     // se llame igual que la linea entera.
     const [programa, ...previos] = COMANDO_PROPIO.trim().split(/\s+/);
-    return limpiar(
-      execFileSync(programa, [...previos, "-qtAc", consulta], {
-        encoding: "utf8",
-      }),
-    );
+    return execFileSync(programa, [...previos, "-qtAc", consulta], {
+      encoding: "utf8",
+    });
   }
 
-  const salida = ejecutar("docker", [
+  return ejecutar("docker", [
     "exec",
     "-i",
     contenedor(),
@@ -90,8 +98,6 @@ export function sql(consulta: string): string {
     "-qtAc",
     consulta,
   ]);
-
-  return limpiar(salida);
 }
 
 /**
@@ -147,20 +153,7 @@ export function provinciasConEntrega(): string[] {
 
 /** Como `sql`, pero devuelve todas las filas y no solo la primera. */
 export function sqlFilas(consulta: string): string[] {
-  const salida = ejecutar("docker", [
-    "exec",
-    "-i",
-    contenedor(),
-    "psql",
-    "-U",
-    USUARIO_DB,
-    "-d",
-    BASE_DATOS,
-    "-qtAc",
-    consulta,
-  ]);
-
-  return salida
+  return consultar(consulta)
     .split("\n")
     .map((l) => l.trim())
     .filter((l) => l && !/^(INSERT|UPDATE|DELETE|SELECT) \d/.test(l));
