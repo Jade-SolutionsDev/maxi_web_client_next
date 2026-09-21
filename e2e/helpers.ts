@@ -6,7 +6,15 @@ import { execFileSync } from "node:child_process";
  * escenarios se pueden correr contra un entorno desplegado sin tocar una
  * linea de codigo.
  */
-export const API = process.env.E2E_API ?? "http://localhost:4000";
+/**
+ * La raiz de la API, SIN el prefijo /api: quien la usa lo añade. Si la variable
+ * ya lo trae —el guion del servidor la ponia asi— se le quita, o la peticion se
+ * va a /api/api/... y contesta 404, que se lee igual que «no desplegado».
+ */
+export const API = (process.env.E2E_API ?? "http://localhost:4000").replace(
+  /\/api\/?$/,
+  "",
+);
 export const TIENDA = process.env.E2E_TIENDA ?? "http://localhost:3001";
 
 /** Prefijo, no nombre exacto: en Swarm el sufijo de tarea cambia solo. */
