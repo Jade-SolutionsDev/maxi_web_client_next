@@ -14,6 +14,18 @@ const PREFIJO_CONTENEDOR =
   process.env.E2E_DB_CONTENEDOR ?? "maxihabana-postgres-dev";
 const BASE_DATOS = process.env.E2E_DB_NOMBRE ?? "maxihabana";
 const USUARIO_DB = process.env.E2E_DB_USUARIO ?? "maxihabana";
+/**
+ * Un guion propio que ya sabe a que base atacar, y al que solo se le pasan
+ * los argumentos de `psql`. Existe porque `sudo` prohibe los comodines en los
+ * argumentos de una regla, asi que no hay forma de permitir
+ * `docker exec ... psql -c <consulta variable>` sin abrir la mano entera:
+ * quien puede lanzar cualquier `docker` es root en la practica.
+ *
+ * Con esto el permiso se concede sobre un guion concreto, propiedad de root,
+ * que lleva dentro el contenedor y la base. Tambien sirve donde no hay docker.
+ */
+const COMANDO_PROPIO = process.env.E2E_DB_COMANDO;
+
 /** En un servidor `docker` suele necesitar sudo; en local no. */
 const CON_SUDO = process.env.E2E_DB_SUDO === "1";
 /**
@@ -54,6 +66,10 @@ function contenedor(): string {
 
 /** Ejecuta SQL contra la base y devuelve las filas en texto. */
 export function sql(consulta: string): string {
+  if (COMANDO_PROPIO) {
+    return limpiar(ejecutar(COMANDO_PROPIO, ["-qtAc", consulta]));
+  }
+
   const salida = ejecutar("docker", [
     "exec",
     "-i",
@@ -67,8 +83,14 @@ export function sql(consulta: string): string {
     consulta,
   ]);
 
-  // Un INSERT ... RETURNING devuelve el valor y ademas la linea "INSERT 0 1".
-  // Nos quedamos con la primera linea util.
+  return limpiar(salida);
+}
+
+/**
+ * Un INSERT ... RETURNING devuelve el valor y ademas la linea "INSERT 0 1".
+ * Nos quedamos con la primera linea util.
+ */
+function limpiar(salida: string): string {
   return (
     salida
       .split("\n")

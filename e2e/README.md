@@ -91,3 +91,27 @@ Una URL de otro dominio **tumba la página entera del catálogo** — ver `MxH-0
 
 **La cookie de zona (`maxi_location`) debe compartir dominio con la navegación.** Todo usa
 `localhost`, no `127.0.0.1`: para el navegador son sitios distintos y la cookie no viajaría.
+
+## Contra un servidor donde `docker` pide sudo
+
+`sudo` no admite comodines en los argumentos de una regla, así que no hay
+forma de permitir `docker exec … psql -c <consulta>` sin conceder `docker`
+entero — que es root en la práctica. La salida es un guion propio, propiedad
+de root, que ya lleva dentro el contenedor y la base:
+
+```bash
+sudo tee /usr/local/bin/maxi-psql-staging > /dev/null <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+CONTENEDOR=$(docker ps --format '{{.Names}}' | grep '^maxi-db-staging' | head -1)
+[ -n "$CONTENEDOR" ] || { echo "no hay contenedor de staging" >&2; exit 1; }
+exec docker exec -i "$CONTENEDOR" psql -U maxihabana -d maxihabana "$@"
+SH
+sudo chmod 755 /usr/local/bin/maxi-psql-staging
+echo 'jade ALL=(root) NOPASSWD: /usr/local/bin/maxi-psql-staging' | sudo tee /etc/sudoers.d/maxi-pruebas
+sudo chmod 440 /etc/sudoers.d/maxi-pruebas
+```
+
+Y las pruebas se lanzan con `E2E_DB_COMANDO="sudo -n /usr/local/bin/maxi-psql-staging"`,
+que sustituye al camino de `docker`.
+
