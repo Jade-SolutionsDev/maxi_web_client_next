@@ -15,6 +15,9 @@ vi.stubGlobal(
 const cartHasLines = vi.fn(() => true);
 const clearCartForNewMunicipality = vi.fn();
 
+const usePathname = vi.fn(() => '/catalog');
+vi.mock('next/navigation', () => ({ usePathname: () => usePathname() }));
+
 vi.mock('@/feature/cart/lib/cart-zone-reset', () => ({
   cartHasLines: () => cartHasLines(),
   clearCartForNewMunicipality: () => clearCartForNewMunicipality(),
@@ -72,15 +75,18 @@ const chooseOption = async (
   await user.click(await screen.findByRole('option', { name: option }));
 };
 
+// El cleanup vivía dentro del primer describe, así que los bloques de abajo
+// heredaban el DOM del anterior y pasaban o fallaban según el orden. A nivel
+// de fichero cada prueba arranca con la pantalla vacía.
+afterEach(() => {
+  cleanup();
+});
+
 describe('LocationPicker', () => {
   beforeEach(() => {
     onSubmit.mockClear();
     cartHasLines.mockClear().mockReturnValue(true);
     clearCartForNewMunicipality.mockClear();
-  });
-
-  afterEach(() => {
-    cleanup();
   });
 
   it('warns before leaving the province with a cart, and saves once accepted', async () => {
@@ -157,5 +163,86 @@ describe('LocationPicker', () => {
       expect(onSubmit).toHaveBeenCalledWith({ municipalityId: vinales });
     });
     expect(screen.queryByText(/¿Deseas cambiar tu ubicación\?/)).toBeNull();
+  });
+});
+
+describe.each([
+  ['/login', 'entrar'],
+  ['/register', 'registrarse'],
+  ['/register/verify', 'confirmar el correo'],
+  ['/reset-password', 'recuperar la clave'],
+])('en %s', (ruta, loQueViene) => {
+  // El diálogo se abría encima del formulario y tapaba el botón: tres
+  // escenarios de navegador morían por timeout al pulsar «Enviar código».
+  it(`no tapa el formulario de ${loQueViene}`, () => {
+    usePathname.mockReturnValue(ruta);
+
+    render(
+      <LocationPicker
+        provinces={provinces}
+        municipalitiesByProvince={municipalitiesByProvince}
+        selected={null}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByText('¿Dónde estás?')).toBeNull();
+  });
+});
+
+describe('en la página de seguimiento', () => {
+  // El enlace de seguimiento se abre desde WhatsApp o un correo, y quien lo
+  // abre no viene a comprar: el selector de zona tapaba la pantalla entera.
+  it('no se abre solo, aunque no haya zona elegida', () => {
+    usePathname.mockReturnValue('/seguimiento/abc123');
+
+    render(
+      <LocationPicker
+        provinces={provinces}
+        municipalitiesByProvince={municipalitiesByProvince}
+        selected={null}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByText('¿Dónde estás?')).toBeNull();
+  });
+
+  it('en el resto de la tienda sigue abriéndose', () => {
+    usePathname.mockReturnValue('/catalog');
+
+    render(
+      <LocationPicker
+        provinces={provinces}
+        municipalitiesByProvince={municipalitiesByProvince}
+        selected={null}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('¿Dónde estás?')).toBeTruthy();
+  });
+});
+
+describe('el texto del diálogo', () => {
+  // Una clienta eligió su municipio creyendo que pedía entrega a domicilio y
+  // escribió preguntando si repartíamos allí. El diálogo tiene que decir para
+  // qué sirve la zona. Cuando se active la entrega a domicilio, esta prueba
+  // falla a propósito: la frase deja de ser cierta y hay que rehacerla.
+  it('aclara que la zona no es una dirección de entrega', () => {
+    usePathname.mockReturnValue('/catalog');
+
+    render(
+      <LocationPicker
+        provinces={provinces}
+        municipalitiesByProvince={municipalitiesByProvince}
+        selected={null}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getAllByText(/No es una dirección de entrega/).length,
+    ).toBeGreaterThan(0);
   });
 });

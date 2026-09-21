@@ -1,6 +1,7 @@
 'use client';
 
 import { MapPin } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { ConfirmDialog } from '@/app/components/form/ConfirmDialog';
 import {
@@ -37,6 +38,14 @@ interface LocationPickerProps {
   className?: string;
 }
 
+/** Ver el comentario de `preguntarLaZona`, dentro del componente. */
+const RUTAS_SIN_PREGUNTAR = [
+  '/seguimiento',
+  '/login',
+  '/register',
+  '/reset-password',
+];
+
 export const LocationPicker = ({
   provinces,
   municipalitiesByProvince,
@@ -44,7 +53,23 @@ export const LocationPicker = ({
   onSubmit,
   className,
 }: LocationPickerProps) => {
-  const [isOpen, setIsOpen] = useState(selected === null);
+  /**
+   * Rutas donde no se pregunta la zona nada más entrar. El seguimiento de un
+   * pedido se abre desde un enlace reenviado —WhatsApp, un correo— y quien lo
+   * abre no viene a comprar: encontrarse un formulario de provincia y
+   * municipio tapando la pantalla es pedirle datos para algo que no pidió.
+   * El selector sigue estando en la cabecera por si quiere usarlo.
+   *
+   * Lo mismo vale para las páginas de cuenta: quien va a entrar, a registrarse
+   * o a recuperar su clave tiene un formulario delante, y el diálogo se abría
+   * justo encima, tapando el botón. Se vio en las pruebas de navegador —tres
+   * escenarios muertos por «timeout» al pulsar— pero le pasa igual a cualquiera
+   * que abra el enlace de recuperar contraseña sin haber elegido zona.
+   */
+  const ruta = usePathname();
+  const preguntarLaZona = !RUTAS_SIN_PREGUNTAR.some((r) => ruta?.startsWith(r));
+
+  const [isOpen, setIsOpen] = useState(selected === null && preguntarLaZona);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const answerConfirm = useRef<((accepted: boolean) => void) | null>(null);
 
