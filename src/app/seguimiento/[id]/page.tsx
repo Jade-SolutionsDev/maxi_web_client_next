@@ -132,6 +132,24 @@ async function SeguimientoContenido({
  * La consulta vive dentro de `Suspense` en vez de marcar la ruta como
  * dinámica: con `cacheComponents` esa directiva no está permitida, y además
  * así la cabecera se pinta al instante mientras el estado del pedido llega.
+ *
+ * **Efecto conocido: un enlace inválido contesta 200, no 404.** La respuesta
+ * empieza a salir antes de que se sepa si el pedido existe, así que cuando
+ * `notFound()` se ejecuta la cabecera ya viajó. Se intentó arreglar por tres
+ * caminos el 22-sep-2026 y los tres fallan:
+ *
+ * 1. Consultar en la página con `connection()` para adelantar el `notFound()`:
+ *    el build lo rechaza — «Uncached data was accessed outside of <Suspense>».
+ * 2. Leer `params` en la página para validar el formato antes: mismo rechazo,
+ *    `params` también cuenta como dato de petición.
+ * 3. Validar el formato en `generateMetadata()`, que se resuelve antes: compila,
+ *    pero el estado sigue siendo 200 — el armazón prerenderizado ya se envió.
+ *
+ * Se deja así a propósito. La página **no es indexable** (`robots: index: false`)
+ * ni está en el sitemap, que es el motivo por el que un *soft 404* importaría, y
+ * el cliente ve el mensaje correcto. Si algún día hace falta el código de
+ * verdad, la única vía que queda es un middleware que mire la forma de la URL
+ * antes de llegar aquí, a costa de perder esta página de error.
  */
 export default function SeguimientoPage({
   params,
