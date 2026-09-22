@@ -9,6 +9,7 @@ import { PageHero } from '@/app/components/ui/page-hero';
 import { TrackingTimeline } from '@/feature/tracking/components/TrackingTimeline';
 import { estaCancelado, plazoVencido } from '@/feature/tracking/pasos';
 import { getOrderTracking } from '@/feature/tracking/service/tracking.service';
+import { plazoEnDiasHabiles } from '@/lib/plazo';
 
 export const metadata: Metadata = {
   title: 'Seguimiento del pedido | Maxi Habana',
@@ -88,7 +89,7 @@ async function SeguimientoContenido({
                     ? `Entregado el ${fechaLarga(tracking.deliveredAt)}`
                     : tracking.promisedAt
                       ? `Fecha comprometida: ${fechaLarga(tracking.promisedAt)}`
-                      : `Plazo comprometido: ${tracking.promiseDays} días`}
+                      : `Plazo comprometido: ${plazoEnDiasHabiles(tracking.promiseDays ?? 0)}`}
                 </p>
                 {tarde && (
                   <p className='mt-1 text-sm text-muted'>
