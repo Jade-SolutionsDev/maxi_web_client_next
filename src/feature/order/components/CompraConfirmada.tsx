@@ -1,6 +1,7 @@
 'use client';
 
 import { CircleCheck } from 'lucide-react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 interface CompraConfirmadaProps {
@@ -44,7 +45,13 @@ export const CompraConfirmada = ({
         </p>
         <p className='text-sm text-muted'>
           Puedes volver a esta página cuando quieras desde{' '}
-          <strong className='text-heading'>Mis pedidos</strong>.
+          <Link
+            href='/pedidos'
+            className='font-semibold text-heading underline underline-offset-2'
+          >
+            Mis pedidos
+          </Link>
+          .
         </p>
       </div>
     </section>

@@ -32,6 +32,9 @@ describe('CompraConfirmada', () => {
     expect(aviso.textContent).toContain('ORD-20260150');
     expect(aviso.textContent).toContain('mientras completas el pago');
     expect(aviso.textContent).toContain('Mis pedidos');
+    expect(
+      screen.getByRole('link', { name: 'Mis pedidos' }).getAttribute('href'),
+    ).toBe('/pedidos');
   });
 
   it('no manda a pagar un pedido que ya está pagado', () => {
