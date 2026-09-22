@@ -1,5 +1,6 @@
 import { CalendarClock, Share2 } from 'lucide-react';
 import Link from 'next/link';
+import { plazoEnDiasHabiles } from '@/lib/plazo';
 import type { Order } from '../type/order.type';
 
 const fechaLarga = (iso: string) =>
@@ -28,7 +29,7 @@ export function OrderPromiseAndTracking({ order }: { order: Order }) {
             <p className='text-sm font-bold text-heading'>
               {order.promisedAt
                 ? `Entrega comprometida: ${fechaLarga(order.promisedAt)}`
-                : `Plazo de entrega: ${order.promiseDays} días`}
+                : `Plazo de entrega: ${plazoEnDiasHabiles(order.promiseDays ?? 0)}`}
             </p>
             {!order.promisedAt && (
               <p className='text-xs text-muted'>
