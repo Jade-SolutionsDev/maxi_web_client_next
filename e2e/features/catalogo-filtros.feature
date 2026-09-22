@@ -10,14 +10,14 @@ Característica: Ordenar, filtrar y pasar de página en el catálogo
   Escenario: Ordenar por precio pone primero lo más barato
     Dado que existe un producto "Barato" de US$50 con 10 unidades
     Y que existe un producto "Caro" de US$300 con 10 unidades
-    Cuando el cliente abre el catálogo
+    Cuando el cliente abre el catálogo con solo sus productos
     Y ordena por "Precio: menor a mayor"
     Entonces el primer producto de la lista es "Barato"
 
   Escenario: Ordenar por precio al revés pone primero lo más caro
     Dado que existe un producto "Barato" de US$50 con 10 unidades
     Y que existe un producto "Caro" de US$300 con 10 unidades
-    Cuando el cliente abre el catálogo
+    Cuando el cliente abre el catálogo con solo sus productos
     Y ordena por "Precio: mayor a menor"
     Entonces el primer producto de la lista es "Caro"
 

@@ -8,6 +8,7 @@ import {
   productoSembrado,
   registrarProducto,
   sembrarProducto,
+  sufijo,
   sql,
 } from "../helpers";
 
@@ -76,6 +77,16 @@ Given(
     await invalidarCatalogo();
   },
 );
+
+/**
+ * El catalogo de staging tiene productos de verdad: «Azucar Blanca» a $1.00 le
+ * gana a cualquier «Barato» que siembre la prueba, y «Cerveza Cristal» a
+ * $51.840 le gana al «Caro». Acotando la busqueda al sufijo del escenario, la
+ * lista solo contiene lo suyo y el orden vuelve a ser comprobable.
+ */
+When("el cliente abre el catálogo con solo sus productos", async ({ page }) => {
+  await page.goto(`/catalog?q=${encodeURIComponent(`E2E ${sufijo()}`)}`);
+});
 
 When(
   "filtra por el departamento de {string}",
