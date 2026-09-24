@@ -6,7 +6,15 @@ import { execFileSync } from "node:child_process";
  * escenarios se pueden correr contra un entorno desplegado sin tocar una
  * linea de codigo.
  */
-export const API = process.env.E2E_API ?? "http://localhost:4000";
+/**
+ * La raiz de la API, SIN el prefijo /api: quien la usa lo añade. Si la variable
+ * ya lo trae —el guion del servidor la ponia asi— se le quita, o la peticion se
+ * va a /api/api/... y contesta 404, que se lee igual que «no desplegado».
+ */
+export const API = (process.env.E2E_API ?? "http://localhost:4000").replace(
+  /\/api\/?$/,
+  "",
+);
 export const TIENDA = process.env.E2E_TIENDA ?? "http://localhost:3001";
 
 /** Prefijo, no nombre exacto: en Swarm el sufijo de tarea cambia solo. */
@@ -113,7 +121,20 @@ function limpiar(salida: string): string {
   );
 }
 
-/** Invalida el cache del catalogo de la tienda, que dura un dia. */
+/**
+ * Invalida el cache del catalogo de la tienda, que dura un dia.
+ *
+ * Y despues **se come una peticion**. La tienda sirve con
+ * `stale-while-revalidate`: la primera visita tras invalidar devuelve lo viejo
+ * y dispara la regeneracion en segundo plano; la siguiente ya trae lo nuevo.
+ * Sin este sacrificio, el escenario que siembra y mira acto seguido no ve su
+ * producto, y el fallo parece del catalogo. Tampoco depende del reloj, sino del
+ * numero de visitas: por eso alguno pasaba aislado —el escenario anterior hacia
+ * de calentamiento— y fallaba dentro del feature completo.
+ *
+ * La cookie es obligatoria: el arbol se guarda por municipio, y calentar sin
+ * ella regenera otra entrada distinta de la que mira la prueba.
+ */
 export async function invalidarCatalogo(): Promise<void> {
   await fetch(`${TIENDA}/api/revalidate`, {
     method: "POST",
@@ -126,6 +147,20 @@ export async function invalidarCatalogo(): Promise<void> {
       tags: ["taxonomy", "taxonomy-tree", "location-catalog", "product-list"],
     }),
   });
+
+  const municipio = municipioConCobertura();
+  // Dos vueltas, no una: la primera se come lo viejo y dispara la regeneracion,
+  // y la segunda espera a que haya terminado. Con una sola, el arbol de
+  // departamentos ya salia bien pero la lista de productos seguia a medio
+  // regenerar. Se lee el cuerpo entero en las dos: hasta que no se consume, la
+  // tienda no ha acabado de servir.
+  for (let vuelta = 0; vuelta < 2; vuelta += 1) {
+    const respuesta = await fetch(`${TIENDA}/catalog`, {
+      headers: { cookie: `maxi_location=${municipio}` },
+    }).catch(() => null);
+    await respuesta?.text();
+    await new Promise((sigue) => setTimeout(sigue, 400));
+  }
 }
 
 /** Un municipio al que no llega ningun almacen activo. */
@@ -159,14 +194,34 @@ export function sqlFilas(consulta: string): string[] {
     .filter((l) => l && !/^(INSERT|UPDATE|DELETE|SELECT) \d/.test(l));
 }
 
-/** Municipio cualquiera de una provincia con cobertura, para la cookie de zona. */
+/**
+ * El almacen donde siembran las pruebas: el mas antiguo activo. Vive aqui, y no
+ * repetido en cada paso, porque la zona del escenario tiene que salir de este
+ * mismo almacen.
+ */
+export const ALMACEN_DE_LAS_PRUEBAS = `
+  SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1`;
+
+export function almacenDeLasPruebas(): string {
+  return sql(ALMACEN_DE_LAS_PRUEBAS);
+}
+
+/**
+ * Un municipio que cubra EL ALMACEN DONDE SE SIEMBRA, para la cookie de zona.
+ *
+ * Antes era «un municipio cualquiera de una provincia con cobertura», y con
+ * varios almacenes eso separaba las dos mitades del escenario: las existencias
+ * iban al mas antiguo —«Almacen Central La Habana», que solo cubre La Habana—
+ * y la cookie se plantaba en Antilla, Holguin, el primero por orden alfabetico.
+ * El escenario buscaba en Holguin un producto que solo existia en La Habana. En
+ * una base con un solo almacen las dos consultas coinciden y no se nota.
+ */
 export function municipioConCobertura(): string {
   return sql(`
     SELECT m.id FROM municipalities m
-     WHERE EXISTS (
-       SELECT 1 FROM stock_location_coverage c
-        JOIN stock_locations sl ON sl.id = c.location_id AND sl.is_active
-       WHERE c.province_id = m.province_id)
+     JOIN stock_location_coverage c ON c.province_id = m.province_id
+     JOIN stock_locations sl ON sl.id = c.location_id AND sl.is_active
+     WHERE sl.id = (${ALMACEN_DE_LAS_PRUEBAS})
      ORDER BY m.name LIMIT 1`);
 }
 

@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
 import {
+  almacenDeLasPruebas,
   API,
   invalidarCatalogo,
   municipioConCobertura,
@@ -89,9 +90,7 @@ Given(
   "que existe un producto {string} con {int} unidades y un {int}% de rebaja",
   async ({}, nombre: string, unidades: number, rebaja: number) => {
     const sembrado = sembrarProducto(nombre, rebaja);
-    const almacen = sql(
-      "SELECT id FROM stock_locations WHERE is_active ORDER BY created_at LIMIT 1",
-    );
+    const almacen = almacenDeLasPruebas();
     sql(
       `INSERT INTO inventory (location_id, product_id, quantity) VALUES ('${almacen}', '${sembrado.id}', ${unidades})`,
     );
@@ -139,7 +138,12 @@ When("el cliente abre {string}", async ({ page }, ruta: string) => {
 
 When("pulsa sobre el producto {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
-  await page.getByText(producto!.nombreReal).first().click();
+  const enLaPagina = () => page.getByText(producto!.nombreReal).first();
+
+  // Mismo rescate que en «ve el producto»: la pagina puede haber llegado de la
+  // cache vieja, y entonces no hay nada que pulsar hasta pedirla otra vez.
+  if (!(await enLaPagina().isVisible())) await page.reload();
+  await enLaPagina().click();
 });
 
 When(
@@ -162,7 +166,21 @@ When("se consultan los productos públicos de la API", async ({ request }) => {
 
 Then("ve el producto {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
-  await expect(page.getByText(producto!.nombreReal).first()).toBeVisible();
+  const enLaPagina = () => page.getByText(producto!.nombreReal).first();
+
+  try {
+    await expect(enLaPagina()).toBeVisible({ timeout: 10_000 });
+  } catch {
+    /**
+     * La tienda sirve con `stale-while-revalidate`, y cada combinacion de
+     * filtros tiene su propia entrada: `invalidarCatalogo` calienta /catalog,
+     * pero una URL con filtros llega fria igual y devuelve lo viejo mientras
+     * regenera por detras. Esperar no sirve —la respuesta ya esta en la pagina—;
+     * hay que volver a pedirla una vez.
+     */
+    await page.reload();
+    await expect(enLaPagina()).toBeVisible({ timeout: 15_000 });
+  }
 });
 
 Then("no ve el producto {string}", async ({ page }, nombre: string) => {
