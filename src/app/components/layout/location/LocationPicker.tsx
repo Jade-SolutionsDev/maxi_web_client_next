@@ -41,6 +41,7 @@ interface LocationPickerProps {
 /** Ver el comentario de `preguntarLaZona`, dentro del componente. */
 const RUTAS_SIN_PREGUNTAR = [
   '/seguimiento',
+  '/invitacion',
   '/login',
   '/register',
   '/reset-password',
