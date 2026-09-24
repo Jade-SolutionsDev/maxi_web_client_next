@@ -52,6 +52,7 @@ export interface PaymentMethod {
   description: string | null;
   icon: string | null;
   kind: PaymentKind;
+  holdMinutes?: number | null;
 }
 
 export type CancellationReason =

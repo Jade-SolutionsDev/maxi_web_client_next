@@ -12,6 +12,7 @@ import { useCartActions } from '@/feature/cart/hook/useCart';
 import type { LocationCatalog } from '@/shared/location/type/location.interface';
 import { checkoutAction } from '../action/order.action';
 import { notifyCheckoutFailure } from '../feedback/order.notify';
+import { plazoEnPalabras } from '../lib/payment-time';
 import {
   type CheckoutInput,
   CheckoutInputSchema,
@@ -104,6 +105,13 @@ export const CheckoutForm = ({
   const addressId = form.watch('addressId') ?? '';
   const paymentMethod = form.watch('paymentMethod') ?? '';
 
+  const metodoElegido =
+    paymentMethods.find((method) => method.code === paymentMethod) ??
+    (paymentMethods.length === 1 ? paymentMethods[0] : undefined);
+  const plazoDeLaReserva = metodoElegido?.holdMinutes
+    ? plazoEnPalabras(metodoElegido.holdMinutes)
+    : '';
+
   useEffect(() => {
     const options = offer.deliveryOptions;
     if (options.length === 0) {
@@ -153,7 +161,7 @@ export const CheckoutForm = ({
         Boolean(values.paymentMethod) && !result.order.payment;
       const destino = noSePudoCobrar
         ? `/pedidos/${result.order.id}?pagoFallido=${encodeURIComponent(values.paymentMethod as string)}`
-        : `/pedidos/${result.order.id}`;
+        : `/pedidos/${result.order.id}?compraConfirmada=1`;
       startNavigation(() => router.push(destino));
       setIsSubmitting(false);
       return;
@@ -221,8 +229,16 @@ export const CheckoutForm = ({
       </Button>
 
       <p className='text-center text-xs text-muted'>
-        Al confirmar reservamos tu stock y te mostramos las instrucciones de
-        pago.
+        {plazoDeLaReserva ? (
+          <>
+            Al confirmar apartamos tu stock durante{' '}
+            <strong className='text-heading'>{plazoDeLaReserva}</strong> y te
+            mostramos las instrucciones de pago. Si no recibimos el pago en ese
+            plazo, el pedido se cancela y los productos vuelven a la tienda.
+          </>
+        ) : (
+          'Al confirmar reservamos tu stock y te mostramos las instrucciones de pago.'
+        )}
       </p>
     </Form>
   );

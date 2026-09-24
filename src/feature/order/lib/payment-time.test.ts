@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   formatCountdown,
+  plazoEnPalabras,
   remainingSeconds,
   secondsUntil,
 } from './payment-time';
@@ -59,5 +60,30 @@ describe('remainingSeconds', () => {
   it('falls back to the deadline when the server sent no count', () => {
     expect(remainingSeconds(null, inThirtyMinutes)).toBeGreaterThan(1700);
     expect(remainingSeconds(undefined, null)).toBe(0);
+  });
+});
+
+describe('plazoEnPalabras', () => {
+  it('dice los minutos de una pasarela', () => {
+    expect(plazoEnPalabras(30)).toBe('30 minutos');
+  });
+
+  it('dice las horas de un pago manual en vez de 1440 minutos', () => {
+    expect(plazoEnPalabras(24 * 60)).toBe('24 horas');
+  });
+
+  it('usa el singular donde toca', () => {
+    expect(plazoEnPalabras(60)).toBe('1 hora');
+    expect(plazoEnPalabras(1)).toBe('1 minuto');
+  });
+
+  it('junta horas y minutos cuando el plazo no es redondo', () => {
+    expect(plazoEnPalabras(90)).toBe('1 hora y 30 minutos');
+  });
+
+  it('no inventa un plazo con un valor imposible', () => {
+    expect(plazoEnPalabras(0)).toBe('');
+    expect(plazoEnPalabras(-5)).toBe('');
+    expect(plazoEnPalabras(Number.NaN)).toBe('');
   });
 });
