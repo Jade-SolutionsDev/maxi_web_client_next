@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 import logo from '@/assets/logoFooter.svg';
 import { BrandPanel } from '@/feature/auth/components/BrandPanel';
 import { InvitacionForm } from '@/feature/auth/components/InvitacionForm';
+import { InvitacionSkeleton } from '@/feature/auth/components/InvitacionSkeleton';
 
 export const metadata: Metadata = {
   title: 'Activar mi cuenta | Maxi Habana',
@@ -45,7 +46,9 @@ export default function InvitacionPage() {
           </div>
 
           <div className='w-full'>
-            <InvitacionForm />
+            <Suspense fallback={<InvitacionSkeleton />}>
+              <InvitacionForm />
+            </Suspense>
           </div>
         </div>
       </div>
