@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { navItems, visibleNavItems } from "./constants/nav.constants";
-import { navItemClass, primaryNavClass } from "./nav-item.styles";
+import Link from 'next/link';
+import { navItems, visibleNavItems } from './constants/nav.constants';
+import { navItemClass, primaryNavClass } from './nav-item.styles';
 
 /**
  * Static primary-nav rendered in the prerendered shell while the interactive
@@ -9,7 +9,7 @@ import { navItemClass, primaryNavClass } from "./nav-item.styles";
  * those arrive with the hydrated version.
  */
 export const NavItemsFallback = ({ showFaq }: { showFaq: boolean }) => (
-  <nav aria-label="Navegación principal" className={primaryNavClass}>
+  <nav aria-label='Navegación principal' className={primaryNavClass}>
     {visibleNavItems(navItems, { showFaq }).map(({ href, label }) => (
       <Link key={href} href={href} className={navItemClass(false)}>
         {label}

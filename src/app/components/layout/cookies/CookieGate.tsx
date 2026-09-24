@@ -1,5 +1,5 @@
-import { readConsentimiento } from "@/shared/cookies/cookie/consent.cookie";
-import { CookieNotice } from "./CookieNotice";
+import { readConsentimiento } from '@/shared/cookies/cookie/consent.cookie';
+import { CookieNotice } from './CookieNotice';
 
 /**
  * Decide en el servidor si hay que preguntar, para que el aviso no parpadee

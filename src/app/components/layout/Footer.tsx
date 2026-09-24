@@ -11,6 +11,7 @@ import { getFooterDepartmentLinks } from './constants/footer-departments';
 import { buildFooterLegalLinks } from './constants/footer-legal-links';
 import { CookiePreferencesLink } from './cookies/CookiePreferencesLink';
 import { FooterLinkColumn } from './FooterLinkColumn';
+import { RedesSociales } from './RedesSociales';
 
 const contactClass =
   'flex items-center gap-3 text-sm text-white/80 transition-colors hover:text-white hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange rounded-sm';
@@ -58,6 +59,8 @@ export const Footer = async () => {
                 {contact.hours}
               </p>
             </address>
+
+            <RedesSociales className='flex gap-3' />
           </div>
 
           <FooterLinkColumn title='Enlaces' label='Enlaces' links={siteLinks} />
@@ -67,11 +70,7 @@ export const Footer = async () => {
             links={departmentLinks}
           />
           <div className='flex flex-col gap-4'>
-            <FooterLinkColumn
-              title='Legal'
-              label='Legal'
-              links={legalLinks}
-            />
+            <FooterLinkColumn title='Legal' label='Legal' links={legalLinks} />
             <CookiePreferencesLink />
           </div>
         </div>

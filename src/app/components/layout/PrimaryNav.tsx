@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { cn, isActiveHref } from "@/lib/utils";
-import { navItems, visibleNavItems } from "./constants/nav.constants";
-import { navItemClass, primaryNavClass } from "./nav-item.styles";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { cn, isActiveHref } from '@/lib/utils';
+import { navItems, visibleNavItems } from './constants/nav.constants';
+import { navItemClass, primaryNavClass } from './nav-item.styles';
 
 type Indicator = { x: number; width: number; visible: boolean };
 
@@ -51,17 +51,17 @@ export const PrimaryNav = ({ showFaq }: { showFaq: boolean }) => {
   useEffect(() => {
     settle();
     const raf = requestAnimationFrame(() => setAnimate(true));
-    window.addEventListener("resize", settle);
+    window.addEventListener('resize', settle);
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", settle);
+      window.removeEventListener('resize', settle);
     };
   }, [settle]);
 
   return (
     <nav
       ref={navRef}
-      aria-label="Navegación principal"
+      aria-label='Navegación principal'
       onPointerLeave={settle}
       className={primaryNavClass}
     >
@@ -72,7 +72,7 @@ export const PrimaryNav = ({ showFaq }: { showFaq: boolean }) => {
             linkRefs.current[index] = el;
           }}
           href={href}
-          aria-current={index === activeIndex ? "page" : undefined}
+          aria-current={index === activeIndex ? 'page' : undefined}
           onPointerEnter={() => moveTo(index)}
           className={navItemClass(index === activeIndex)}
         >
@@ -81,16 +81,16 @@ export const PrimaryNav = ({ showFaq }: { showFaq: boolean }) => {
       ))}
 
       <span
-        aria-hidden="true"
+        aria-hidden='true'
         style={{
           width: 1,
           transform: `translateX(${indicator.x}px) scaleX(${indicator.width})`,
           opacity: indicator.visible ? 1 : 0,
         }}
         className={cn(
-          "pointer-events-none absolute bottom-1 left-0 h-1 origin-left rounded-full bg-white",
+          'pointer-events-none absolute bottom-1 left-0 h-1 origin-left rounded-full bg-white',
           animate &&
-            "transition-[transform,opacity] duration-400 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
+            'transition-[transform,opacity] duration-400 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none',
         )}
       />
     </nav>

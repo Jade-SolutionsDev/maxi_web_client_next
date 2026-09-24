@@ -1,5 +1,5 @@
-import { Suspense } from "react";
-import { CookieGate } from "./CookieGate";
+import { Suspense } from 'react';
+import { CookieGate } from './CookieGate';
 
 /**
  * Leer cookies en el servidor bloquea el pintado de toda la ruta si no hay un

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Cookie } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useRef, useState, useTransition } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Cookie } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useRef, useState, useTransition } from 'react';
+import { Button } from '@/app/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -11,22 +11,22 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/app/components/ui/dialog";
-import { guardarConsentimiento } from "@/shared/cookies/action/consent.action";
+} from '@/app/components/ui/dialog';
+import { guardarConsentimiento } from '@/shared/cookies/action/consent.action';
 import {
   CATEGORIAS,
   CATEGORIAS_OPCIONALES,
   type CategoriaCookie,
-} from "@/shared/cookies/consent";
+} from '@/shared/cookies/consent';
 
-export const RUTA_POLITICA = "/paginas/politica-de-cookies";
+export const RUTA_POLITICA = '/paginas/politica-de-cookies';
 
 /**
  * El enlace del pie y el panel viven en ramas distintas del arbol y no hay
  * estado compartido entre ellas. Un evento del navegador los une sin montar un
  * proveedor de contexto alrededor de toda la aplicacion para una sola cosa.
  */
-export const EVENTO_ABRIR_COOKIES = "maxi:configurar-cookies";
+export const EVENTO_ABRIR_COOKIES = 'maxi:configurar-cookies';
 
 interface CookieNoticeProps {
   /** Falso cuando ya hay una decisión guardada: entonces solo vive el panel. */
@@ -68,7 +68,7 @@ export const CookieNotice = ({
       Array.from(
         document.querySelectorAll('[role="dialog"], [role="alertdialog"]'),
       ).some((el) =>
-        el instanceof HTMLElement && typeof el.checkVisibility === "function"
+        el instanceof HTMLElement && typeof el.checkVisibility === 'function'
           ? el.checkVisibility()
           : el.getClientRects().length > 0,
       );
@@ -134,53 +134,53 @@ export const CookieNotice = ({
       {visible && despejado && (
         <div
           ref={barra}
-          role="region"
-          aria-label="Aviso de cookies"
+          role='region'
+          aria-label='Aviso de cookies'
           /*
             En telefono se apoya justo encima de la barra de navegacion
             inferior (`h-14`, y solo existe por debajo de `md`), o la
             taparia entera: sin Inicio, Catalogo, Carrito ni Menu.
           */
-          className="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-40 border-t border-input bg-background/95 backdrop-blur-sm md:bottom-0"
+          className='fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-40 border-t border-input bg-background/95 backdrop-blur-sm md:bottom-0'
         >
-          <div className="mx-auto flex max-w-5xl flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5">
+          <div className='mx-auto flex max-w-5xl flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5'>
             <Cookie
-              className="hidden size-6 shrink-0 text-primary sm:block"
-              aria-hidden="true"
+              className='hidden size-6 shrink-0 text-primary sm:block'
+              aria-hidden='true'
             />
-            <p className="min-w-0 flex-1 text-sm text-heading">
+            <p className='min-w-0 flex-1 text-sm text-heading'>
               Usamos cookies para mantener tu sesión, recordar tu zona y guardar
-              tu carrito.{" "}
-              <strong className="font-semibold">
+              tu carrito.{' '}
+              <strong className='font-semibold'>
                 No usamos cookies de publicidad ni de seguimiento.
-              </strong>{" "}
+              </strong>{' '}
               <Link
                 href={RUTA_POLITICA}
-                className="underline underline-offset-2 hover:text-primary"
+                className='underline underline-offset-2 hover:text-primary'
               >
                 Política de cookies
               </Link>
               .
             </p>
-            <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center">
+            <div className='flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center'>
               <Button
-                size="sm"
-                variant="ghost"
+                size='sm'
+                variant='ghost'
                 onClick={() => setPanelAbierto(true)}
                 disabled={guardando}
               >
                 Configurar
               </Button>
               <Button
-                size="sm"
-                variant="outline"
+                size='sm'
+                variant='outline'
                 onClick={() => decidir([])}
                 loading={guardando}
               >
                 Rechazar no necesarias
               </Button>
               <Button
-                size="sm"
+                size='sm'
                 onClick={() => decidir(todas)}
                 loading={guardando}
               >
@@ -192,7 +192,7 @@ export const CookieNotice = ({
       )}
 
       <Dialog open={panelAbierto} onOpenChange={cerrarPanel}>
-        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
+        <DialogContent className='max-h-[85vh] overflow-y-auto sm:max-w-2xl'>
           <DialogHeader>
             <DialogTitle>Configurar cookies</DialogTitle>
             <DialogDescription>
@@ -201,30 +201,30 @@ export const CookieNotice = ({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-col gap-4">
+          <div className='flex flex-col gap-4'>
             {CATEGORIAS.map((categoria) => (
               <section
                 key={categoria.id}
-                className="rounded-xl border border-input p-4"
+                className='rounded-xl border border-input p-4'
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <h3 className="text-sm font-semibold text-heading">
+                <div className='flex items-start justify-between gap-4'>
+                  <div className='min-w-0'>
+                    <h3 className='text-sm font-semibold text-heading'>
                       {categoria.titulo}
                     </h3>
-                    <p className="mt-1 text-sm text-muted">
+                    <p className='mt-1 text-sm text-muted'>
                       {categoria.descripcion}
                     </p>
                   </div>
                   {categoria.obligatoria ? (
-                    <span className="shrink-0 rounded-lg bg-surface px-2.5 py-1 text-xs font-medium text-muted">
+                    <span className='shrink-0 rounded-lg bg-surface px-2.5 py-1 text-xs font-medium text-muted'>
                       Siempre activas
                     </span>
                   ) : (
-                    <label className="flex shrink-0 cursor-pointer items-center gap-2 text-sm">
+                    <label className='flex shrink-0 cursor-pointer items-center gap-2 text-sm'>
                       <input
-                        type="checkbox"
-                        className="size-4 rounded border-input accent-primary"
+                        type='checkbox'
+                        className='size-4 rounded border-input accent-primary'
                         checked={seleccion.includes(categoria.id)}
                         onChange={() => alternar(categoria.id)}
                       />
@@ -233,15 +233,15 @@ export const CookieNotice = ({
                   )}
                 </div>
 
-                <ul className="mt-3 flex flex-col gap-2 border-t border-input pt-3">
+                <ul className='mt-3 flex flex-col gap-2 border-t border-input pt-3'>
                   {categoria.cookies.map((cookie) => (
-                    <li key={cookie.nombre} className="text-xs text-muted">
-                      <span className="font-medium text-heading">
+                    <li key={cookie.nombre} className='text-xs text-muted'>
+                      <span className='font-medium text-heading'>
                         {cookie.nombre}
                       </span>
-                      {" · "}
+                      {' · '}
                       {cookie.proveedor}
-                      {" · "}
+                      {' · '}
                       {cookie.duracion}
                       <br />
                       {cookie.proposito}
@@ -252,7 +252,7 @@ export const CookieNotice = ({
             ))}
 
             {CATEGORIAS_OPCIONALES.length === 0 && (
-              <p className="rounded-xl bg-surface p-4 text-sm text-heading">
+              <p className='rounded-xl bg-surface p-4 text-sm text-heading'>
                 Ahora mismo <strong>no hay nada opcional que elegir</strong>: la
                 tienda no usa cookies de análisis ni de publicidad. Si algún día
                 las usara, aparecerían aquí y tendrías que aceptarlas antes de
@@ -264,20 +264,20 @@ export const CookieNotice = ({
           <DialogFooter>
             <Link
               href={RUTA_POLITICA}
-              className="mr-auto self-center text-sm underline underline-offset-2 hover:text-primary"
+              className='mr-auto self-center text-sm underline underline-offset-2 hover:text-primary'
             >
               Leer la política de cookies
             </Link>
             <Button
-              size="sm"
-              variant="outline"
+              size='sm'
+              variant='outline'
               onClick={() => decidir([])}
               loading={guardando}
             >
               Rechazar no necesarias
             </Button>
             <Button
-              size="sm"
+              size='sm'
               onClick={() => decidir(seleccion)}
               loading={guardando}
             >
