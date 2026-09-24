@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
-import { Facebook, Instagram, Mail, Phone } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
 import { Container } from '@/app/components/layout/Container';
+import { LogoRed } from '@/app/components/layout/RedesSociales';
 import { toTelHref } from '@/helpers';
 import { getSiteSettings } from '@/shared/cms/service/cms.service';
 import { getContactMotives } from '../service/contact.service';
@@ -47,7 +48,7 @@ export async function ContactSection() {
           className={cardClass}
         >
           <span className='flex size-14 items-center justify-center rounded-full bg-surface text-accent'>
-            <Facebook className='size-6' aria-hidden='true' />
+            <LogoRed nombre='Facebook' className='size-6' />
           </span>
           <h2 className='font-bold text-heading'>Facebook</h2>
           <p className='text-sm text-muted'>Escríbenos por Messenger</p>
@@ -60,7 +61,7 @@ export async function ContactSection() {
           className={cardClass}
         >
           <span className='flex size-14 items-center justify-center rounded-full bg-surface text-accent'>
-            <Instagram className='size-6' aria-hidden='true' />
+            <LogoRed nombre='Instagram' className='size-6' />
           </span>
           <h2 className='font-bold text-heading'>Instagram</h2>
           <p className='text-sm text-muted'>@maxihabana</p>
