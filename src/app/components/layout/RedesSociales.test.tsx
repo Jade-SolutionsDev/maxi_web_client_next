@@ -29,4 +29,15 @@ describe('RedesSociales', () => {
       expect(enlace.getAttribute('aria-label')).toMatch(/Maxi Habana en/);
     }
   });
+  // La primera versión usaba lucide-react, que ya no trae iconos de marcas:
+  // el componente caía a un texto de repuesto, las pruebas pasaban y el build
+  // de Next se rompía. Ahora se comprueba que el logo se dibuja de verdad.
+  it('dibuja el logo, no un texto de repuesto', () => {
+    const { container } = render(<RedesSociales />);
+    const logos = container.querySelectorAll('svg path');
+    expect(logos.length).toBe(2);
+    for (const logo of logos) {
+      expect(logo.getAttribute('d')?.length ?? 0).toBeGreaterThan(50);
+    }
+  });
 });
