@@ -80,6 +80,8 @@ export const InvitacionForm = () => {
         required
       />
 
+      <div id='clerk-captcha'></div>
+
       <Button
         type='submit'
         size='lg'
