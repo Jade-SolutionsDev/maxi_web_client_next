@@ -1,11 +1,11 @@
-import { SignUp } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
-import Image from 'next/image';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import logo from '@/assets/logoFooter.svg';
 import { BrandPanel } from '@/feature/auth/components/BrandPanel';
+import { InvitacionForm } from '@/feature/auth/components/InvitacionForm';
 
 export const metadata: Metadata = {
   title: 'Activar mi cuenta | Maxi Habana',
@@ -22,15 +22,6 @@ async function RedirectIfAuthenticated() {
   return null;
 }
 
-/**
- * Donde aterriza quien recibe una invitación abierta desde el back-office.
- *
- * Aquí sí se usa el componente de Clerk y no el formulario propio del registro:
- * el enlace trae un ticket en la URL y ese componente sabe canjearlo, pedir
- * solo la contraseña y dejar la sesión iniciada. El formulario de `/register`
- * crea cuentas desde cero y no entiende de tickets, así que mandar aquí a
- * alguien invitado le haría teclear un correo que ya está decidido.
- */
 export default function InvitacionPage() {
   return (
     <div className='grid min-h-[calc(100vh-64px)] lg:grid-cols-2'>
@@ -53,12 +44,9 @@ export default function InvitacionPage() {
             </div>
           </div>
 
-          <SignUp
-            routing='hash'
-            signInUrl='/login'
-            fallbackRedirectUrl='/'
-            appearance={{ captcha: { language: 'es-ES' } }}
-          />
+          <div className='w-full'>
+            <InvitacionForm />
+          </div>
         </div>
       </div>
     </div>
