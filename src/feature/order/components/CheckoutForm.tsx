@@ -27,7 +27,6 @@ import { FulfillmentMethodTabs } from "./FulfillmentMethodTabs";
 import { FulfillmentUnavailable } from "./FulfillmentUnavailable";
 import { PaymentMethodSelector } from "./PaymentMethodSelector";
 import { PickupPointSelector } from "./PickupPointSelector";
-import { RecipientFields } from "./RecipientFields";
 
 interface CheckoutFormProps {
   paymentMethods: PaymentMethod[];
