@@ -47,13 +47,13 @@ Then("los datos de quien recibe vienen puestos", async ({ page }) => {
 });
 
 When("escribe los datos de quien recibe", async ({ page }) => {
-  await page.getByLabel(/nombre y apellido/i).fill("Daniel Smith");
-  await page.getByLabel(/carnet de identidad/i).fill("91031512345");
+  await page.getByLabel(/nombre y apellido/i).fill("Ana Rodríguez");
+  await page.getByLabel(/carnet de identidad/i).fill("90051512345");
   await page.getByLabel(/tel[eé]fono de contacto/i).fill("55512345");
 });
 
 When("escribe un carnet imposible", async ({ page }) => {
-  await page.getByLabel(/nombre y apellido/i).fill("Daniel Smith");
+  await page.getByLabel(/nombre y apellido/i).fill("Ana Rodríguez");
   // 30 de febrero: once dígitos y aun así no existe.
   await page.getByLabel(/carnet de identidad/i).fill("99023012345");
   await page.getByLabel(/tel[eé]fono de contacto/i).fill("55512345");

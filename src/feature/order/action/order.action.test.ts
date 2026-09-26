@@ -20,8 +20,8 @@ const input = {
   fulfillmentType: 'pickup' as const,
   pickupAddressId: 'point-1',
   paymentMethod: 'tropipay',
-  recipientName: 'Daniel Smith',
-  idCard: '91031512345',
+  recipientName: 'Ana Rodríguez',
+  idCard: '90051512345',
   contactPhone: '55512345',
 };
 
@@ -50,8 +50,8 @@ describe('checkoutAction', () => {
     expect(checkout).toHaveBeenCalledWith(
       expect.objectContaining({
         contact: {
-          recipientName: 'Daniel Smith',
-          idCard: '91031512345',
+          recipientName: 'Ana Rodríguez',
+          idCard: '90051512345',
           contactPhone: '55512345',
         },
       }),
