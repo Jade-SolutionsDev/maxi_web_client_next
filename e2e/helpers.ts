@@ -322,6 +322,6 @@ export function sembrarDireccion(
     INSERT INTO client_addresses (client_id, label, street, municipality_id, is_default,
                                   recipient_name, id_card, contact_phone)
     VALUES ('${cliente}', '${etiqueta}', 'Calle 23 #456', '${municipioConCobertura()}', true,
-            'Merlinda Vargas', '85072045678', '55512345')
+            'Merlinda Vargas', '85072045678', '+53 5251 9414')
     RETURNING id`);
 }
