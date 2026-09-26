@@ -1,3 +1,5 @@
+import { Plus } from 'lucide-react';
+import Link from 'next/link';
 import { SafeImage } from '@/app/components/ui/safe-image';
 import type { Cart } from '@/feature/cart/type/cart.interface';
 import { formatPrice } from '@/helpers';
@@ -51,6 +53,21 @@ export const CheckoutSummary = ({
         </li>
       ))}
     </ul>
+
+    {/*
+      Volver al catalogo sin abandonar la compra (MxH-0099). Va aqui, debajo
+      de lo que ya se lleva y antes de los totales, que es donde uno se da
+      cuenta de que le falta algo. Es un enlace normal: el carrito vive en el
+      servidor para quien tiene sesion y en el navegador para quien no, asi
+      que navegar no se lleva nada por delante.
+    */}
+    <Link
+      href='/catalog'
+      className='mt-4 flex items-center justify-center gap-2 rounded-xl border border-input px-4 py-2.5 text-sm font-semibold text-heading transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
+    >
+      <Plus className='size-4 shrink-0' aria-hidden='true' />
+      Seguir comprando
+    </Link>
 
     <dl className='mt-4 flex flex-col gap-2 border-t border-input pt-4'>
       <div className='flex items-baseline justify-between'>

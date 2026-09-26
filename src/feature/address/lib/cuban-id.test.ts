@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { isCubanIdCard } from './cuban-id';
 
 describe('isCubanIdCard', () => {
-  it.each(['90051512345', '04053067890', '00010112345'])('acepta %s', (ci) =>
-    expect(isCubanIdCard(ci)).toBe(true),
+  it.each(['90051512345', '04053067890', '00010112345'])(
+    'acepta %s',
+    (ci) => expect(isCubanIdCard(ci)).toBe(true),
   );
 
   it.each([

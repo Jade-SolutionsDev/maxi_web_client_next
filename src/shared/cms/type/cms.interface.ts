@@ -5,7 +5,7 @@ export interface BannerAsset {
 }
 
 export interface CmsBannerTarget {
-  type: "department" | "category" | "product";
+  type: 'department' | 'category' | 'product';
   id: string;
   slug: string;
 }
@@ -145,8 +145,8 @@ export interface SiteSettings {
 }
 
 export interface SiteSettingsResponse {
-  footer?: Partial<SiteSettings["footer"]>;
-  contact?: Partial<SiteSettings["contact"]>;
-  payments?: Partial<SiteSettings["payments"]>;
-  services?: Partial<SiteSettings["services"]>;
+  footer?: Partial<SiteSettings['footer']>;
+  contact?: Partial<SiteSettings['contact']>;
+  payments?: Partial<SiteSettings['payments']>;
+  services?: Partial<SiteSettings['services']>;
 }

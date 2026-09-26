@@ -90,37 +90,40 @@ export const CheckoutAddressSelector = ({
         );
       })}
 
-      <label
-        className={cn(
-          'flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors',
-          usingNew
-            ? 'border-primary bg-primary/5'
-            : 'border-input hover:bg-surface',
-          disabled && 'cursor-not-allowed opacity-60',
-        )}
-      >
-        <input
-          type='radio'
-          name='addressId'
-          className='sr-only'
-          checked={usingNew}
-          onChange={() => onChange(NEW_ADDRESS)}
-        />
-        <Plus
+      {/*
+        Solo cuando hay algo entre lo que elegir. Sin direcciones guardadas el
+        formulario ya sale abierto debajo, y esta fila era un botón aparente
+        que no hacía nada (MxH-0104).
+      */}
+      {addresses.length > 0 && (
+        <label
           className={cn(
-            'size-4 shrink-0',
-            usingNew ? 'text-primary' : 'text-muted',
+            'flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors',
+            usingNew
+              ? 'border-primary bg-primary/5'
+              : 'border-input hover:bg-surface',
+            disabled && 'cursor-not-allowed opacity-60',
           )}
-          aria-hidden='true'
-        />
-        <span className='text-sm font-semibold text-heading'>
-          {addresses.length > 0
-            ? 'Usar otra dirección'
-            : zone
-              ? `Agregar una dirección en ${zone.municipalityName}`
-              : 'Agregar dirección'}
-        </span>
-      </label>
+        >
+          <input
+            type='radio'
+            name='addressId'
+            className='sr-only'
+            checked={usingNew}
+            onChange={() => onChange(NEW_ADDRESS)}
+          />
+          <Plus
+            className={cn(
+              'size-4 shrink-0',
+              usingNew ? 'text-primary' : 'text-muted',
+            )}
+            aria-hidden='true'
+          />
+          <span className='text-sm font-semibold text-heading'>
+            Usar otra dirección
+          </span>
+        </label>
+      )}
 
       {zone && (
         <p className='text-xs text-muted'>
@@ -154,17 +157,11 @@ export const CheckoutAddressSelector = ({
               className='md:col-span-2'
             />
           </div>
-          {zone ? (
-            <p className='flex items-center gap-2 rounded-xl bg-surface px-3 py-2 text-sm text-heading'>
-              <MapPin
-                className='size-4 shrink-0 text-primary'
-                aria-hidden='true'
-              />
-              Entrega en <strong>{zone.municipalityName}</strong>
-            </p>
-          ) : (
-            <AddressMunicipalityFields catalog={catalog} />
-          )}
+          {/*
+            Sin zona hay que preguntar el municipio. Con zona no se dice nada:
+            la línea de arriba ya explica en cuál estamos y cómo cambiarla.
+          */}
+          {!zone && <AddressMunicipalityFields catalog={catalog} />}
           <label className='flex cursor-pointer items-center gap-2 text-sm text-heading'>
             <input
               type='checkbox'

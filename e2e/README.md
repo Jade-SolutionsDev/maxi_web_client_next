@@ -23,11 +23,22 @@ cd ../maxi_api_nestjs && pnpm run docker:db:start && pnpm run start   # :4000
 bun run dev --port 3001                                              # :3001
 ```
 
-**Y almacenes sembrados**, o el catálogo sale vacío y no hay zona que elegir:
+**Y la base sembrada entera**, en este orden:
 
 ```bash
-cd ../maxi_api_nestjs && pnpm run seed:stock-locations
+cd ../maxi_api_nestjs
+pnpm run seed:stock-locations   # almacenes y su cobertura
+pnpm run seed:fulfillment       # opciones de entrega y puntos de recogida
+pnpm run seed:products          # catálogo
+pnpm run seed:inventory         # existencias
+pnpm run seed:client            # el cliente de QA
 ```
+
+**No basta con `seed:stock-locations`.** Sin `seed:fulfillment` no hay ninguna
+opción de entrega ni ningún punto de recogida, así que la tienda no puede
+ofrecer nada: el checkout enseña el mensaje de soporte en vez del formulario y
+**todos** los escenarios `@sesion` de `compra.feature` fallan sin decir por qué.
+Costó una tarde averiguarlo.
 
 ## Ejecutar
 
@@ -38,6 +49,23 @@ bun run test:e2e:headed    # viendo el navegador
 
 Ambos ejecutan `bddgen` antes: traduce las features a specs. **Sin ese paso Playwright no
 encuentra nada.**
+
+## Contra otro entorno
+
+Por defecto todo apunta a la máquina de desarrollo. Estas variables lo mueven sin tocar código:
+
+| Variable | Para qué | Por defecto |
+|---|---|---|
+| `E2E_BASE_URL` | La tienda que se prueba. **También fija el dominio de la cookie de zona**, sin la cual el modal de ubicación tapa media pantalla | `http://localhost:3001` |
+| `E2E_TIENDA` / `E2E_API` | URLs que usan los pasos y la invalidación de caché | los locales |
+| `E2E_DB_CONTENEDOR` | Prefijo del contenedor de Postgres; el sufijo de tarea se resuelve solo | `maxihabana-postgres-dev` |
+| `E2E_DB_SUDO` / `E2E_DB_CLAVE_SUDO` | Cuando `docker` necesita sudo. La clave va por entrada estándar, nunca por la línea de comandos | sin sudo |
+| `E2E_REVALIDATE_SECRET` | El de ese entorno. Si no coincide, la invalidación devuelve 401 **en silencio** y el catálogo se queda cacheado un día | `change-me-in-production` |
+| `E2E_CANAL` | `chromium` en un servidor sin Chrome del sistema | `chrome` |
+| `E2E_TIMEOUT`, `E2E_TIMEOUT_EXPECT`, `E2E_TIMEOUT_ACCION` | Un entorno desplegado hidrata más lento que un servidor de desarrollo | 60s / 10s / 15s |
+
+**Aviso: la suite escribe en la base del entorno que apuntes.** Siembra productos y borra pedidos
+y direcciones del cliente de QA. Contra algo que no sea desechable, piénsalo dos veces.
 
 Al fallar guarda **captura, vídeo y traza** en `test-results/`. La traza se recorre paso a paso
 con `npx playwright show-trace <ruta>`.
@@ -63,3 +91,27 @@ Una URL de otro dominio **tumba la página entera del catálogo** — ver `MxH-0
 
 **La cookie de zona (`maxi_location`) debe compartir dominio con la navegación.** Todo usa
 `localhost`, no `127.0.0.1`: para el navegador son sitios distintos y la cookie no viajaría.
+
+## Contra un servidor donde `docker` pide sudo
+
+`sudo` no admite comodines en los argumentos de una regla, así que no hay
+forma de permitir `docker exec … psql -c <consulta>` sin conceder `docker`
+entero — que es root en la práctica. La salida es un guion propio, propiedad
+de root, que ya lleva dentro el contenedor y la base:
+
+```bash
+sudo tee /usr/local/bin/maxi-psql-staging > /dev/null <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+CONTENEDOR=$(docker ps --format '{{.Names}}' | grep '^maxi-db-staging' | head -1)
+[ -n "$CONTENEDOR" ] || { echo "no hay contenedor de staging" >&2; exit 1; }
+exec docker exec -i "$CONTENEDOR" psql -U maxihabana -d maxihabana "$@"
+SH
+sudo chmod 755 /usr/local/bin/maxi-psql-staging
+echo 'jade ALL=(root) NOPASSWD: /usr/local/bin/maxi-psql-staging' | sudo tee /etc/sudoers.d/maxi-pruebas
+sudo chmod 440 /etc/sudoers.d/maxi-pruebas
+```
+
+Y las pruebas se lanzan con `E2E_DB_COMANDO="sudo -n /usr/local/bin/maxi-psql-staging"`,
+que sustituye al camino de `docker`.
+

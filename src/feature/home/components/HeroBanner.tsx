@@ -5,10 +5,10 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/app/components/ui/carousel";
-import { heroSpineClass } from "@/feature/home/components/hero-banner.styles";
-import { LinkedBannerPicture } from "@/feature/home/components/LinkedBannerPicture";
-import { getBanners } from "@/shared/cms/service/cms.service";
+} from '@/app/components/ui/carousel';
+import { heroSpineClass } from '@/feature/home/components/hero-banner.styles';
+import { LinkedBannerPicture } from '@/feature/home/components/LinkedBannerPicture';
+import { getBanners } from '@/shared/cms/service/cms.service';
 
 async function HeroBanner() {
   const banners = await getBanners();
@@ -17,7 +17,7 @@ async function HeroBanner() {
 
   return (
     <div className={heroSpineClass}>
-      <Carousel aria-label="Banners promocionales">
+      <Carousel aria-label='Banners promocionales'>
         <CarouselContent>
           {banners.map((slide, index) => (
             <CarouselItem key={slide.id}>

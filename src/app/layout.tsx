@@ -8,6 +8,7 @@ import { SiteStructuredData } from '@/shared/seo/components/SiteStructuredData';
 import { SITE_URL } from '@/shared/seo/site-url';
 import { Toaster } from './components/feedback/Toaster';
 import { BottomNav } from './components/layout/bottom-nav';
+import { CookieBoundary } from './components/layout/cookies/CookieBoundary';
 import { Footer } from './components/layout/Footer';
 import { Header } from './components/layout/Header';
 
@@ -66,6 +67,13 @@ export default function RootLayout({
       <body className='flex min-h-full flex-col pb-[var(--bottom-nav-height)]'>
         <ClerkProvider
           allowedRedirectOrigins={['http://localhost:3000', SITE_URL]}
+          /*
+            El captcha del registro lo pinta Cloudflare Turnstile a través de
+            Clerk, y su idioma NO sale del <html lang='es'>: Clerk lo toma de
+            appearance.captcha.language, y si no se dice nada cae en 'en-US'.
+            En una tienda cubana salía «Verify you are human».
+          */
+          appearance={{ captcha: { language: 'es-ES' } }}
         >
           {/*
             El adaptador envuelve todo, no solo <main>: el buscador de la
@@ -78,6 +86,11 @@ export default function RootLayout({
             <main className='grow'>{children}</main>
             <Footer />
             <BottomNav />
+            {/*
+              Al final del arbol y en posicion fija: informa sin empujar el
+              contenido ni entrar en el orden de lectura antes de tiempo.
+            */}
+            <CookieBoundary />
           </NuqsAdapter>
         </ClerkProvider>
         <Toaster />

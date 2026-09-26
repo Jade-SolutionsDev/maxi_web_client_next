@@ -3,7 +3,33 @@ import type { Order } from '../type/order.type';
 const line = (value: unknown) =>
   typeof value === 'string' && value.trim() ? value.trim() : null;
 
-export const OrderDeliveryDetails = ({ order }: { order: Order }) => {
+/**
+ * Quién recibe el pedido, para que el cliente pueda comprobar lo que escribió.
+ * Hasta ahora se le pedían estos datos y no volvía a verlos: un carnet mal
+ * tecleado se descubría en el mostrador, cuando ya no tiene arreglo fácil.
+ */
+const Beneficiario = ({ order }: { order: Order }) => {
+  const contacto = order.contactSnapshot;
+  const nombre = line(contacto?.recipientName);
+  const carnet = line(contacto?.idCard);
+  const telefono = line(contacto?.contactPhone);
+
+  if (!nombre && !carnet && !telefono) return null;
+
+  const etiqueta = order.fulfillmentType === 'pickup' ? 'Recoge' : 'Recibe';
+
+  return (
+    <div className='flex flex-col gap-1 border-b border-input pb-2 text-sm text-muted'>
+      <span className='font-semibold text-heading'>
+        {etiqueta}: {nombre ?? '—'}
+      </span>
+      {carnet && <span>Carnet: {carnet}</span>}
+      {telefono && <span>Teléfono: {telefono}</span>}
+    </div>
+  );
+};
+
+const Destino = ({ order }: { order: Order }) => {
   if (order.fulfillmentType === 'pickup') {
     const pickup = order.pickupAddress;
 
@@ -56,3 +82,10 @@ export const OrderDeliveryDetails = ({ order }: { order: Order }) => {
     </dl>
   );
 };
+
+export const OrderDeliveryDetails = ({ order }: { order: Order }) => (
+  <div className='flex flex-col gap-2'>
+    <Beneficiario order={order} />
+    <Destino order={order} />
+  </div>
+);

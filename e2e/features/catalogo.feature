@@ -37,3 +37,13 @@ Característica: El catálogo de la tienda refleja lo que hay a la venta
     Cuando el cliente busca "zzzzinexistente" en el catálogo
     Entonces no ve el producto "Cola"
     Y la página sigue funcionando
+
+  # MxH-0086: un producto con una imagen de un dominio que no está autorizado
+  # tumbaba la página entera —«Algo salió mal» para todos los visitantes—,
+  # porque next/image lanza al renderizar, antes de que nada pueda atajarlo.
+  # La tarjeta debe verse sin imagen; lo que no puede es caerse el catálogo.
+  Escenario: Una imagen de un dominio no autorizado no tumba el catálogo
+    Dado que el producto "Cola" tiene una imagen de un dominio no autorizado
+    Cuando el cliente abre el catálogo
+    Entonces ve el producto "Cola"
+    Y la página sigue funcionando

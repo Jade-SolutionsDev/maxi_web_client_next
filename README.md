@@ -27,10 +27,10 @@ bun run dev --port 3001
 
 Lee `.env.example`: explica qué es cada variable y cuáles tienen que coincidir con las de la API.
 
-> **Si algo se comporta de forma inexplicable en local, empieza por las claves de Clerk.**
-> Sin `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` la tienda arranca igual, pero Clerk entra en *keyless
-> mode* y se inventa una aplicación temporal: la sesión deja de valer contra la API y el
-> formulario de acceso no responde. No avisa de nada.
+> **`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` no es opcional.** Sin ella Clerk entraría en *keyless
+> mode* y se inventaría una aplicación temporal: la sesión deja de valer contra la API y el
+> formulario de acceso no responde. Antes eso pasaba en silencio; ahora `next.config.ts` revisa
+> la clave y el build falla explicando qué falta, y en producción exige una `pk_live_`.
 
 **3. Sin almacenes no hay tienda.** El catálogo y los selectores de zona salen de la cobertura de
 los almacenes. Con la base recién creada no hay ninguno, así que el catálogo sale vacío y no se

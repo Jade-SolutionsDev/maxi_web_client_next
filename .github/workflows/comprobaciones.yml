@@ -1,11 +1,16 @@
 # Comprobaciones en cada propuesta de cambios.
 #
-# Capa 1 de la integración continua: las 98 pruebas unitarias, que corren en
-# segundos y no necesitan nada levantado.
+# Capa 1 de la integración continua: comprobación de tipos y pruebas unitarias,
+# que corren en segundos y no necesitan nada levantado.
+#
+# El typecheck entró el 24-sep-2026 y no es adorno: ese mismo día un import de
+# `lucide-react` que ya no existía pasó las 272 pruebas y el linter, y reventó
+# en el despliegue de staging con `TS2305`. Las pruebas no miran los tipos, y
+# el linter aquí es informativo: sin este paso, el primero que se entera de que
+# algo no compila es Dokploy, ya publicado.
 #
 # Dos cosas quedan fuera a propósito:
-#  - `next build` necesita las claves de Clerk; entra cuando estén como
-#    secretos del repositorio.
+#  - `next build` entero, que necesita la API en pie para las páginas del CMS.
 #  - Las pruebas de navegador (MxH-0085) necesitan la API y una base, y van
 #    en su propia capa.
 name: Comprobaciones
@@ -34,6 +39,24 @@ jobs:
 
       - name: Instalar dependencias
         run: bun install --frozen-lockfile
+
+      # `next typegen` escribe los tipos de rutas y de los recursos —las
+      # imágenes de `@/assets` entre ellos—, que no están en el repositorio.
+      # Sin esto el typecheck falla con diez `TS2307` que no son errores de
+      # nadie. Las claves son de mentira: solo hacen falta porque
+      # `next.config.ts` se niega a cargar sin ellas (MxH-0081), y aquí no se
+      # construye ni se sirve nada.
+      - name: Tipos de Next
+        run: bun run next typegen
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_solo_para_comprobar_tipos
+          CLERK_SECRET_KEY: sk_test_solo_para_comprobar_tipos
+
+      # Antes de las pruebas: si los tipos no cuadran, lo que corra después
+      # dice poco y tarda más en decirlo. `tsconfig.ci.json` deja fuera `e2e/`,
+      # que necesita Playwright instalado y tiene su propio flujo.
+      - name: Comprobación de tipos
+        run: bun run tsc --noEmit -p tsconfig.ci.json
 
       - name: Pruebas
         run: bun run vitest run

@@ -13,7 +13,7 @@ Característica: La ficha de un producto
   Escenario: La ficha muestra el precio que se va a cobrar
     Cuando el cliente abre la ficha de "Cola"
     Entonces ve el producto "Cola"
-    Y ve el precio "US$80.00"
+    Y ve el precio "$80.00"
 
   Escenario: Se puede llenar el carrito desde la ficha
     Cuando el cliente abre la ficha de "Cola"

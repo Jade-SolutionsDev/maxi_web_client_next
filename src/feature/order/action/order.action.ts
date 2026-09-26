@@ -1,23 +1,23 @@
-"use server";
+'use server';
 
-import { revalidatePath } from "next/cache";
-import { readMunicipalityId } from "@/shared/location/cookie/location.cookie";
-import { toOrderFailure } from "../lib/order-error";
-import { CheckoutInputSchema } from "../schema/checkout.schema";
+import { revalidatePath } from 'next/cache';
+import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
+import { toOrderFailure } from '../lib/order-error';
+import { CheckoutInputSchema } from '../schema/checkout.schema';
 import {
   OrderIdInputSchema,
   StartPaymentInputSchema,
-} from "../schema/order-action.schema";
-import type { CheckoutAddressPayload } from "../service/order.service";
-import * as orders from "../service/order.service";
-import type { FulfillmentOffer } from "../type/fulfillment.type";
+} from '../schema/order-action.schema';
+import type { CheckoutAddressPayload } from '../service/order.service';
+import * as orders from '../service/order.service';
+import type { FulfillmentOffer } from '../type/fulfillment.type';
 import type {
   OrderListResult,
   OrderResult,
   PaymentCharge,
   PaymentMethod,
   PaymentResult,
-} from "../type/order.type";
+} from '../type/order.type';
 
 const toAddressPayload = (input: {
   recipientName?: string;
@@ -62,7 +62,7 @@ const openPaymentCharge = async (
 export const checkoutAction = async (input: unknown): Promise<OrderResult> => {
   const parsed = CheckoutInputSchema.safeParse(input);
 
-  if (!parsed.success) return { failure: { kind: "unknown" } };
+  if (!parsed.success) return { failure: { kind: 'unknown' } };
 
   try {
     const { data } = parsed;
@@ -90,8 +90,8 @@ export const checkoutAction = async (input: unknown): Promise<OrderResult> => {
       data.paymentMethod || undefined,
     );
 
-    revalidatePath("/checkout");
-    revalidatePath("/pedidos");
+    revalidatePath('/checkout');
+    revalidatePath('/pedidos');
 
     return { order: payment ? { ...order, payment } : order };
   } catch (error) {
@@ -122,7 +122,7 @@ export const fetchOrders = async (page: number): Promise<OrderListResult> => {
 export const fetchOrder = async (input: unknown): Promise<OrderResult> => {
   const parsed = OrderIdInputSchema.safeParse(input);
 
-  if (!parsed.success) return { failure: { kind: "unknown" } };
+  if (!parsed.success) return { failure: { kind: 'unknown' } };
 
   try {
     return { order: await orders.getOrder(parsed.data.orderId) };
@@ -136,7 +136,7 @@ export const cancelOrderAction = async (
 ): Promise<OrderResult> => {
   const parsed = OrderIdInputSchema.safeParse(input);
 
-  if (!parsed.success) return { failure: { kind: "unknown" } };
+  if (!parsed.success) return { failure: { kind: 'unknown' } };
 
   try {
     return { order: await orders.cancelOrder(parsed.data.orderId) };
@@ -150,7 +150,7 @@ export const fetchPaymentStatus = async (
 ): Promise<PaymentResult> => {
   const parsed = OrderIdInputSchema.safeParse(input);
 
-  if (!parsed.success) return { failure: { kind: "unknown" } };
+  if (!parsed.success) return { failure: { kind: 'unknown' } };
 
   try {
     return { payment: await orders.getPayment(parsed.data.orderId) };
@@ -164,7 +164,7 @@ export const startPaymentAttempt = async (
 ): Promise<PaymentResult> => {
   const parsed = StartPaymentInputSchema.safeParse(input);
 
-  if (!parsed.success) return { failure: { kind: "unknown" } };
+  if (!parsed.success) return { failure: { kind: 'unknown' } };
 
   try {
     return {
@@ -186,12 +186,12 @@ export const submitPaymentProofAction = async (
   orderId: string,
   formData: FormData,
 ): Promise<PaymentResult> => {
-  const reference = String(formData.get("reference") ?? "").trim();
+  const reference = String(formData.get('reference') ?? '').trim();
   if (reference.length < 3) {
-    return { failure: { kind: "unknown" } };
+    return { failure: { kind: 'unknown' } };
   }
 
-  const receipt = formData.get("receipt");
+  const receipt = formData.get('receipt');
   const file = receipt instanceof File && receipt.size > 0 ? receipt : null;
 
   try {

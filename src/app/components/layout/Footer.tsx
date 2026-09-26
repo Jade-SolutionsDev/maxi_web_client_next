@@ -7,29 +7,21 @@ import logo from '@/assets/logo.svg';
 import { toWhatsAppHref } from '@/helpers';
 import { getCmsPages, getSiteSettings } from '@/shared/cms/service/cms.service';
 import { siteLinks } from './constants/footer.constants';
-// import { paymentLogos } from './constants/footer.constants'; // ver «Métodos de pago» abajo
 import { getFooterDepartmentLinks } from './constants/footer-departments';
 import { buildFooterLegalLinks } from './constants/footer-legal-links';
+import { CookiePreferencesLink } from './cookies/CookiePreferencesLink';
 import { FooterLinkColumn } from './FooterLinkColumn';
+import { RedesSociales } from './RedesSociales';
 
 const contactClass =
   'flex items-center gap-3 text-sm text-white/80 transition-colors hover:text-white hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange rounded-sm';
 
 export const Footer = async () => {
-  const [{ footer, contact }, departmentLinks, cmsPages] =
-    await Promise.all([
-      getSiteSettings(),
-      getFooterDepartmentLinks(),
-      getCmsPages(),
-    ]);
-
-  // Métodos de pago ocultos por ahora a petición de Jade (15-sep-2026).
-  // Para restaurarlos: volver a leer `payments` de getSiteSettings(),
-  // reactivar el import de `paymentLogos` y descomentar este cálculo y el
-  // bloque JSX «Métodos de pago» de abajo.
-  // const enabledMethods = (
-  //   Object.keys(paymentLogos) as (keyof typeof paymentLogos)[]
-  // ).filter((method) => payments[method]);
+  const [{ footer, contact }, departmentLinks, cmsPages] = await Promise.all([
+    getSiteSettings(),
+    getFooterDepartmentLinks(),
+    getCmsPages(),
+  ]);
 
   const legalLinks = buildFooterLegalLinks(footer.legalLinks, cmsPages);
 
@@ -67,6 +59,8 @@ export const Footer = async () => {
                 {contact.hours}
               </p>
             </address>
+
+            <RedesSociales className='flex gap-3' />
           </div>
 
           <FooterLinkColumn title='Enlaces' label='Enlaces' links={siteLinks} />
@@ -75,36 +69,22 @@ export const Footer = async () => {
             label='Departamentos'
             links={departmentLinks}
           />
-          <FooterLinkColumn title='Legal' label='Legal' links={legalLinks} />
+          <div className='flex flex-col gap-4'>
+            <FooterLinkColumn title='Legal' label='Legal' links={legalLinks} />
+            <CookiePreferencesLink />
+          </div>
         </div>
 
-        {/* Métodos de pago — oculto por ahora (15-sep-2026), ver nota arriba.
-        {enabledMethods.length > 0 && (
-          <div className='mt-10 flex flex-wrap items-center gap-4'>
-            <span className='text-xs font-semibold tracking-wider text-white/60'>
-              MÉTODOS DE PAGO
-            </span>
-            <ul className='flex flex-wrap items-center gap-3'>
-              {enabledMethods.map((method) => {
-                const display = paymentLogos[method];
-                return (
-                  <li
-                    key={method}
-                    className='flex h-9 items-center justify-center rounded-md bg-white px-3'
-                  >
-                    {display.src ? (
-                      <Image src={display.src} alt={display.alt} height={16} />
-                    ) : (
-                      <span className='text-xs font-bold text-heading'>
-                        {display.alt}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
+        {/* Métodos de pago — oculto por ahora a petición de Jade (15-sep-2026).
+            Para restaurarlo, descomentar este bloque.
+        <div className='mt-10 flex flex-wrap items-center gap-4'>
+          <span className='text-xs font-semibold tracking-wider text-white/60'>
+            MÉTODOS DE PAGO
+          </span>
+          <span className='flex h-9 items-center justify-center rounded-md bg-white px-3 text-xs font-bold text-heading'>
+            Mi Billetera
+          </span>
+        </div>
         */}
       </Container>
 

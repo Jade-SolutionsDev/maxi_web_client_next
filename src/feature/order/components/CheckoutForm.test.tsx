@@ -94,6 +94,7 @@ const methods = [
     description: 'Paga con tarjeta.',
     icon: 'CreditCard',
     kind: 'redirect' as const,
+    holdMinutes: 30,
   },
   {
     code: 'manual',
@@ -101,6 +102,7 @@ const methods = [
     description: 'Coordinamos el pago.',
     icon: 'HandCoins',
     kind: 'manual' as const,
+    holdMinutes: 24 * 60,
   },
 ];
 
@@ -111,7 +113,7 @@ const fillRecipient = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.type(screen.getByLabelText(/carnet de identidad/i), '90051512345');
   await user.type(
     screen.getByLabelText(/tel[eé]fono de contacto/i),
-    '55512345',
+    '+53 5251 9414',
   );
 };
 
@@ -156,7 +158,7 @@ describe('CheckoutForm', () => {
     await waitFor(() => expect(markCheckedOut).toHaveBeenCalled());
   });
 
-  it('navigates to the order once the checkout succeeds', async () => {
+  it('navigates to the order once the checkout succeeds, saying the purchase went through', async () => {
     render(
       <CheckoutForm
         paymentMethods={methods}
@@ -169,7 +171,66 @@ describe('CheckoutForm', () => {
 
     await submit();
 
-    await waitFor(() => expect(push).toHaveBeenCalledWith('/pedidos/order-1'));
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith('/pedidos/order-1?compraConfirmada=1'),
+    );
+  });
+
+  it('dice cuánto se aparta el stock con el método elegido', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.getByText(/30 minutos/)).toBeTruthy();
+    expect(screen.getByText(/el pedido se cancela/)).toBeTruthy();
+  });
+
+  /**
+   * El rótulo no es cosmético: decide qué carnet acaba en el pedido, y ese es
+   * el que se pide en el almacén al entregar. Con «Datos del cliente» el
+   * comprador ponía el suyo, cuando aquí casi siempre paga alguien de fuera y
+   * recoge un familiar en Cuba (en producción ya hay pedidos donde titular y
+   * beneficiario son personas distintas).
+   */
+  it('pide los datos del beneficiario, no los de quien compra', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.getByText(/Datos del beneficiario/i)).toBeTruthy();
+    expect(screen.queryByText(/Datos del cliente/i)).toBeNull();
+  });
+
+  it('no promete ningún plazo si la API todavía no lo manda', () => {
+    const sinPlazo = methods.map((method) => ({
+      ...method,
+      holdMinutes: null,
+    }));
+
+    render(
+      <CheckoutForm
+        paymentMethods={sinPlazo}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.queryByText(/30 minutos/)).toBeNull();
+    expect(screen.getByText(/reservamos tu stock/)).toBeTruthy();
   });
 
   /**
@@ -300,7 +361,7 @@ describe('CheckoutForm', () => {
           // Lo que en una recogida no puede salir de ninguna dirección.
           recipientName: 'Ana Rodríguez',
           idCard: '90051512345',
-          contactPhone: '55512345',
+          contactPhone: '+53 5251 9414',
         }),
       ),
     );
@@ -347,7 +408,7 @@ describe('CheckoutForm', () => {
     );
     await user.type(
       screen.getByLabelText(/tel[eé]fono de contacto/i),
-      '55512345',
+      '+53 5251 9414',
     );
     await user.click(screen.getByRole('button', { name: /Confirmar pedido/ }));
 
@@ -486,7 +547,28 @@ describe('CheckoutForm', () => {
 
     await userEvent.click(screen.getByText(/Usar otra dirección/));
 
-    expect(screen.getByText(/Entrega en/)).toBeTruthy();
+    // Lo que importa: con zona no se pregunta el municipio.
     expect(screen.queryByLabelText(/Provincia/)).toBeNull();
+    // Y ya no se repite en una píldora lo que el texto de arriba explica.
+    expect(screen.queryByText(/Entrega en/)).toBeNull();
+  });
+
+  it('no ofrece «agregar dirección» cuando no hay ninguna guardada', async () => {
+    // El formulario ya sale abierto; esa fila era un botón aparente que no
+    // hacía nada.
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={[]}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.queryByText(/agregar una direcci[oó]n/i)).toBeNull();
+    expect(screen.queryByText(/usar otra direcci[oó]n/i)).toBeNull();
+    // Pero los campos sí están, que es de lo que se trata.
+    expect(screen.getByLabelText(/calle y n[uú]mero/i)).toBeTruthy();
   });
 });
