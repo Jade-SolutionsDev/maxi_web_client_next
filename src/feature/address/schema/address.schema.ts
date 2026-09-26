@@ -1,4 +1,20 @@
 import { z } from 'zod';
+import { CUBAN_ID_MESSAGE, isCubanIdCard } from '../lib/cuban-id';
+
+/**
+ * Opcionales aquí y obligatorios en el checkout, a propósito: hay direcciones
+ * guardadas de antes que no los tienen, y forzarlos aquí convertiría editar
+ * una dirección vieja en rellenar un carnet que nadie pidió.
+ */
+export const recipientFields = {
+  recipientName: z.string().trim().max(150).optional().or(z.literal('')),
+  idCard: z
+    .string()
+    .trim()
+    .refine((value) => value === '' || isCubanIdCard(value), CUBAN_ID_MESSAGE)
+    .optional()
+    .or(z.literal('')),
+};
 
 const optionalText = (max: number) =>
   z.string().trim().max(max).optional().or(z.literal(''));
@@ -9,6 +25,7 @@ const optionalText = (max: number) =>
  * municipality and the API derives the province from it.
  */
 export const AddressFormSchema = z.object({
+  ...recipientFields,
   label: optionalText(100),
   street: z.string().trim().min(1, 'Escribe la calle y el número').max(300),
   betweenStreets: optionalText(200),

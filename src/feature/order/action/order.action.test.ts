@@ -20,6 +20,9 @@ const input = {
   fulfillmentType: 'pickup' as const,
   pickupAddressId: 'point-1',
   paymentMethod: 'tropipay',
+  recipientName: 'Daniel Smith',
+  idCard: '91031512345',
+  contactPhone: '55512345',
 };
 
 describe('checkoutAction', () => {
@@ -37,6 +40,29 @@ describe('checkoutAction', () => {
 
     expect(startPayment).toHaveBeenCalledWith('order-1', 'tropipay');
     expect(result.order).toEqual({ id: 'order-1', payment: charge });
+  });
+
+  it('manda a quien recibe el pedido, no solo dónde entregarlo', async () => {
+    startPayment.mockResolvedValue({});
+
+    await checkoutAction(input);
+
+    expect(checkout).toHaveBeenCalledWith(
+      expect.objectContaining({
+        contact: {
+          recipientName: 'Daniel Smith',
+          idCard: '91031512345',
+          contactPhone: '55512345',
+        },
+      }),
+    );
+  });
+
+  it('descarta un checkout con el carnet mal', async () => {
+    const result = await checkoutAction({ ...input, idCard: '99023012345' });
+
+    expect(checkout).not.toHaveBeenCalled();
+    expect(result.failure).toBeDefined();
   });
 
   it('keeps the order when the payment attempt fails', async () => {

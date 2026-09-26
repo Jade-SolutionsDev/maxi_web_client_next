@@ -16,6 +16,8 @@ export interface AddressResponse {
   municipalityName: string;
   provinceId: string;
   provinceName: string;
+  recipientName: string | null;
+  idCard: string | null;
   contactPhone: string | null;
   isDefault: boolean;
   createdAt: string;
@@ -31,6 +33,8 @@ export interface Address {
   municipalityName: string;
   provinceId: string;
   provinceName: string;
+  recipientName?: string;
+  idCard?: string;
   contactPhone?: string;
   isDefault: boolean;
 }

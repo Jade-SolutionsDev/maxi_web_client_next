@@ -15,6 +15,8 @@ export const toAddress = (response: AddressResponse): Address => ({
   municipalityName: response.municipalityName,
   provinceId: response.provinceId,
   provinceName: response.provinceName,
+  recipientName: optional(response.recipientName),
+  idCard: optional(response.idCard),
   contactPhone: optional(response.contactPhone),
   isDefault: response.isDefault,
 });
