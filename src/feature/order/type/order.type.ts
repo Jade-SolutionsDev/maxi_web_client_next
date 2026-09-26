@@ -113,6 +113,15 @@ export interface Order {
   total: number;
   deliveryMunicipalityId: string | null;
   deliveryAddress: Record<string, string | null> | null;
+  /**
+   * Quién recibe el pedido, congelado al comprar. En una recogida es el único
+   * sitio donde vive: no hay dirección de la que sacarlo.
+   */
+  contactSnapshot: {
+    recipientName?: string | null;
+    idCard?: string | null;
+    contactPhone?: string | null;
+  } | null;
   customerNotes: string | null;
   items?: OrderItem[];
   payment?: PaymentCharge;
