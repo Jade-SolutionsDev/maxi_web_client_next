@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { Mail, Phone } from 'lucide-react';
 import { Container } from '@/app/components/layout/Container';
+import { LogoRed } from '@/app/components/layout/RedesSociales';
 import { toTelHref } from '@/helpers';
 import { getSiteSettings } from '@/shared/cms/service/cms.service';
 import { getContactMotives } from '../service/contact.service';
@@ -38,6 +39,32 @@ export async function ContactSection() {
           </span>
           <h2 className='font-bold text-heading'>Teléfono</h2>
           <p className='text-sm text-muted'>{contact.phone}</p>
+        </a>
+
+        <a
+          href='https://www.facebook.com/profile.php?id=61550740714835'
+          target='_blank'
+          rel='noopener noreferrer'
+          className={cardClass}
+        >
+          <span className='flex size-14 items-center justify-center rounded-full bg-surface text-accent'>
+            <LogoRed nombre='Facebook' className='size-6' />
+          </span>
+          <h2 className='font-bold text-heading'>Facebook</h2>
+          <p className='text-sm text-muted'>Escríbenos por Messenger</p>
+        </a>
+
+        <a
+          href='https://www.instagram.com/maxihabana'
+          target='_blank'
+          rel='noopener noreferrer'
+          className={cardClass}
+        >
+          <span className='flex size-14 items-center justify-center rounded-full bg-surface text-accent'>
+            <LogoRed nombre='Instagram' className='size-6' />
+          </span>
+          <h2 className='font-bold text-heading'>Instagram</h2>
+          <p className='text-sm text-muted'>@maxihabana</p>
         </a>
       </div>
 

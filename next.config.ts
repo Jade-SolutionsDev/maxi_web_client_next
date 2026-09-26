@@ -1,22 +1,19 @@
 import type { NextConfig } from 'next';
+import { revisarClaveDeClerk } from './src/lib/clerk-key';
+import { patronesDeImagen } from './src/lib/image-hosts';
 
-// CMS uploads (banners, staff photos) live on the object-storage host the API
-// is configured with; the hardcoded S3 entry below only allows /BANNER/**.
-// Set NEXT_PUBLIC_MEDIA_URL to that storage's public base URL per environment.
-const mediaUrl = process.env.NEXT_PUBLIC_MEDIA_URL;
-const mediaPattern = mediaUrl
-  ? (() => {
-      const url = new URL(mediaUrl);
-      return [
-        {
-          protocol: url.protocol.replace(':', '') as 'http' | 'https',
-          hostname: url.hostname,
-          ...(url.port ? { port: url.port } : {}),
-          pathname: `${url.pathname.replace(/\/$/, '')}/**`,
-        },
-      ];
-    })()
-  : [];
+const problemaConClerk = revisarClaveDeClerk({
+  clave: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  sitio: process.env.NEXT_PUBLIC_SITE_URL,
+});
+
+if (problemaConClerk) throw new Error(problemaConClerk);
+
+// Los sitios permitidos viven en `src/lib/image-hosts.ts` porque los necesitan
+// dos lados: esta configuración, para autorizarlos, y `SafeImage`, para saber
+// de antemano si una URL sería rechazada y caer al respaldo. Cuando la lista
+// estaba solo aquí, una imagen de otro dominio tumbaba el catálogo entero
+// (MxH-0086): next/image lanza al renderizar, antes de que nada pueda atajarlo.
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -32,31 +29,7 @@ const nextConfig: NextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    remotePatterns: [
-      ...mediaPattern,
-      {
-        protocol: 'https',
-        hostname: 'maxi-media-prod.s3.us-east-1.amazonaws.com',
-        port: '',
-        pathname: '/BANNER/**',
-      },
-      {
-        hostname: 'res.cloudinary.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
-        pathname: '/**',
-      },
-      // Local object storage used by the API in development.
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '9002',
-        pathname: '/**',
-      },
-    ],
+    remotePatterns: patronesDeImagen(process.env.NEXT_PUBLIC_MEDIA_URL),
   },
 };
 

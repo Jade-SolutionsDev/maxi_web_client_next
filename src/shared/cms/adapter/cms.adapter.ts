@@ -1,4 +1,4 @@
-import { DEFAULT_SITE_SETTINGS } from "../constants/site-settings.constants";
+import { DEFAULT_SITE_SETTINGS } from '../constants/site-settings.constants';
 import type {
   BannerSlide,
   CmsBannerResponse,
@@ -13,7 +13,7 @@ import type {
   SiteSettings,
   SiteSettingsResponse,
   StaffMember,
-} from "../type/cms.interface";
+} from '../type/cms.interface';
 
 export const toFaqCategory = (
   category: CmsFaqCategoryResponse,

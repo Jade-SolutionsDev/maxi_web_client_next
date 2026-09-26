@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   CircleCheckBig,
@@ -6,34 +6,34 @@ import {
   ExternalLink,
   HandCoins,
   TriangleAlert,
-} from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Button, buttonVariants } from "@/app/components/ui/button";
-import { formatPrice, truncateDecimals } from "@/helpers";
-import { cn } from "@/lib/utils";
+} from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Button, buttonVariants } from '@/app/components/ui/button';
+import { formatPrice, truncateDecimals } from '@/helpers';
+import { cn } from '@/lib/utils';
 import {
   fetchPaymentStatus,
   startPaymentAttempt,
-} from "../action/order.action";
-import { CHARGE_FAILURE_COPY } from "../constants/order-status.constants";
+} from '../action/order.action';
+import { CHARGE_FAILURE_COPY } from '../constants/order-status.constants';
 import {
   notifyOrderPaid,
   notifyPaymentFailure,
   notifyPaymentReturn,
-} from "../feedback/order.notify";
-import { remainingSeconds } from "../lib/payment-time";
+} from '../feedback/order.notify';
+import { remainingSeconds } from '../lib/payment-time';
 import {
   type Order,
   type PaymentCharge,
   type PaymentMethod,
   TERMINAL_CHARGE_STATUSES,
-} from "../type/order.type";
-import { CopyButton } from "./CopyButton";
-import { PaymentCountdown } from "./PaymentCountdown";
-import { PaymentInstructions } from "./PaymentInstructions";
-import { PaymentMethodSelector } from "./PaymentMethodSelector";
-import { PaymentProofForm } from "./PaymentProofForm";
+} from '../type/order.type';
+import { CopyButton } from './CopyButton';
+import { PaymentCountdown } from './PaymentCountdown';
+import { PaymentInstructions } from './PaymentInstructions';
+import { PaymentMethodSelector } from './PaymentMethodSelector';
+import { PaymentProofForm } from './PaymentProofForm';
 
 const POLL_INTERVAL_MS = 8000;
 
@@ -44,37 +44,37 @@ interface PaymentPanelProps {
 }
 
 type PanelMode =
-  | "paid"
-  | "refunded"
-  | "redirect"
-  | "instructions"
-  | "confirming"
-  | "charge-failed"
-  | "manual-pending"
-  | "start";
+  | 'paid'
+  | 'refunded'
+  | 'redirect'
+  | 'instructions'
+  | 'confirming'
+  | 'charge-failed'
+  | 'manual-pending'
+  | 'start';
 
 const resolveMode = (order: Order, charge: PaymentCharge | null): PanelMode => {
-  if (order.paymentStatus === "paid" || charge?.status === "SUCCEEDED") {
-    return "paid";
+  if (order.paymentStatus === 'paid' || charge?.status === 'SUCCEEDED') {
+    return 'paid';
   }
-  if (order.paymentStatus === "refunded") return "refunded";
+  if (order.paymentStatus === 'refunded') return 'refunded';
   if (charge) {
-    if (charge.status === "REQUIRES_ACTION") {
+    if (charge.status === 'REQUIRES_ACTION') {
       if (
         (charge.expiresAt || charge.expiresInSeconds !== null) &&
         remainingSeconds(charge.expiresInSeconds, charge.expiresAt) <= 0
       ) {
-        return "charge-failed";
+        return 'charge-failed';
       }
 
-      return charge.kind === "redirect" && charge.redirectUrl
-        ? "redirect"
-        : "instructions";
+      return charge.kind === 'redirect' && charge.redirectUrl
+        ? 'redirect'
+        : 'instructions';
     }
-    if (charge.status === "PENDING" || charge.status === "PROCESSING") {
-      return charge.kind === "manual" ? "manual-pending" : "confirming";
+    if (charge.status === 'PENDING' || charge.status === 'PROCESSING') {
+      return charge.kind === 'manual' ? 'manual-pending' : 'confirming';
     }
-    return "charge-failed";
+    return 'charge-failed';
   }
 
   /**
@@ -89,7 +89,7 @@ const resolveMode = (order: Order, charge: PaymentCharge | null): PanelMode => {
    * `manual-pending` sigue existiendo arriba, para lo que de verdad es: un
    * cobro manual ya creado y esperando confirmación.
    */
-  return "start";
+  return 'start';
 };
 
 export const PaymentPanel = ({
@@ -99,9 +99,9 @@ export const PaymentPanel = ({
 }: PaymentPanelProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const gatewayOutcome = searchParams.get("pago");
+  const gatewayOutcome = searchParams.get('pago');
   // Lo pone el checkout cuando el pedido se creó pero su cobro no.
-  const failedAtCheckout = searchParams.get("pagoFallido");
+  const failedAtCheckout = searchParams.get('pagoFallido');
   const openCharge = payment ?? order.payment ?? null;
   const [charge, setCharge] = useState<PaymentCharge | null>(openCharge);
   /**
@@ -114,22 +114,22 @@ export const PaymentPanel = ({
     reason: string;
   } | null>(
     failedAtCheckout
-      ? { code: failedAtCheckout, reason: "no pudo iniciar el pago" }
+      ? { code: failedAtCheckout, reason: 'no pudo iniciar el pago' }
       : null,
   );
   const [isStarting, setIsStarting] = useState(false);
   const [expiredLocally, setExpiredLocally] = useState(false);
   const [method, setMethod] = useState(
-    openCharge?.provider ?? paymentMethods[0]?.code ?? "",
+    openCharge?.provider ?? paymentMethods[0]?.code ?? '',
   );
-  const paidNotified = useRef(order.paymentStatus === "paid");
+  const paidNotified = useRef(order.paymentStatus === 'paid');
 
   const applyCharge = useCallback(
     (next: PaymentCharge) => {
       setCharge(next);
       setFailedMethod(null);
 
-      if (next.status === "SUCCEEDED" && !paidNotified.current) {
+      if (next.status === 'SUCCEEDED' && !paidNotified.current) {
         paidNotified.current = true;
         notifyOrderPaid();
         router.refresh();
@@ -170,11 +170,11 @@ export const PaymentPanel = ({
     const onVisible = () => {
       if (!document.hidden) void refresh();
     };
-    document.addEventListener("visibilitychange", onVisible);
+    document.addEventListener('visibilitychange', onVisible);
 
     return () => {
       clearInterval(interval);
-      document.removeEventListener("visibilitychange", onVisible);
+      document.removeEventListener('visibilitychange', onVisible);
     };
   }, [isPolling, refresh]);
 
@@ -194,9 +194,9 @@ export const PaymentPanel = ({
     setFailedMethod({
       code: method,
       reason:
-        result.failure.kind === "gateway-unavailable"
-          ? "no está disponible en este momento"
-          : "no pudo iniciar el pago",
+        result.failure.kind === 'gateway-unavailable'
+          ? 'no está disponible en este momento'
+          : 'no pudo iniciar el pago',
     });
     notifyPaymentFailure(result.failure);
   };
@@ -207,78 +207,78 @@ export const PaymentPanel = ({
   }, [refresh]);
 
   const mode = expiredLocally
-    ? resolveMode(order, charge && { ...charge, status: "EXPIRED" })
+    ? resolveMode(order, charge && { ...charge, status: 'EXPIRED' })
     : resolveMode(order, charge);
 
   return (
     <section
-      aria-labelledby="payment-title"
-      aria-live="polite"
-      className="rounded-2xl border border-input bg-background p-5 sm:p-6"
+      aria-labelledby='payment-title'
+      aria-live='polite'
+      className='rounded-2xl border border-input bg-background p-5 sm:p-6'
     >
       <h2
-        id="payment-title"
-        className="mb-4 flex items-center gap-2 text-lg font-bold text-heading"
+        id='payment-title'
+        className='mb-4 flex items-center gap-2 text-lg font-bold text-heading'
       >
-        <CircleDollarSign className="size-5 text-primary" aria-hidden="true" />
+        <CircleDollarSign className='size-5 text-primary' aria-hidden='true' />
         Pago
       </h2>
 
-      {mode === "paid" && (
+      {mode === 'paid' && (
         <PanelState
-          tone="success"
-          icon={<CircleCheckBig className="size-8" aria-hidden="true" />}
-          title="Pago confirmado"
-          description="Recibimos tu pago. Estamos preparando tu pedido."
+          tone='success'
+          icon={<CircleCheckBig className='size-8' aria-hidden='true' />}
+          title='Pago confirmado'
+          description='Recibimos tu pago. Estamos preparando tu pedido.'
         />
       )}
 
-      {mode === "refunded" && (
+      {mode === 'refunded' && (
         <PanelState
-          tone="muted"
-          icon={<HandCoins className="size-8" aria-hidden="true" />}
-          title="Pago reembolsado"
-          description="El importe de este pedido fue devuelto."
+          tone='muted'
+          icon={<HandCoins className='size-8' aria-hidden='true' />}
+          title='Pago reembolsado'
+          description='El importe de este pedido fue devuelto.'
         />
       )}
 
-      {mode === "confirming" && (
+      {mode === 'confirming' && (
         <PanelState
-          tone="progress"
+          tone='progress'
           icon={
             <span
-              aria-hidden="true"
-              className="status-spinner size-8 rounded-full border-[3px] border-primary/25 border-t-total"
+              aria-hidden='true'
+              className='status-spinner size-8 rounded-full border-[3px] border-primary/25 border-t-total'
             />
           }
-          title="Confirmando tu pago…"
-          description="Estamos esperando la confirmación de la red. Esta pantalla se actualiza sola."
+          title='Confirmando tu pago…'
+          description='Estamos esperando la confirmación de la red. Esta pantalla se actualiza sola.'
         />
       )}
 
-      {mode === "redirect" && charge?.redirectUrl && (
-        <div className="flex flex-col gap-4">
-          <p className="text-sm text-muted">
-            Vas a pagar{" "}
-            <strong className="text-heading">
+      {mode === 'redirect' && charge?.redirectUrl && (
+        <div className='flex flex-col gap-4'>
+          <p className='text-sm text-muted'>
+            Vas a pagar{' '}
+            <strong className='text-heading'>
               {formatPrice(
                 Number(charge.amount ?? 0),
                 charge.currency ?? undefined,
               )}
-            </strong>{" "}
+            </strong>{' '}
             en la pasarela segura. Al terminar vuelves a esta página.
           </p>
 
           <a
             href={charge.redirectUrl}
-            rel="noopener"
+            rel='noopener'
             className={cn(
-              buttonVariants({ size: "lg" }),
-              "w-full gap-2 sm:w-auto sm:self-start",
+              buttonVariants({ size: 'lg' }),
+              'w-full gap-2 sm:w-auto sm:self-start',
             )}
           >
             Pagar ahora
-            <ExternalLink className="size-4" aria-hidden="true" />
+            <ExternalLink className='size-4' aria-hidden='true' />
           </a>
 
           {charge.expiresAt && (
@@ -289,36 +289,36 @@ export const PaymentPanel = ({
             />
           )}
 
-          <p className="text-center text-xs text-muted">
+          <p className='text-center text-xs text-muted'>
             ¿Ya pagaste? Esta pantalla se actualiza sola en cuanto lo
             confirmemos. Referencia: {charge.reference}
           </p>
         </div>
       )}
 
-      {mode === "instructions" && charge && charge.depositAddress && (
-        <div className="flex flex-col gap-4">
-          <p className="text-sm text-muted">
-            Envía{" "}
-            <strong className="text-heading">
+      {mode === 'instructions' && charge && charge.depositAddress && (
+        <div className='flex flex-col gap-4'>
+          <p className='text-sm text-muted'>
+            Envía{' '}
+            <strong className='text-heading'>
               exactamente {charge.amount} {charge.token?.toUpperCase()}
-            </strong>{" "}
-            por la red{" "}
-            <strong className="text-heading">{charge.blockchain}</strong> a esta
+            </strong>{' '}
+            por la red{' '}
+            <strong className='text-heading'>{charge.blockchain}</strong> a esta
             dirección:
           </p>
 
-          <div className="flex items-center gap-2 rounded-xl bg-surface p-3">
-            <code className="min-w-0 flex-1 text-sm font-semibold break-all text-heading">
+          <div className='flex items-center gap-2 rounded-xl bg-surface p-3'>
+            <code className='min-w-0 flex-1 text-sm font-semibold break-all text-heading'>
               {charge.depositAddress}
             </code>
             <CopyButton
               value={charge.depositAddress}
-              label="Copiar dirección de depósito"
+              label='Copiar dirección de depósito'
             />
           </div>
 
-          <div className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          <div className='rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900'>
             Usa únicamente la red {charge.blockchain}. Un envío por otra red
             puede perder los fondos.
           </div>
@@ -331,37 +331,37 @@ export const PaymentPanel = ({
             />
           )}
 
-          <p className="text-center text-xs text-muted">
+          <p className='text-center text-xs text-muted'>
             Esta pantalla se actualiza sola cuando detectemos tu pago.
             Referencia: {charge.reference}
           </p>
         </div>
       )}
 
-      {mode === "instructions" && charge && !charge.depositAddress && (
-        <div className="flex flex-col gap-4">
-          <p className="text-sm text-muted">
-            Abre tu app de Mi Billetera y paga la solicitud de cobro por{" "}
-            <strong className="text-heading">
-              {truncateDecimals(charge.amount ?? "0")} {charge.currency ?? ""}
+      {mode === 'instructions' && charge && !charge.depositAddress && (
+        <div className='flex flex-col gap-4'>
+          <p className='text-sm text-muted'>
+            Abre tu app de Mi Billetera y paga la solicitud de cobro por{' '}
+            <strong className='text-heading'>
+              {truncateDecimals(charge.amount ?? '0')} {charge.currency ?? ''}
             </strong>
             .
           </p>
 
-          <div className="flex items-center gap-2 rounded-xl bg-surface p-3">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs text-muted">
+          <div className='flex items-center gap-2 rounded-xl bg-surface p-3'>
+            <div className='min-w-0 flex-1'>
+              <p className='text-xs text-muted'>
                 {charge.operationNumber
-                  ? "Solicitud de cobro"
-                  : "Referencia del cobro"}
+                  ? 'Solicitud de cobro'
+                  : 'Referencia del cobro'}
               </p>
-              <code className="text-sm font-semibold break-all text-heading">
+              <code className='text-sm font-semibold break-all text-heading'>
                 {charge.operationNumber ?? charge.reference}
               </code>
             </div>
             <CopyButton
               value={charge.operationNumber ?? charge.reference}
-              label="Copiar el número de la solicitud de cobro"
+              label='Copiar el número de la solicitud de cobro'
             />
           </div>
 
@@ -373,67 +373,67 @@ export const PaymentPanel = ({
             />
           )}
 
-          <p className="text-center text-xs text-muted">
+          <p className='text-center text-xs text-muted'>
             Esta pantalla se actualiza sola cuando detectemos tu pago.
           </p>
         </div>
       )}
 
-      {mode === "charge-failed" && (
-        <div className="flex flex-col gap-4">
+      {mode === 'charge-failed' && (
+        <div className='flex flex-col gap-4'>
           <PanelState
-            tone="danger"
-            icon={<TriangleAlert className="size-8" aria-hidden="true" />}
+            tone='danger'
+            icon={<TriangleAlert className='size-8' aria-hidden='true' />}
             title={
-              CHARGE_FAILURE_COPY[charge?.status ?? "FAILED"]?.title ??
+              CHARGE_FAILURE_COPY[charge?.status ?? 'FAILED']?.title ??
               CHARGE_FAILURE_COPY.FAILED?.title ??
-              "El pago falló"
+              'El pago falló'
             }
             description={
               (charge?.errorMessage ||
-                CHARGE_FAILURE_COPY[charge?.status ?? "FAILED"]?.description) ??
-              ""
+                CHARGE_FAILURE_COPY[charge?.status ?? 'FAILED']?.description) ??
+              ''
             }
           />
           <PaymentMethodSelector
             methods={paymentMethods}
             value={method}
             onChange={setMethod}
-            legend="Elige cómo reintentar"
+            legend='Elige cómo reintentar'
             disabled={isStarting}
           />
 
           <Button
-            type="button"
-            size="lg"
+            type='button'
+            size='lg'
             loading={isStarting}
             onClick={handleStart}
-            className="w-full sm:w-auto sm:self-center"
+            className='w-full sm:w-auto sm:self-center'
           >
             Reintentar pago
           </Button>
         </div>
       )}
 
-      {mode === "start" && (
-        <div className="flex flex-col gap-4">
-          <p className="text-sm text-muted">
+      {mode === 'start' && (
+        <div className='flex flex-col gap-4'>
+          <p className='text-sm text-muted'>
             Tu pedido está reservado. Elige cómo pagarlo para continuar.
           </p>
 
           {failedMethod && (
             <p
-              role="alert"
-              className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-heading"
+              role='alert'
+              className='rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-heading'
             >
               <strong>
                 {paymentMethods.find((o) => o.code === failedMethod.code)
-                  ?.label ?? "La forma de pago elegida"}
-              </strong>{" "}
-              {failedMethod.reason}.{" "}
+                  ?.label ?? 'La forma de pago elegida'}
+              </strong>{' '}
+              {failedMethod.reason}.{' '}
               {paymentMethods.length > 1
-                ? "Prueba con otra de las opciones."
-                : "Vuelve a intentarlo en unos minutos."}
+                ? 'Prueba con otra de las opciones.'
+                : 'Vuelve a intentarlo en unos minutos.'}
             </p>
           )}
 
@@ -445,27 +445,27 @@ export const PaymentPanel = ({
           />
 
           <Button
-            type="button"
-            size="lg"
+            type='button'
+            size='lg'
             loading={isStarting}
             onClick={handleStart}
-            className="w-full sm:w-auto sm:self-start"
+            className='w-full sm:w-auto sm:self-start'
           >
             Continuar con el pago
           </Button>
         </div>
       )}
 
-      {mode === "manual-pending" && (
-        <div className="flex flex-col gap-4">
+      {mode === 'manual-pending' && (
+        <div className='flex flex-col gap-4'>
           {charge?.instructions ? (
             <PaymentInstructions instructions={charge.instructions} />
           ) : (
             <PanelState
-              tone="progress"
-              icon={<HandCoins className="size-8" aria-hidden="true" />}
-              title="Pago pendiente de confirmación"
-              description="Tu pedido queda registrado. Nos pondremos en contacto contigo para coordinar el pago y lo confirmaremos a mano."
+              tone='progress'
+              icon={<HandCoins className='size-8' aria-hidden='true' />}
+              title='Pago pendiente de confirmación'
+              description='Tu pedido queda registrado. Nos pondremos en contacto contigo para coordinar el pago y lo confirmaremos a mano.'
             />
           )}
 
@@ -483,10 +483,10 @@ export const PaymentPanel = ({
 };
 
 const STATE_TONES = {
-  success: "bg-emerald-100 text-emerald-700",
-  danger: "bg-destructive/10 text-destructive",
-  progress: "bg-primary/10 text-primary",
-  muted: "bg-surface text-muted",
+  success: 'bg-emerald-100 text-emerald-700',
+  danger: 'bg-destructive/10 text-destructive',
+  progress: 'bg-primary/10 text-primary',
+  muted: 'bg-surface text-muted',
 } as const;
 
 const PanelState = ({
@@ -500,17 +500,17 @@ const PanelState = ({
   title: string;
   description: string;
 }) => (
-  <div className="flex flex-col items-center gap-3 py-4 text-center">
+  <div className='flex flex-col items-center gap-3 py-4 text-center'>
     <span
       className={cn(
-        "status-medallion flex size-16 items-center justify-center rounded-full",
+        'status-medallion flex size-16 items-center justify-center rounded-full',
         STATE_TONES[tone],
       )}
     >
       {icon}
     </span>
-    <p className="text-lg font-bold text-heading">{title}</p>
-    <p className="mx-auto max-w-[44ch] text-sm text-pretty text-muted">
+    <p className='text-lg font-bold text-heading'>{title}</p>
+    <p className='mx-auto max-w-[44ch] text-sm text-pretty text-muted'>
       {description}
     </p>
   </div>

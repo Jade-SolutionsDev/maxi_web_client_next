@@ -1,5 +1,5 @@
-import { type BrowserContext, expect, type Page } from '@playwright/test';
-import { municipioConCobertura } from '../helpers';
+import { type BrowserContext, expect, type Page } from "@playwright/test";
+import { municipioConCobertura } from "../helpers";
 
 /**
  * El acceso, en un solo sitio: lo usa el proyecto `acceso` al empezar y el
@@ -8,9 +8,9 @@ import { municipioConCobertura } from '../helpers';
  * El usuario debe existir en la instancia de Clerk de la tienda **y** como
  * cliente en la base. Se puede cambiar con E2E_EMAIL / E2E_PASSWORD.
  */
-export const ARCHIVO_SESION = 'e2e/.auth/cliente.json';
-export const CORREO = process.env.E2E_EMAIL ?? 'qa.direcciones@maxihabana.com';
-const CLAVE = process.env.E2E_PASSWORD ?? 'MaxiDirecciones2026';
+export const ARCHIVO_SESION = "e2e/.auth/cliente.json";
+export const CORREO = process.env.E2E_EMAIL ?? "qa.direcciones@maxihabana.com";
+const CLAVE = process.env.E2E_PASSWORD ?? "MaxiDirecciones2026";
 
 export async function iniciarSesion(page: Page, context: BrowserContext) {
   /**
@@ -20,24 +20,27 @@ export async function iniciarSesion(page: Page, context: BrowserContext) {
    */
   await context.addCookies([
     {
-      name: 'maxi_location',
+      name: "maxi_location",
       value: municipioConCobertura(),
-      domain: 'localhost',
-      path: '/',
+      // Del entorno, no fijo: contra un dominio real 'localhost' no aplica y
+      // reaparece el modal de ubicacion, que tapa media pagina.
+      domain: new URL(process.env.E2E_BASE_URL ?? "http://localhost:3001")
+        .hostname,
+      path: "/",
     },
   ]);
 
-  await page.goto('/login');
+  await page.goto("/login");
 
   // El formulario de acceso, no el buscador de la cabecera: se localiza por su
   // campo de contraseña.
   const campoClave = page.locator('input[name="password"]');
-  await campoClave.waitFor({ state: 'visible' });
-  const formulario = page.locator('form').filter({ has: campoClave });
+  await campoClave.waitFor({ state: "visible" });
+  const formulario = page.locator("form").filter({ has: campoClave });
 
   await formulario.locator('input[name="email"]').fill(CORREO);
   await campoClave.fill(CLAVE);
-  await formulario.getByRole('button', { name: /iniciar sesión/i }).click();
+  await formulario.getByRole("button", { name: /iniciar sesión/i }).click();
 
   // La sesion esta lista cuando deja de estar en /login.
   await expect(page).not.toHaveURL(/\/login/, { timeout: 30_000 });

@@ -1,7 +1,7 @@
-import Link from "next/link";
-import type { BannerSlide } from "@/shared/cms/type/cms.interface";
-import { bannerTargetHref } from "../constants/banner-target-href";
-import { BannerPicture } from "./BannerPicture";
+import Link from 'next/link';
+import type { BannerSlide } from '@/shared/cms/type/cms.interface';
+import { bannerTargetHref } from '../constants/banner-target-href';
+import { BannerPicture } from './BannerPicture';
 
 type LinkedBannerPictureProps = {
   slide: BannerSlide;
@@ -18,7 +18,7 @@ function LinkedBannerPicture({ slide, eager }: LinkedBannerPictureProps) {
   return (
     <Link
       href={href}
-      className="block rounded-sm outline-none focus-visible:ring-3 focus-visible:ring-primary/50 focus-visible:ring-inset"
+      className='block rounded-sm outline-none focus-visible:ring-3 focus-visible:ring-primary/50 focus-visible:ring-inset'
     >
       {picture}
     </Link>

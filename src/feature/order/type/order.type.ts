@@ -1,44 +1,44 @@
 export type OrderStatus =
-  | "pending"
-  | "confirmed"
-  | "processing"
-  | "shipped"
-  | "delivered"
-  | "cancelled";
+  | 'pending'
+  | 'confirmed'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled';
 
-export type OrderPaymentStatus = "pending" | "paid" | "failed" | "refunded";
+export type OrderPaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 
 export type ChargeStatus =
-  | "PENDING"
-  | "REQUIRES_ACTION"
-  | "PROCESSING"
-  | "SUCCEEDED"
-  | "FAILED"
-  | "EXPIRED"
-  | "CANCELLED";
+  | 'PENDING'
+  | 'REQUIRES_ACTION'
+  | 'PROCESSING'
+  | 'SUCCEEDED'
+  | 'FAILED'
+  | 'EXPIRED'
+  | 'CANCELLED';
 
 export const TERMINAL_CHARGE_STATUSES: ChargeStatus[] = [
-  "SUCCEEDED",
-  "FAILED",
-  "EXPIRED",
-  "CANCELLED",
+  'SUCCEEDED',
+  'FAILED',
+  'EXPIRED',
+  'CANCELLED',
 ];
 
-export type PaymentKind = "redirect" | "instructions" | "manual";
+export type PaymentKind = 'redirect' | 'instructions' | 'manual';
 
 export type PaymentInstructions =
   | {
-      type: "bank";
+      type: 'bank';
       bankName: string;
       accountHolder?: string | null;
       accountNumber?: string | null;
       cardNumber?: string | null;
       note?: string | null;
     }
-  | { type: "qr"; imageUrl: string; note?: string | null }
-  | { type: "link"; url: string; note?: string | null }
+  | { type: 'qr'; imageUrl: string; note?: string | null }
+  | { type: 'link'; url: string; note?: string | null }
   | {
-      type: "crypto";
+      type: 'crypto';
       address: string;
       network: string;
       asset?: string | null;
@@ -52,10 +52,12 @@ export interface PaymentMethod {
   description: string | null;
   icon: string | null;
   kind: PaymentKind;
+  holdMinutes?: number | null;
 }
 
 export type CancellationReason =
-  "payment_not_received" | "paid_after_expiry_out_of_stock";
+  | 'payment_not_received'
+  | 'paid_after_expiry_out_of_stock';
 
 export interface OrderPaymentMethod {
   code: string;
@@ -111,29 +113,44 @@ export interface Order {
   total: number;
   deliveryMunicipalityId: string | null;
   deliveryAddress: Record<string, string | null> | null;
+  /**
+   * Quién recibe el pedido, congelado al comprar. En una recogida es el único
+   * sitio donde vive: no hay dirección de la que sacarlo.
+   */
+  contactSnapshot: {
+    recipientName?: string | null;
+    idCard?: string | null;
+    contactPhone?: string | null;
+  } | null;
   customerNotes: string | null;
   items?: OrderItem[];
   payment?: PaymentCharge;
   paymentMethod?: OrderPaymentMethod;
   cancellationReason: CancellationReason | null;
-  fulfillmentType: "delivery" | "pickup";
+  fulfillmentType: 'delivery' | 'pickup';
   deliveryOptionLabel: string | null;
   pickupAddress: OrderPickupAddress | null;
   pickupLocationId: string | null;
+  /** Días comprometidos de entrega, según la opción elegida. */
+  promiseDays: number | null;
+  /** Fecha comprometida, que la API calcula al cobrarse el pedido. */
+  promisedAt: string | null;
+  /** Identificador del enlace público de seguimiento (MxH-0059). */
+  trackingId: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export type OrderFailure =
-  | { kind: "stale-cart"; lines: { name: string; available: number }[] }
-  | { kind: "empty-cart" }
-  | { kind: "unauthenticated" }
-  | { kind: "not-found" }
-  | { kind: "already-paid" }
-  | { kind: "payment-conflict" }
-  | { kind: "gateway-unavailable" }
-  | { kind: "no-payment" }
-  | { kind: "unknown" };
+  | { kind: 'stale-cart'; lines: { name: string; available: number }[] }
+  | { kind: 'empty-cart' }
+  | { kind: 'unauthenticated' }
+  | { kind: 'not-found' }
+  | { kind: 'already-paid' }
+  | { kind: 'payment-conflict' }
+  | { kind: 'gateway-unavailable' }
+  | { kind: 'no-payment' }
+  | { kind: 'unknown' };
 
 export type OrderResult =
   | { order: Order; failure?: undefined }

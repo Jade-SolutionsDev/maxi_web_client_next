@@ -7,6 +7,8 @@ import { Form } from '@/app/components/form/Form';
 import { FormInput } from '@/app/components/form/FormInput';
 import { FormPassword } from '@/app/components/form/FormPassword';
 import { Button } from '@/app/components/ui/button';
+import { CuentasNoDisponibles } from '@/feature/auth/components/CuentasNoDisponibles';
+import { useClerkDisponible } from '@/feature/auth/hook/useClerkDisponible';
 import { useSignIn } from '@/feature/auth/hook/useSignIn';
 import {
   clerkErrorTarget,
@@ -26,6 +28,7 @@ export const LoginForm = () => {
   });
 
   const { login, isSubmitting, isReady } = useSignIn();
+  const { caido } = useClerkDisponible();
 
   const onSubmit = async (data: LoginSchemaType) => {
     form.clearErrors();
@@ -44,6 +47,13 @@ export const LoginForm = () => {
         <p className='text-sm text-red-500'>
           {form.formState.errors.root.message}
         </p>
+      )}
+
+      {caido && (
+        <CuentasNoDisponibles>
+          No podemos conectar con el servicio de cuentas, así que ahora mismo no
+          se puede entrar.
+        </CuentasNoDisponibles>
       )}
 
       <FormInput

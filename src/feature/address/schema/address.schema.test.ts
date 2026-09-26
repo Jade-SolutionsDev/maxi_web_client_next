@@ -42,7 +42,7 @@ describe('AddressFormSchema', () => {
 
   it('accepts a plausible Cuban phone', () => {
     expect(
-      AddressFormSchema.safeParse({ ...valid, contactPhone: '+53 5551 2345' })
+      AddressFormSchema.safeParse({ ...valid, contactPhone: '+53 5251 9414' })
         .success,
     ).toBe(true);
   });
