@@ -107,8 +107,8 @@ const methods = [
 // Los datos de quien recibe son obligatorios desde MxH-0104, así que sin
 // rellenarlos ningún envío pasa de la validación.
 const fillRecipient = async (user: ReturnType<typeof userEvent.setup>) => {
-  await user.type(screen.getByLabelText(/nombre y apellido/i), 'Daniel Smith');
-  await user.type(screen.getByLabelText(/carnet de identidad/i), '91031512345');
+  await user.type(screen.getByLabelText(/nombre y apellido/i), 'Ana Rodríguez');
+  await user.type(screen.getByLabelText(/carnet de identidad/i), '90051512345');
   await user.type(
     screen.getByLabelText(/tel[eé]fono de contacto/i),
     '55512345',
@@ -298,8 +298,8 @@ describe('CheckoutForm', () => {
           fulfillmentType: 'pickup',
           pickupAddressId: offer.pickupPoints[0].id,
           // Lo que en una recogida no puede salir de ninguna dirección.
-          recipientName: 'Daniel Smith',
-          idCard: '91031512345',
+          recipientName: 'Ana Rodríguez',
+          idCard: '90051512345',
           contactPhone: '55512345',
         }),
       ),
@@ -338,7 +338,7 @@ describe('CheckoutForm', () => {
 
     await user.type(
       screen.getByLabelText(/nombre y apellido/i),
-      'Daniel Smith',
+      'Ana Rodríguez',
     );
     // 30 de febrero: once dígitos, y aun así imposible.
     await user.type(

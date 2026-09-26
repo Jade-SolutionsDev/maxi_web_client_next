@@ -21,14 +21,14 @@ export const RecipientFields = ({ disabled }: { disabled?: boolean }) => (
       <FormInput
         name='recipientName'
         label='Nombre y apellido'
-        placeholder='Daniel Smith'
+        placeholder='Ana Rodríguez'
         autoComplete='name'
         required
       />
       <FormInput
         name='idCard'
         label='Carnet de identidad'
-        placeholder='91031512345'
+        placeholder='90051512345'
         inputMode='numeric'
         maxLength={11}
         required
