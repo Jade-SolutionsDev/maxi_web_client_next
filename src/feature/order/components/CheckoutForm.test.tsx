@@ -191,6 +191,28 @@ describe('CheckoutForm', () => {
     expect(screen.getByText(/el pedido se cancela/)).toBeTruthy();
   });
 
+  /**
+   * El rótulo no es cosmético: decide qué carnet acaba en el pedido, y ese es
+   * el que se pide en el almacén al entregar. Con «Datos del cliente» el
+   * comprador ponía el suyo, cuando aquí casi siempre paga alguien de fuera y
+   * recoge un familiar en Cuba (en producción ya hay pedidos donde titular y
+   * beneficiario son personas distintas).
+   */
+  it('pide los datos del beneficiario, no los de quien compra', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.getByText(/Datos del beneficiario/i)).toBeTruthy();
+    expect(screen.queryByText(/Datos del cliente/i)).toBeNull();
+  });
+
   it('no promete ningún plazo si la API todavía no lo manda', () => {
     const sinPlazo = methods.map((method) => ({
       ...method,
