@@ -43,7 +43,7 @@ export const RecipientFields = ({ disabled }: { disabled?: boolean }) => (
       <FormInput
         name='contactPhone'
         label='Teléfono de contacto'
-        placeholder='+53 5 555 5555'
+        placeholder='+53 5251 9414'
         autoComplete='tel'
         inputMode='tel'
         required
