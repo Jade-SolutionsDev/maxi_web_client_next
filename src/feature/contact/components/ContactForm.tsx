@@ -127,7 +127,7 @@ export const ContactForm = ({ motives, isSignedIn }: ContactFormProps) => {
                 name='phone'
                 type='tel'
                 label='Teléfono'
-                placeholder='+53 5 123 4567'
+                placeholder='+53 5251 9414'
               />
             </div>
             <p className='text-xs text-muted'>

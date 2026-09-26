@@ -111,7 +111,7 @@ const fillRecipient = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.type(screen.getByLabelText(/carnet de identidad/i), '90051512345');
   await user.type(
     screen.getByLabelText(/tel[eé]fono de contacto/i),
-    '55512345',
+    '+53 5251 9414',
   );
 };
 
@@ -300,7 +300,7 @@ describe('CheckoutForm', () => {
           // Lo que en una recogida no puede salir de ninguna dirección.
           recipientName: 'Ana Rodríguez',
           idCard: '90051512345',
-          contactPhone: '55512345',
+          contactPhone: '+53 5251 9414',
         }),
       ),
     );
@@ -347,7 +347,7 @@ describe('CheckoutForm', () => {
     );
     await user.type(
       screen.getByLabelText(/tel[eé]fono de contacto/i),
-      '55512345',
+      '+53 5251 9414',
     );
     await user.click(screen.getByRole('button', { name: /Confirmar pedido/ }));
 

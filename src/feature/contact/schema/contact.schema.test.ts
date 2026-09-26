@@ -20,7 +20,7 @@ describe('AnonymousContactSchema', () => {
   it('acepta un envío con solo teléfono', () => {
     const result = AnonymousContactSchema.safeParse({
       ...base,
-      phone: '+53 5 123 4567',
+      phone: '+53 5251 9414',
     });
     expect(result.success).toBe(true);
   });
