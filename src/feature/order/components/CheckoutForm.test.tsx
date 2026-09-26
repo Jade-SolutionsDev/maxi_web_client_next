@@ -177,6 +177,28 @@ describe('CheckoutForm', () => {
    * la transacción—, y entonces la persona aterrizaba en la ficha con el
    * selector delante y sin una palabra de por qué. Se le pasa cuál falló.
    */
+  /**
+   * El rótulo no es cosmético: decide qué carnet acaba en el pedido, y ese es
+   * el que se pide en el almacén al entregar. Con «Datos del cliente» el
+   * comprador ponía el suyo, cuando aquí casi siempre paga alguien de fuera y
+   * recoge un familiar en Cuba (en producción ya hay pedidos donde titular y
+   * beneficiario son personas distintas).
+   */
+  it('pide los datos del beneficiario, no los de quien compra', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={offer}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.getByText(/Datos del beneficiario/i)).toBeTruthy();
+    expect(screen.queryByText(/Datos del cliente/i)).toBeNull();
+  });
+
   it('avisa cuál pasarela falló cuando el pedido se crea sin cobro', async () => {
     checkoutAction.mockResolvedValue({ order: { id: 'order-1' } });
 
