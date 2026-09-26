@@ -133,18 +133,27 @@ export const CheckoutAddressSelector = ({
 
       {usingNew && (
         <div className='mt-2 flex flex-col gap-4 rounded-xl border border-input p-3'>
-          <FormInput
-            name='street'
-            label='Calle y número'
-            placeholder='Calle 23 #456'
-            autoComplete='street-address'
-            required
-          />
-          <FormInput
-            name='betweenStreets'
-            label='Entre calles (opcional)'
-            placeholder='Entre 10 y 12'
-          />
+          {/* Dos columnas en escritorio, una en móvil (MxH-0104). */}
+          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+            <FormInput
+              name='street'
+              label='Calle y número'
+              placeholder='Calle 23 #456'
+              autoComplete='street-address'
+              required
+            />
+            <FormInput
+              name='betweenStreets'
+              label='Entre calles (opcional)'
+              placeholder='Entre 10 y 12'
+            />
+            <FormInput
+              name='reference'
+              label='Referencia (opcional)'
+              placeholder='Edificio azul, al lado de la panadería'
+              className='md:col-span-2'
+            />
+          </div>
           {zone ? (
             <p className='flex items-center gap-2 rounded-xl bg-surface px-3 py-2 text-sm text-heading'>
               <MapPin
@@ -156,17 +165,6 @@ export const CheckoutAddressSelector = ({
           ) : (
             <AddressMunicipalityFields catalog={catalog} />
           )}
-          <FormInput
-            name='reference'
-            label='Referencia (opcional)'
-            placeholder='Edificio azul, al lado de la panadería'
-          />
-          <FormInput
-            name='contactPhone'
-            label='Teléfono de contacto (opcional)'
-            placeholder='+53 5 555 5555'
-            autoComplete='tel'
-          />
           <label className='flex cursor-pointer items-center gap-2 text-sm text-heading'>
             <input
               type='checkbox'
