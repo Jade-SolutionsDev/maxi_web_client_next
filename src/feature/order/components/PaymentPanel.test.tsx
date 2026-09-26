@@ -50,6 +50,7 @@ const order: Order = {
   total: 105,
   deliveryMunicipalityId: null,
   deliveryAddress: null,
+  contactSnapshot: null,
   customerNotes: null,
   items: [],
   cancellationReason: null,
