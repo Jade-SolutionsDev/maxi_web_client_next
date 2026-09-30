@@ -346,6 +346,24 @@ When("añade el primer producto al carrito", async ({ page }) => {
     .toBe(true);
 });
 
+When(
+  "añade el primer producto apenas aparece, sin esperar al carrito",
+  async ({ page }) => {
+    const boton = page.getByRole("button", { name: /^a[ñn]adir/i }).first();
+
+    // El clic necesita que el botón exista, NO que el carrito haya hidratado.
+    // Esperar `cart-storage` aquí escondería exactamente la carrera de MxH-0089.
+    await boton.click({ timeout: 15_000 });
+
+    estado.avisoDeAñadido = await page
+      .getByText(/producto añadido al carrito/i)
+      .first()
+      .waitFor({ state: "visible", timeout: 8_000 })
+      .then(() => true)
+      .catch(() => false);
+  },
+);
+
 /** Lineas que declara la cabecera, con sesion o sin ella. */
 async function lineasEnCabecera(page: import("@playwright/test").Page) {
   const etiqueta = await page
@@ -426,6 +444,13 @@ Then("se le confirma que el producto se añadió", async () => {
     "no apareció el aviso de producto añadido",
   ).toBe(true);
 });
+
+Then(
+  "no se vuelve a anunciar que el producto se añadió",
+  async ({ page }) => {
+    await expect(page.getByText(/producto añadido al carrito/i)).toHaveCount(0);
+  },
+);
 
 Then(
   "el carrito contiene {int} artículo(s)",
