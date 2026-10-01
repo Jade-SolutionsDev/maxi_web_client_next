@@ -116,6 +116,20 @@ export interface CmsPageLink {
   title: string;
 }
 
+export interface HomeNoticeResponse {
+  id: string;
+  title: string;
+  content: string;
+  startsAt: string | null;
+  endsAt: string | null;
+}
+
+export interface HomeNotice {
+  id: string;
+  title: string;
+  content: string;
+}
+
 export interface CmsFaqQuestionResponse {
   id: string;
   question: string;

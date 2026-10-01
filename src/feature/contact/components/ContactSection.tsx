@@ -3,26 +3,26 @@ import { Mail, Phone } from 'lucide-react';
 import { Container } from '@/app/components/layout/Container';
 import { LogoRed } from '@/app/components/layout/RedesSociales';
 import { toTelHref } from '@/helpers';
-import { getSiteSettings } from '@/shared/cms/service/cms.service';
+import { CONTACT_PAGE_SLUG } from '@/feature/cms-page/constants/cms-page.constants';
+import { getCmsPage, getSiteSettings } from '@/shared/cms/service/cms.service';
 import { getContactMotives } from '../service/contact.service';
 import { ContactForm } from './ContactForm';
+import { ContactIntro } from './ContactIntro';
 
 const cardClass =
   'flex flex-col items-center gap-3 rounded-2xl border border-black/5 bg-white px-6 py-10 text-center shadow-sm transition hover:-translate-y-0.5 hover:shadow-md motion-reduce:transform-none';
 
 export async function ContactSection() {
-  const [{ contact }, motives, { userId }] = await Promise.all([
+  const [{ contact }, intro, motives, { userId }] = await Promise.all([
     getSiteSettings(),
+    getCmsPage(CONTACT_PAGE_SLUG),
     getContactMotives(),
     auth(),
   ]);
 
   return (
     <Container size='md' className='py-12'>
-      <p className='mx-auto max-w-2xl text-center text-lg text-muted'>
-        ¿Tienes dudas sobre un pedido o quieres trabajar con nosotros?
-        Escríbenos y te respondemos lo antes posible.
-      </p>
+      <ContactIntro page={intro} />
 
       <div className='mx-auto mt-10 grid max-w-2xl gap-6 sm:grid-cols-2'>
         <a href={`mailto:${contact.email}`} className={cardClass}>
