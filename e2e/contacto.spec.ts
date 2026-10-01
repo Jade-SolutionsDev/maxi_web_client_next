@@ -50,7 +50,7 @@ test.describe("Formulario de contacto", () => {
     await page.getByRole("button", { name: "Enviar mensaje" }).click();
 
     await expect(
-      page.getByText("Dejanos un correo o un teléfono para responderte"),
+      page.getByText("Déjanos un correo o un teléfono para responderte"),
     ).toBeVisible();
   });
 });
