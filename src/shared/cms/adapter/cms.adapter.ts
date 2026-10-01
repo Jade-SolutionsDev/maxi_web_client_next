@@ -10,6 +10,8 @@ import type {
   CmsServiceResponse,
   CmsStaffMemberResponse,
   FaqCategory,
+  HomeNotice,
+  HomeNoticeResponse,
   ServiceItem,
   SiteSettings,
   SiteSettingsResponse,
@@ -102,3 +104,19 @@ export const toCmsPageLink = (page: CmsPageResponse): CmsPageLink => ({
   slug: page.slug,
   title: page.title.trim(),
 });
+
+const hasText = ({ content }: { content: string }) =>
+  Boolean(trimToUndefined(content));
+
+export const toPublishedCmsPage = (page: CmsPageResponse): CmsPage | null =>
+  hasText(page) ? toCmsPage(page) : null;
+
+export const toCmsPageLinks = (pages: CmsPageResponse[]): CmsPageLink[] =>
+  pages.filter(hasText).map(toCmsPageLink);
+
+export const toHomeNotices = (notices: HomeNoticeResponse[]): HomeNotice[] =>
+  notices.filter(hasText).map((notice) => ({
+    id: notice.id,
+    title: notice.title.trim(),
+    content: notice.content,
+  }));

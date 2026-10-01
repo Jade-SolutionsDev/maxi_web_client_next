@@ -1,4 +1,4 @@
-export const SLUG = 'sobre-nosotros';
+export { ABOUT_PAGE_SLUG as SLUG } from '@/feature/cms-page/constants/cms-page.constants';
 export const FALLBACK_TITLE = 'Sobre nosotros';
 export const TITLE_ID = 'sobre-nosotros-titulo';
 export const TEAM_ID = 'sobre-nosotros-equipo';

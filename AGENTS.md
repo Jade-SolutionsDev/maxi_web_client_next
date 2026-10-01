@@ -75,10 +75,20 @@ reintroduce hardcoded copy, banner images, or service cards.
   `src/shared/cms/components/StaffCarousel.tsx` (vertical auto-scrolling
   slider, 3 visible, avatar + name/role/resume; static list when ≤3 members,
   autoplay disabled under reduced motion).
-- Contacto (`src/app/contacto/page.tsx`) → `getSiteSettings().contact`.
+- Contacto (`src/app/contacto/page.tsx`) → `getSiteSettings().contact` plus
+  `getCmsPage('contacto')` as the Markdown intro (`ContactIntro`, which falls
+  back to a default sentence while that page is not published).
 - Info pages (`src/app/paginas/[slug]/page.tsx`) → `getCmsPage(slug)`,
   rendered with `src/app/components/ui/markdown.tsx` (react-markdown, no raw
-  HTML). New pages need no code: create them in the backoffice.
+  HTML). New pages need no code: create them in the backoffice. Slugs with a
+  route of their own (`sobre-nosotros`, `contacto`, see
+  `src/feature/cms-page/constants/cms-page.constants.ts`) redirect there,
+  are left out of the sitemap and `cmsPageHref` links straight to them.
+- Home notices (`src/feature/home/components/HomeNotices.tsx`) →
+  `getHomeNotices()`: temporary announcements above the home sections. The
+  API only returns the published ones within their dates, so this fetch uses
+  `cacheLife('minutes')` instead of `hours` to switch them on and off close to
+  the times the editor chose.
 
 Contracts to preserve when touching these surfaces:
 
@@ -87,6 +97,10 @@ Contracts to preserve when touching these surfaces:
   every admin write, so edits appear without redeploys. Keep new CMS fetches on
   the same tag. Home edits (layout and banners) are drafts: only publishing
   the home pings the storefront.
+- The API only serves the PUBLISHED version of pages and notices; drafts
+  never reach the store. A page or notice whose text is blank is treated as
+  missing (`toPublishedCmsPage` / `toCmsPageLinks` / `toHomeNotices`), so no
+  link leads to an empty page and nothing renders empty.
 - The services swallow fetch failures and return `[]` / `null` /
   `DEFAULT_SITE_SETTINGS` — the footer renders in the layout of every page, so
   a CMS outage must degrade to defaults, never throw. Components return `null`
@@ -96,7 +110,8 @@ Contracts to preserve when touching these surfaces:
   S3 entry only covers legacy `/BANNER/**` paths.
 - API endpoints (all under `GET /public/cms/`): `settings`, `home`,
   `home/draft` (shared secret only), `banners` (published copy, kept for
-  older deployments), `services`, `staff`, `pages`, `pages/:slug`.
+  older deployments), `services`, `staff`, `pages`, `pages/:slug`,
+  `home-notices`.
 - Contact form (`src/feature/contact/`) → motives come from
   `getContactMotives()` (`GET /public/contact/motives`, cache tag
   `nomenclators` — admin nomenclator edits revalidate it); submissions go

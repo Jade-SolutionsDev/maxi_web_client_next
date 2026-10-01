@@ -4,9 +4,10 @@ import { cacheLife, cacheTag } from "next/cache";
 import { draftMode } from "next/headers";
 import { type ApiResponse, api } from "@/api/http";
 import {
-  toCmsPage,
-  toCmsPageLink,
+  toCmsPageLinks,
   toFaqCategory,
+  toHomeNotices,
+  toPublishedCmsPage,
   toServiceItem,
   toSiteSettings,
   toStaffMember,
@@ -24,6 +25,8 @@ import type {
   CmsStaffMemberResponse,
   FaqCategory,
   HomeContent,
+  HomeNotice,
+  HomeNoticeResponse,
   ServiceItem,
   SiteSettings,
   SiteSettingsResponse,
@@ -136,7 +139,7 @@ export const getCmsPages = async (): Promise<CmsPageLink[]> => {
   try {
     const { data } =
       await api<ApiResponse<CmsPageResponse[]>>("/public/cms/pages");
-    return data.map(toCmsPageLink);
+    return toCmsPageLinks(data);
   } catch {
     return [];
   }
@@ -151,8 +154,23 @@ export const getCmsPage = async (slug: string): Promise<CmsPage | null> => {
     const { data } = await api<ApiResponse<CmsPageResponse>>(
       `/public/cms/pages/${encodeURIComponent(slug)}`,
     );
-    return toCmsPage(data);
+    return toPublishedCmsPage(data);
   } catch {
     return null;
+  }
+};
+
+export const getHomeNotices = async (): Promise<HomeNotice[]> => {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("cms");
+
+  try {
+    const { data } = await api<ApiResponse<HomeNoticeResponse[]>>(
+      "/public/cms/home-notices",
+    );
+    return toHomeNotices(data);
+  } catch {
+    return [];
   }
 };
