@@ -1,5 +1,35 @@
 import { describe, expect, it } from 'vitest';
-import { buildPaginationRange, range, truncate } from './helpers';
+import {
+  buildPaginationRange,
+  pickByIds,
+  range,
+  trimToUndefined,
+  truncate,
+} from './helpers';
+
+describe('trimToUndefined', () => {
+  it('trims the text it receives', () => {
+    expect(trimToUndefined('  Ofertas  ')).toBe('Ofertas');
+  });
+
+  it('turns blank or missing text into undefined', () => {
+    expect(trimToUndefined('   ')).toBeUndefined();
+    expect(trimToUndefined(null)).toBeUndefined();
+    expect(trimToUndefined(undefined)).toBeUndefined();
+  });
+});
+
+describe('pickByIds', () => {
+  const items = [{ id: 'a' }, { id: 'b' }, { id: 'c' }];
+
+  it('keeps only the chosen items, in the chosen order', () => {
+    expect(pickByIds(items, ['c', 'a'])).toEqual([{ id: 'c' }, { id: 'a' }]);
+  });
+
+  it('skips ids that are not available', () => {
+    expect(pickByIds(items, ['z', 'b'])).toEqual([{ id: 'b' }]);
+  });
+});
 
 describe('truncate', () => {
   it('leaves text shorter than the limit untouched', () => {

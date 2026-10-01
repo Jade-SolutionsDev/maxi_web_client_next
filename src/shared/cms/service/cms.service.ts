@@ -1,9 +1,9 @@
 import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
+import { draftMode } from "next/headers";
 import { type ApiResponse, api } from "@/api/http";
 import {
-  toBannerSlide,
   toCmsPage,
   toCmsPageLink,
   toFaqCategory,
@@ -11,17 +11,19 @@ import {
   toSiteSettings,
   toStaffMember,
 } from "../adapter/cms.adapter";
+import { toHomeContent } from "../adapter/home.adapter";
+import { DEFAULT_HOME_CONTENT } from "../constants/home.constants";
 import { DEFAULT_SITE_SETTINGS } from "../constants/site-settings.constants";
 import type {
-  BannerSlide,
-  CmsBannerResponse,
   CmsFaqCategoryResponse,
+  CmsHomeResponse,
   CmsPage,
   CmsPageLink,
   CmsPageResponse,
   CmsServiceResponse,
   CmsStaffMemberResponse,
   FaqCategory,
+  HomeContent,
   ServiceItem,
   SiteSettings,
   SiteSettingsResponse,
@@ -68,19 +70,33 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
   }
 };
 
-export const getBanners = async (): Promise<BannerSlide[]> => {
+const fetchHome = async (draft: boolean): Promise<HomeContent> => {
+  const { data } = draft
+    ? await api<ApiResponse<CmsHomeResponse>>("/public/cms/home/draft", {
+        headers: { "x-storefront-secret": process.env.REVALIDATE_SECRET ?? "" },
+      })
+    : await api<ApiResponse<CmsHomeResponse>>("/public/cms/home");
+  return toHomeContent(data);
+};
+
+export const getHomeContent = async (): Promise<HomeContent> => {
   "use cache";
   cacheLife("hours");
   cacheTag("cms");
 
+  const { isEnabled } = await draftMode();
   try {
-    const { data } = await api<ApiResponse<CmsBannerResponse[]>>(
-      "/public/cms/banners",
-    );
-    return data.map(toBannerSlide);
+    return await fetchHome(isEnabled);
   } catch {
-    return [];
+    if (!isEnabled) return DEFAULT_HOME_CONTENT;
+    return fetchHome(false).catch(() => DEFAULT_HOME_CONTENT);
   }
+};
+
+export const isPreviewingHome = async (): Promise<boolean> => {
+  "use cache";
+  const { isEnabled } = await draftMode();
+  return isEnabled;
 };
 
 export const getCmsServices = async (): Promise<ServiceItem[]> => {

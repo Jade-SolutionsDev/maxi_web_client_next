@@ -41,10 +41,25 @@ change the JSX/Tailwind freely but KEEP the data source: fetch through
 `src/shared/cms/service/cms.service.ts`, never inline `fetch` and never
 reintroduce hardcoded copy, banner images, or service cards.
 
-- Hero slider (`src/feature/home/components/HeroBanner.tsx`) → `getBanners()`.
-  Each slide carries desktop/tablet/mobile variants with intrinsic
-  `width`/`height` used to build the `next/image` srcsets — always render
-  through `BannerPicture` or preserve that art-direction contract.
+- Home (`src/app/page.tsx`) → `getHomeContent()`: the section order and
+  visibility, the curated featured product/department ids and the hero
+  banners, all from the PUBLISHED home (`GET /public/cms/home`).
+  `src/feature/home/components/HomeSection.tsx` maps each section key to its
+  component; a key this storefront does not know is skipped. Empty curated
+  lists fall back to the catalog's `featured` flags
+  (`getFeaturedProducts` / `getFeaturedDepartments`).
+- Hero slider (`src/feature/home/components/HeroBanner.tsx`) → the
+  `banners` of `getHomeContent()`. Each slide carries desktop/tablet/mobile
+  variants with intrinsic `width`/`height` used to build the `next/image`
+  srcsets — always render through `BannerPicture` or preserve that
+  art-direction contract. The optional `title`/`subtitle` are drawn over the
+  image by `BannerCaption`.
+- Home preview: the backoffice opens `/api/vista-previa?token=…`, which checks
+  the token against `REVALIDATE_SECRET` (`src/lib/preview-token.ts`, same
+  recipe as the API) and turns on Next draft mode. In draft mode
+  `getHomeContent()` reads `GET /public/cms/home/draft` with the
+  `x-storefront-secret` header and `PreviewNotice` shows the exit link
+  (`/api/vista-previa/salir`).
 - "Nuestros servicios" (`src/feature/home/components/ServicesSection.tsx`) →
   `getCmsServices()` + `getSiteSettings().services` for the heading. Icons are
   NAMES resolved via `src/feature/home/constants/service-icons.ts`; that
@@ -70,7 +85,8 @@ Contracts to preserve when touching these surfaces:
 - Every service function is `'use cache'` + `cacheLife('hours')` +
   `cacheTag('cms')`. The API pings `POST /api/revalidate` with the `cms` tag on
   every admin write, so edits appear without redeploys. Keep new CMS fetches on
-  the same tag.
+  the same tag. Home edits (layout and banners) are drafts: only publishing
+  the home pings the storefront.
 - The services swallow fetch failures and return `[]` / `null` /
   `DEFAULT_SITE_SETTINGS` — the footer renders in the layout of every page, so
   a CMS outage must degrade to defaults, never throw. Components return `null`
@@ -78,8 +94,9 @@ Contracts to preserve when touching these surfaces:
 - CMS image hosts must be allowed in `next.config.ts` via
   `NEXT_PUBLIC_MEDIA_URL` (the API's public storage base URL); the hardcoded
   S3 entry only covers legacy `/BANNER/**` paths.
-- API endpoints (all under `GET /public/cms/`): `settings`, `banners`,
-  `services`, `staff`, `pages`, `pages/:slug`.
+- API endpoints (all under `GET /public/cms/`): `settings`, `home`,
+  `home/draft` (shared secret only), `banners` (published copy, kept for
+  older deployments), `services`, `staff`, `pages`, `pages/:slug`.
 - Contact form (`src/feature/contact/`) → motives come from
   `getContactMotives()` (`GET /public/contact/motives`, cache tag
   `nomenclators` — admin nomenclator edits revalidate it); submissions go
