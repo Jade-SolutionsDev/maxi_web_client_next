@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
+import { draftMode } from "next/headers";
 import { type ApiResponse, api } from "@/api/http";
 import {
   toCmsPage,
@@ -69,18 +70,33 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
   }
 };
 
+const fetchHome = async (draft: boolean): Promise<HomeContent> => {
+  const { data } = draft
+    ? await api<ApiResponse<CmsHomeResponse>>("/public/cms/home/draft", {
+        headers: { "x-storefront-secret": process.env.REVALIDATE_SECRET ?? "" },
+      })
+    : await api<ApiResponse<CmsHomeResponse>>("/public/cms/home");
+  return toHomeContent(data);
+};
+
 export const getHomeContent = async (): Promise<HomeContent> => {
   "use cache";
   cacheLife("hours");
   cacheTag("cms");
 
+  const { isEnabled } = await draftMode();
   try {
-    const { data } =
-      await api<ApiResponse<CmsHomeResponse>>("/public/cms/home");
-    return toHomeContent(data);
+    return await fetchHome(isEnabled);
   } catch {
-    return DEFAULT_HOME_CONTENT;
+    if (!isEnabled) return DEFAULT_HOME_CONTENT;
+    return fetchHome(false).catch(() => DEFAULT_HOME_CONTENT);
   }
+};
+
+export const isPreviewingHome = async (): Promise<boolean> => {
+  "use cache";
+  const { isEnabled } = await draftMode();
+  return isEnabled;
 };
 
 export const getCmsServices = async (): Promise<ServiceItem[]> => {

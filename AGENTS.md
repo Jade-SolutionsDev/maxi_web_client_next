@@ -54,6 +54,12 @@ reintroduce hardcoded copy, banner images, or service cards.
   srcsets — always render through `BannerPicture` or preserve that
   art-direction contract. The optional `title`/`subtitle` are drawn over the
   image by `BannerCaption`.
+- Home preview: the backoffice opens `/api/vista-previa?token=…`, which checks
+  the token against `REVALIDATE_SECRET` (`src/lib/preview-token.ts`, same
+  recipe as the API) and turns on Next draft mode. In draft mode
+  `getHomeContent()` reads `GET /public/cms/home/draft` with the
+  `x-storefront-secret` header and `PreviewNotice` shows the exit link
+  (`/api/vista-previa/salir`).
 - "Nuestros servicios" (`src/feature/home/components/ServicesSection.tsx`) →
   `getCmsServices()` + `getSiteSettings().services` for the heading. Icons are
   NAMES resolved via `src/feature/home/constants/service-icons.ts`; that
@@ -89,8 +95,8 @@ Contracts to preserve when touching these surfaces:
   `NEXT_PUBLIC_MEDIA_URL` (the API's public storage base URL); the hardcoded
   S3 entry only covers legacy `/BANNER/**` paths.
 - API endpoints (all under `GET /public/cms/`): `settings`, `home`,
-  `banners` (published copy, kept for older deployments), `services`,
-  `staff`, `pages`, `pages/:slug`.
+  `home/draft` (shared secret only), `banners` (published copy, kept for
+  older deployments), `services`, `staff`, `pages`, `pages/:slug`.
 - Contact form (`src/feature/contact/`) → motives come from
   `getContactMotives()` (`GET /public/contact/motives`, cache tag
   `nomenclators` — admin nomenclator edits revalidate it); submissions go
