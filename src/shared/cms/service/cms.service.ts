@@ -3,7 +3,6 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { type ApiResponse, api } from "@/api/http";
 import {
-  toBannerSlide,
   toCmsPage,
   toCmsPageLink,
   toFaqCategory,
@@ -11,17 +10,19 @@ import {
   toSiteSettings,
   toStaffMember,
 } from "../adapter/cms.adapter";
+import { toHomeContent } from "../adapter/home.adapter";
+import { DEFAULT_HOME_CONTENT } from "../constants/home.constants";
 import { DEFAULT_SITE_SETTINGS } from "../constants/site-settings.constants";
 import type {
-  BannerSlide,
-  CmsBannerResponse,
   CmsFaqCategoryResponse,
+  CmsHomeResponse,
   CmsPage,
   CmsPageLink,
   CmsPageResponse,
   CmsServiceResponse,
   CmsStaffMemberResponse,
   FaqCategory,
+  HomeContent,
   ServiceItem,
   SiteSettings,
   SiteSettingsResponse,
@@ -68,18 +69,17 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
   }
 };
 
-export const getBanners = async (): Promise<BannerSlide[]> => {
+export const getHomeContent = async (): Promise<HomeContent> => {
   "use cache";
   cacheLife("hours");
   cacheTag("cms");
 
   try {
-    const { data } = await api<ApiResponse<CmsBannerResponse[]>>(
-      "/public/cms/banners",
-    );
-    return data.map(toBannerSlide);
+    const { data } =
+      await api<ApiResponse<CmsHomeResponse>>("/public/cms/home");
+    return toHomeContent(data);
   } catch {
-    return [];
+    return DEFAULT_HOME_CONTENT;
   }
 };
 

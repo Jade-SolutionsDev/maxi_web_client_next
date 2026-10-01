@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { BannerSlide } from '@/shared/cms/type/cms.interface';
 import { bannerTargetHref } from '../constants/banner-target-href';
+import { BannerCaption } from './BannerCaption';
 import { BannerPicture } from './BannerPicture';
 
 type LinkedBannerPictureProps = {
@@ -11,7 +12,12 @@ type LinkedBannerPictureProps = {
 /** A banner without a public destination intentionally remains a plain image. */
 function LinkedBannerPicture({ slide, eager }: LinkedBannerPictureProps) {
   const href = bannerTargetHref(slide.target);
-  const picture = <BannerPicture slide={slide} eager={eager} />;
+  const picture = (
+    <div className='relative'>
+      <BannerPicture slide={slide} eager={eager} />
+      <BannerCaption title={slide.title} subtitle={slide.subtitle} />
+    </div>
+  );
 
   if (!href) return picture;
 

@@ -79,6 +79,17 @@ export const truncateDecimals = (
 export const range = (from: number, to: number): number[] =>
   Array.from({ length: Math.max(to - from + 1, 0) }, (_, i) => from + i);
 
+export const trimToUndefined = (value: string | null | undefined) =>
+  value?.trim() || undefined;
+
+export const pickByIds = <T extends { id: string }>(
+  items: T[],
+  ids: string[],
+): T[] => {
+  const byId = new Map(items.map((item) => [item.id, item]));
+  return ids.flatMap((id) => byId.get(id) ?? []);
+};
+
 export const PAGINATION_ELLIPSIS = 'ellipsis';
 
 export type PaginationSlot = number | typeof PAGINATION_ELLIPSIS;

@@ -2,6 +2,7 @@ import 'server-only';
 
 import { cacheLife, cacheTag } from 'next/cache';
 import { type ApiResponse, api, type Paginated } from '@/api/http';
+import { pickByIds } from '@/helpers';
 import { toTaxonomy, toTaxonomyGroup } from '../adapter/taxonomy.adapter';
 import type {
   CatalogDepartmentResponse,
@@ -33,6 +34,16 @@ const getTaxonomy = async (
 export const getDepartments = (
   filters: TaxonomyFilters = {},
 ): Promise<Taxonomy[]> => getTaxonomy('/public/departments', filters);
+
+export const getFeaturedDepartments = async (
+  departmentIds: string[],
+  municipalityId?: string,
+): Promise<Taxonomy[]> => {
+  if (!departmentIds.length) {
+    return getDepartments({ featured: true, municipalityId });
+  }
+  return pickByIds(await getDepartments({ municipalityId }), departmentIds);
+};
 
 export const getCategories = (
   filters: TaxonomyFilters = {},

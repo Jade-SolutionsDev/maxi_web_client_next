@@ -1,3 +1,4 @@
+import { trimToUndefined } from '@/helpers';
 import { DEFAULT_SITE_SETTINGS } from '../constants/site-settings.constants';
 import type {
   BannerSlide,
@@ -36,6 +37,8 @@ export const toFaqCategory = (
 export const toBannerSlide = (banner: CmsBannerResponse): BannerSlide => ({
   id: banner.id,
   alt: banner.alt.trim(),
+  title: trimToUndefined(banner.title),
+  subtitle: trimToUndefined(banner.subtitle),
   desktop: banner.desktop,
   tablet: banner.tablet,
   mobile: banner.mobile,
