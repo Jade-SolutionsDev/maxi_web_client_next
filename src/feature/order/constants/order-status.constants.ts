@@ -55,7 +55,7 @@ export const CHARGE_FAILURE_COPY: Partial<
   EXPIRED: {
     title: 'El tiempo para pagar venció',
     description:
-      'Las instrucciones anteriores ya no sirven. Generá unas nuevas para reintentar.',
+      'Las instrucciones anteriores ya no sirven. Genera unas nuevas para reintentar.',
   },
   CANCELLED: {
     title: 'El intento de pago fue cancelado',

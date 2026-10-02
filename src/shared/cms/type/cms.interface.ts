@@ -13,21 +13,49 @@ export interface CmsBannerTarget {
 export interface CmsBannerResponse {
   id: string;
   alt: string;
+  title: string | null;
+  subtitle: string | null;
   desktop: BannerAsset;
   tablet: BannerAsset;
   mobile: BannerAsset;
-  sortOrder: number;
-  isActive: boolean;
   target: CmsBannerTarget | null;
 }
 
 export interface BannerSlide {
   id: string;
   alt: string;
+  title?: string;
+  subtitle?: string;
   desktop: BannerAsset;
   tablet: BannerAsset;
   mobile: BannerAsset;
   target: CmsBannerTarget | null;
+}
+
+export const HOME_SECTION_KEYS = [
+  'hero',
+  'departments',
+  'featured-products',
+  'services',
+  'on-sale-products',
+  'categories',
+  'recent-products',
+] as const;
+
+export type HomeSectionKey = (typeof HOME_SECTION_KEYS)[number];
+
+export interface CmsHomeResponse {
+  sections: { key: string; isVisible: boolean }[];
+  featuredProductIds: string[];
+  featuredDepartmentIds: string[];
+  banners: CmsBannerResponse[];
+}
+
+export interface HomeContent {
+  sections: HomeSectionKey[];
+  featuredProductIds: string[];
+  featuredDepartmentIds: string[];
+  banners: BannerSlide[];
 }
 
 export interface CmsServiceResponse {
@@ -86,6 +114,20 @@ export interface CmsPage {
 export interface CmsPageLink {
   slug: string;
   title: string;
+}
+
+export interface HomeNoticeResponse {
+  id: string;
+  title: string;
+  content: string;
+  startsAt: string | null;
+  endsAt: string | null;
+}
+
+export interface HomeNotice {
+  id: string;
+  title: string;
+  content: string;
 }
 
 export interface CmsFaqQuestionResponse {

@@ -171,6 +171,17 @@ describe.each([
   ['/register', 'registrarse'],
   ['/register/verify', 'confirmar el correo'],
   ['/reset-password', 'recuperar la clave'],
+  ['/invitacion', 'activar una cuenta invitada'],
+  // Las informativas se quedaron fuera cuando esto era una lista de
+  // excepciones: el formulario de contacto estuvo semanas tapado para quien
+  // entraba sin zona elegida, y se reportó como «está en producción pero no
+  // en staging» porque allí ya había zona guardada (MxH-0068).
+  ['/contacto', 'escribir un mensaje'],
+  ['/sobre-nosotros', 'leer quiénes somos'],
+  ['/preguntas-frecuentes', 'consultar las preguntas frecuentes'],
+  ['/paginas/politica-de-privacidad', 'leer las páginas legales'],
+  ['/pedidos', 'ver sus pedidos'],
+  ['/direcciones', 'gestionar sus direcciones'],
 ])('en %s', (ruta, loQueViene) => {
   // El diálogo se abría encima del formulario y tapaba el botón: tres
   // escenarios de navegador morían por timeout al pulsar «Enviar código».
@@ -244,5 +255,34 @@ describe('el texto del diálogo', () => {
     expect(
       screen.getAllByText(/No es una dirección de entrega/).length,
     ).toBeGreaterThan(0);
+  });
+});
+
+/**
+ * El lado que la inversión podría romper en silencio: si alguien quita una
+ * ruta de la lista, dejaríamos de preguntar donde la zona sí decide lo que se
+ * ve —qué hay disponible y cuánto cuesta traerlo— y nadie lo notaría hasta
+ * que un cliente viera un catálogo que no es el suyo.
+ */
+describe.each([
+  ['/', 'la portada, que enseña destacados'],
+  ['/catalog', 'el catálogo'],
+  ['/catalog/aceite-de-oliva', 'la ficha de un producto'],
+  ['/categorias', 'las categorías'],
+  ['/checkout', 'el pago, donde la zona decide la entrega y su coste'],
+])('en %s', (ruta, porQue) => {
+  it(`sí pregunta la zona: ${porQue}`, () => {
+    usePathname.mockReturnValue(ruta);
+
+    render(
+      <LocationPicker
+        provinces={provinces}
+        municipalitiesByProvince={municipalitiesByProvince}
+        selected={null}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('¿Dónde estás?')).toBeTruthy();
   });
 });

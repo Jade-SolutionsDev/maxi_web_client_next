@@ -38,14 +38,27 @@ interface LocationPickerProps {
   className?: string;
 }
 
-/** Ver el comentario de `preguntarLaZona`, dentro del componente. */
-const RUTAS_SIN_PREGUNTAR = [
-  '/seguimiento',
-  '/invitacion',
-  '/login',
-  '/register',
-  '/reset-password',
-];
+/**
+ * Las únicas páginas que piden la zona nada más entrar.
+ *
+ * **Está escrito al revés a propósito.** Antes era una lista de excepciones, y
+ * eso hacía que cada página nueva naciera con el diálogo encima salvo que
+ * alguien se acordara de añadirla: así se quedaron fuera contacto, sobre
+ * nosotros, preguntas frecuentes y las páginas legales, y el formulario de
+ * contacto estuvo semanas inaccesible para quien entraba sin zona elegida
+ * (MxH-0068). Con la lista al derecho, olvidarse significa no molestar, que
+ * es el error barato.
+ *
+ * El criterio para entrar aquí: que lo que se ve dependa de dónde esté quien
+ * mira. El catálogo y las categorías enseñan disponibilidad; el pago, las
+ * opciones de entrega y su coste. Lo demás —leer quiénes somos, escribir un
+ * mensaje, consultar un pedido, entrar en la cuenta— es igual desde
+ * cualquier sitio.
+ *
+ * El selector sigue en la cabecera: quien quiera elegir zona puede hacerlo
+ * cuando le convenga.
+ */
+const RUTAS_QUE_PIDEN_ZONA = ['/catalog', '/categorias', '/checkout'];
 
 export const LocationPicker = ({
   provinces,
@@ -55,20 +68,12 @@ export const LocationPicker = ({
   className,
 }: LocationPickerProps) => {
   /**
-   * Rutas donde no se pregunta la zona nada más entrar. El seguimiento de un
-   * pedido se abre desde un enlace reenviado —WhatsApp, un correo— y quien lo
-   * abre no viene a comprar: encontrarse un formulario de provincia y
-   * municipio tapando la pantalla es pedirle datos para algo que no pidió.
-   * El selector sigue estando en la cabecera por si quiere usarlo.
-   *
-   * Lo mismo vale para las páginas de cuenta: quien va a entrar, a registrarse
-   * o a recuperar su clave tiene un formulario delante, y el diálogo se abría
-   * justo encima, tapando el botón. Se vio en las pruebas de navegador —tres
-   * escenarios muertos por «timeout» al pulsar— pero le pasa igual a cualquiera
-   * que abra el enlace de recuperar contraseña sin haber elegido zona.
+   * La portada entra por su nombre exacto: enseña destacados, así que la zona
+   * importa. No puede ir en la lista porque `startsWith('/')` casa con todo.
    */
   const ruta = usePathname();
-  const preguntarLaZona = !RUTAS_SIN_PREGUNTAR.some((r) => ruta?.startsWith(r));
+  const preguntarLaZona =
+    ruta === '/' || RUTAS_QUE_PIDEN_ZONA.some((r) => ruta?.startsWith(r));
 
   const [isOpen, setIsOpen] = useState(selected === null && preguntarLaZona);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);

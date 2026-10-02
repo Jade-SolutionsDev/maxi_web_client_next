@@ -102,7 +102,14 @@ export const RegisterForm = () => {
         <FormPassword name='confirmPassword' label='Confirmar' required />
       </div>
 
-      <div id='clerk-captcha'></div>
+      {/*
+        Aquí monta Clerk el captcha de Cloudflare Turnstile. Su idioma no sale
+        del <html lang='es'> ni del appearance del ClerkProvider: en un flujo
+        propio como este, clerk-js lee los data-cl-* de este mismo div, y sin
+        ellos pide el widget con lang=auto, que es el idioma del navegador.
+        A quien tenía Chrome en inglés le salía «Verify you are human».
+      */}
+      <div id='clerk-captcha' data-cl-language='es'></div>
 
       <Button
         type='submit'

@@ -5,21 +5,29 @@ import {
   productCardSizes,
   productGridClass,
 } from '@/feature/product/components/product-grid.styles';
-import { getProducts } from '@/feature/product/service/product.service';
+import { getFeaturedProducts } from '@/feature/product/service/product.service';
 import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 
-async function FeaturedProducts() {
+type FeaturedProductsProps = {
+  productIds: string[];
+};
+
+async function FeaturedProducts({ productIds }: FeaturedProductsProps) {
   const municipalityId = await readMunicipalityId();
-  const { items: products } = await getProducts({
-    featured: true,
-    limit: 24,
-    municipalityId: municipalityId ?? undefined,
-  });
+  const products = await getFeaturedProducts(
+    productIds,
+    municipalityId ?? undefined,
+  );
+  const isCurated = productIds.length > 0;
 
   return (
     <Section
       title='Productos destacados'
-      action={{ href: '/catalog?featured=true', label: 'Ver todos →' }}
+      action={
+        isCurated
+          ? undefined
+          : { href: '/catalog?featured=true', label: 'Ver todos →' }
+      }
     >
       {!products.length ? (
         <EmptyState
