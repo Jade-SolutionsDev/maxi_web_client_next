@@ -22,15 +22,29 @@ export const CartAnnouncer = () => {
    * load with "producto añadido".
    */
   const settled = useRef(false);
+  const changedBeforeSettle = useRef(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    if (!hydrated || status === 'idle' || status === 'loading') return;
+    if (status === 'idle' || status === 'loading') {
+      // Hydration changes the count and status together. A count that changes
+      // while the cart is still unsettled can only come from a user mutation;
+      // remember it so the first `ready` render does not swallow that action.
+      if (totalItems !== previous.current) changedBeforeSettle.current = true;
+      return;
+    }
+
+    if (!hydrated) return;
 
     if (!settled.current) {
       settled.current = true;
-      previous.current = totalItems;
-      return;
+
+      if (changedBeforeSettle.current && totalItems !== previous.current) {
+        changedBeforeSettle.current = false;
+      } else {
+        previous.current = totalItems;
+        return;
+      }
     }
 
     if (totalItems === previous.current) return;
