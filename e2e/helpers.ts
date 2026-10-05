@@ -216,6 +216,27 @@ export function almacenDeLasPruebas(): string {
  * El escenario buscaba en Holguin un producto que solo existia en La Habana. En
  * una base con un solo almacen las dos consultas coinciden y no se nota.
  */
+/**
+ * La provincia de la direccion predeterminada del cliente, que es la que la
+ * tarjeta imprime detras del municipio.
+ *
+ * La comprobacion estaba fijada a «La Habana|Artemisa» y fallaba con la
+ * pantalla correcta delante. Preguntar por la zona tampoco vale: la zona
+ * elegida y la direccion guardada son datos distintos y no tienen por que
+ * coincidir —medido: zona en La Habana y direccion en Holguin a la vez—. Se
+ * pregunta por la direccion que se esta mirando.
+ */
+export function provinciaDeLaDireccion(correoCliente: string): string {
+  return sql(`
+    SELECT p.name
+      FROM client_addresses a
+      JOIN municipalities m ON m.id = a.municipality_id
+      JOIN provinces p ON p.id = m.province_id
+      JOIN clients c ON c.id = a.client_id
+     WHERE c.email = '${correoCliente}' AND a.is_default
+     LIMIT 1`);
+}
+
 export function municipioConCobertura(): string {
   return sql(`
     SELECT m.id FROM municipalities m

@@ -56,7 +56,14 @@ After(async () => {
   );
   sql(`DELETE FROM products WHERE sku LIKE 'E2E-${estado.sufijo}%'`);
   sql(`DELETE FROM categories WHERE slug LIKE '%-e2e-${estado.sufijo}%'`);
-  sql(`DELETE FROM cms_pages WHERE slug = 'pagina-e2e-${estado.sufijo}'`);
+  // En orden de dependencia: las versiones cuelgan de la pagina por clave
+  // ajena, y hay que soltar primero la que la pagina senala como publicada.
+  sql(`
+    UPDATE cms_pages SET published_version_id = NULL
+     WHERE slug = 'pagina-e2e-${estado.sufijo}';
+    DELETE FROM cms_page_versions
+     WHERE page_id IN (SELECT id FROM cms_pages WHERE slug = 'pagina-e2e-${estado.sufijo}');
+    DELETE FROM cms_pages WHERE slug = 'pagina-e2e-${estado.sufijo}'`);
 
   /**
    * Y se invalida el cache: la tienda guarda el catalogo un dia entero, asi que
@@ -517,12 +524,37 @@ Given(
   },
 );
 
+/**
+ * Una pagina del CMS, sembrada con el modelo de versiones.
+ *
+ * Desde la migracion `AddCmsPageVersions`, `cms_pages.title`/`content` son el
+ * BORRADOR: lo que la tienda muestra es la fila de `cms_page_versions` a la
+ * que apunta `published_version_id`. Sembrando solo en `cms_pages` quedaba una
+ * pagina en borrador, la tienda respondia 404 —correctamente— y la prueba lo
+ * leia como que el contenido no se veia.
+ *
+ * `activa` publica: crea la version 1 y la deja apuntada. Sin publicar, la
+ * pagina existe en borrador, que es justo lo que la tienda no debe mostrar.
+ */
 function sembrarPagina(titulo: string, activa: boolean) {
   const slug = `pagina-e2e-${estado.sufijo}`;
   const contenido = `Contenido de prueba ${estado.sufijo}`;
-  sql(`
+  const id = sql(`
     INSERT INTO cms_pages (slug, title, content, is_active)
-    VALUES ('${slug}', '${titulo}', '${contenido}', ${activa})`);
+    VALUES ('${slug}', '${titulo}', '${contenido}', ${activa})
+    RETURNING id`);
+
+  if (activa) {
+    const version = sql(`
+      INSERT INTO cms_page_versions
+        (page_id, version, title, content, published_by_name)
+      VALUES ('${id}', 1, '${titulo}', '${contenido}', 'Pruebas e2e')
+      RETURNING id`);
+    sql(`
+      UPDATE cms_pages SET published_version_id = '${version}'
+       WHERE id = '${id}'`);
+  }
+
   return { slug, titulo, contenido };
 }
 

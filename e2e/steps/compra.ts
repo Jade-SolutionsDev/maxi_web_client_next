@@ -96,7 +96,10 @@ When("elige recoger en tienda", async ({ page }) => {
 });
 
 Then("también le piden quién recoge", async ({ page }) => {
-  await expect(page.getByText(/datos del cliente/i).first()).toBeVisible({
+  // «Datos del beneficiario», no «del cliente»: el rótulo se cambió a propósito
+  // porque aquí quien paga y quien recoge suelen ser personas distintas, y el
+  // carnet que acaba en el pedido es el que se pide en el almacén al entregar.
+  await expect(page.getByText(/datos del beneficiario/i).first()).toBeVisible({
     timeout: 15_000,
   });
   await expect(page.getByLabel(/carnet de identidad/i)).toBeVisible();
@@ -181,8 +184,11 @@ When("elige recoger en el almacén", async ({ page }) => {
     .or(page.getByText(/recoger en tienda/i))
     .first()
     .click();
-  // El punto de recogida se elige solo cuando solo hay uno.
-  await expect(page.getByText(/mostrador|recogida/i).first()).toBeVisible({
+  // Se espera a la consecuencia de haber elegido recogida —que aparezcan los
+  // datos de quien recoge— y no al rotulo del punto de recogida: ese solo se
+  // pinta cuando hay un unico almacen, asi que la prueba se caia al añadir
+  // almacenes a staging, con la pantalla correcta delante.
+  await expect(page.getByText(/datos del beneficiario/i).first()).toBeVisible({
     timeout: 15_000,
   });
 });
