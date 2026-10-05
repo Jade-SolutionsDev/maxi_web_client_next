@@ -1,12 +1,9 @@
 import { CalendarClock, Share2 } from 'lucide-react';
 import Link from 'next/link';
-import { plazoEnDiasHabiles } from '@/lib/plazo';
+import { fechaComprometida, plazoEnDiasHabiles } from '@/lib/plazo';
 import { absoluteUrl } from '@/shared/seo/site-url';
 import type { Order } from '../type/order.type';
 import { CopyButton } from './CopyButton';
-
-const fechaLarga = (iso: string) =>
-  new Intl.DateTimeFormat('es', { dateStyle: 'long' }).format(new Date(iso));
 
 /**
  * El compromiso de entrega y el enlace para seguir el pedido sin sesión.
@@ -30,7 +27,7 @@ export function OrderPromiseAndTracking({ order }: { order: Order }) {
           <div>
             <p className='text-sm font-bold text-heading'>
               {order.promisedAt
-                ? `Entrega comprometida: ${fechaLarga(order.promisedAt)}`
+                ? `Listo el ${fechaComprometida(order.promisedAt)}`
                 : `Plazo de entrega: ${plazoEnDiasHabiles(order.promiseDays ?? 0)}`}
             </p>
             {!order.promisedAt && (

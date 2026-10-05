@@ -5,6 +5,11 @@ export interface DeliveryOption {
   label: string;
   description: string | null;
   fee: number;
+  /**
+   * Días hábiles que promete esta opción (MxH-0092). `null` si no se configuró
+   * ninguno: entonces no se inventa un plazo ni se deja el hueco.
+   */
+  promiseDays: number | null;
 }
 
 export interface PickupPoint {
@@ -20,4 +25,9 @@ export interface FulfillmentOffer {
   pickupPoints: PickupPoint[];
   pickupEnabled: boolean;
   unavailableMessage: string | null;
+  /**
+   * El plazo de la recogida. No va por punto de recogida: sale de los ajustes
+   * de entrega y vale para todos los mostradores.
+   */
+  pickupPromiseDays: number | null;
 }
