@@ -38,11 +38,13 @@ const offer = {
       label: 'Mensajería',
       description: null,
       fee: 5,
+      promiseDays: null,
     },
   ],
   pickupPoints: [],
   pickupEnabled: false,
   unavailableMessage: null,
+  pickupPromiseDays: null,
 };
 
 const addresses: never[] = [];
