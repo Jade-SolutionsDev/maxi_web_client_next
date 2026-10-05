@@ -1,10 +1,9 @@
 import { CalendarClock, Share2 } from 'lucide-react';
 import Link from 'next/link';
-import { plazoEnDiasHabiles } from '@/lib/plazo';
+import { fechaComprometida, plazoEnDiasHabiles } from '@/lib/plazo';
+import { absoluteUrl } from '@/shared/seo/site-url';
 import type { Order } from '../type/order.type';
-
-const fechaLarga = (iso: string) =>
-  new Intl.DateTimeFormat('es', { dateStyle: 'long' }).format(new Date(iso));
+import { CopyButton } from './CopyButton';
 
 /**
  * El compromiso de entrega y el enlace para seguir el pedido sin sesión.
@@ -28,7 +27,7 @@ export function OrderPromiseAndTracking({ order }: { order: Order }) {
           <div>
             <p className='text-sm font-bold text-heading'>
               {order.promisedAt
-                ? `Entrega comprometida: ${fechaLarga(order.promisedAt)}`
+                ? `Listo el ${fechaComprometida(order.promisedAt)}`
                 : `Plazo de entrega: ${plazoEnDiasHabiles(order.promiseDays ?? 0)}`}
             </p>
             {!order.promisedAt && (
@@ -54,12 +53,25 @@ export function OrderPromiseAndTracking({ order }: { order: Order }) {
               Comparte este enlace con quien vaya a recibir el pedido: puede ver
               cómo va sin iniciar sesión.
             </p>
-            <Link
-              href={`/seguimiento/${order.trackingId}`}
-              className='mt-1 inline-block text-sm font-semibold text-primary underline'
-            >
-              Ver el seguimiento
-            </Link>
+            <div className='mt-2 flex flex-wrap items-center gap-3'>
+              <Link
+                href={`/seguimiento/${order.trackingId}`}
+                className='text-sm font-semibold text-primary underline'
+              >
+                Ver el seguimiento
+              </Link>
+              {/*
+                El texto de arriba promete compartir el enlace, así que aquí
+                tiene que haber forma de copiarlo. Se copia la dirección
+                completa, no la ruta: lo que se pega en WhatsApp tiene que
+                abrirse en el navegador de quien lo reciba.
+              */}
+              <CopyButton
+                value={absoluteUrl(`/seguimiento/${order.trackingId}`)}
+                label='Copiar enlace'
+                withText
+              />
+            </div>
           </div>
         </div>
       )}

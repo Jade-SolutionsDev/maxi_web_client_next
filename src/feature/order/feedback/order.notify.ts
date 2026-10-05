@@ -26,7 +26,7 @@ export const notifyCheckoutFailure = (failure: OrderFailure) => {
   }
 
   if (failure.kind === 'unauthenticated') {
-    notify.info('Iniciá sesión para completar tu compra', { id });
+    notify.info('Inicia sesión para completar tu compra', { id });
     return;
   }
 

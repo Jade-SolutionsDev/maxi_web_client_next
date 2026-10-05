@@ -8,11 +8,13 @@ import {
 } from '@/app/components/ui/carousel';
 import { heroSpineClass } from '@/feature/home/components/hero-banner.styles';
 import { LinkedBannerPicture } from '@/feature/home/components/LinkedBannerPicture';
-import { getBanners } from '@/shared/cms/service/cms.service';
+import type { BannerSlide } from '@/shared/cms/type/cms.interface';
 
-async function HeroBanner() {
-  const banners = await getBanners();
+type HeroBannerProps = {
+  banners: BannerSlide[];
+};
 
+function HeroBanner({ banners }: HeroBannerProps) {
   if (banners.length === 0) return null;
 
   return (

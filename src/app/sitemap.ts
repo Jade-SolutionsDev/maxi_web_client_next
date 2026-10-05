@@ -1,5 +1,8 @@
 import type { MetadataRoute } from "next";
-import { cmsPageHref } from "@/feature/cms-page/constants/cms-page.constants";
+import {
+  cmsPageHref,
+  hasDedicatedRoute,
+} from "@/feature/cms-page/constants/cms-page.constants";
 import { departmentHref } from "@/feature/product/constants/catalog-taxonomy-href";
 import { buildProductDetailHref } from "@/feature/product/constants/product-detail-href";
 import { getProducts } from "@/feature/product/service/product.service";
@@ -62,11 +65,13 @@ const departmentEntries = async (): Promise<Entry[]> => {
 const cmsPageEntries = async (): Promise<Entry[]> => {
   const pages = await getCmsPages();
 
-  return pages.map(({ slug }) => ({
-    url: absoluteUrl(cmsPageHref(slug)),
-    changeFrequency: "monthly",
-    priority: 0.4,
-  }));
+  return pages
+    .filter(({ slug }) => !hasDedicatedRoute(slug))
+    .map(({ slug }) => ({
+      url: absoluteUrl(cmsPageHref(slug)),
+      changeFrequency: "monthly",
+      priority: 0.4,
+    }));
 };
 
 const collectProducts = async (): Promise<Product[]> => {

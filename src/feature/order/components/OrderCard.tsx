@@ -1,6 +1,12 @@
-import { ChevronRight, CreditCard, ShoppingBag } from 'lucide-react';
+import {
+  CalendarClock,
+  ChevronRight,
+  CreditCard,
+  ShoppingBag,
+} from 'lucide-react';
 import Link from 'next/link';
 import { formatPrice } from '@/helpers';
+import { fechaComprometida } from '@/lib/plazo';
 import type { Order } from '../type/order.type';
 import { OrderStatusPill, PaymentStatusPill } from './OrderStatusPill';
 
@@ -26,6 +32,18 @@ export const OrderCard = ({ order }: { order: Order }) => (
           <OrderStatusPill status={order.status} />
           <PaymentStatusPill status={order.paymentStatus} />
         </div>
+
+        {/*
+          La fecha comprometida (MxH-0118). Solo cuando existe: la API la calcula
+          al entrar el pago, así que un pedido sin pagar no la tiene y el
+          listado no promete nada.
+        */}
+        {order.promisedAt && (
+          <p className='mt-1.5 flex items-center gap-1.5 text-xs font-medium text-primary'>
+            <CalendarClock className='size-3.5 shrink-0' aria-hidden='true' />
+            Listo el {fechaComprometida(order.promisedAt)}
+          </p>
+        )}
 
         {order.paymentMethod && (
           <p className='mt-1.5 flex items-center gap-1.5 text-xs text-muted'>

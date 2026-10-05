@@ -35,6 +35,30 @@ describe('LinkedBannerPicture', () => {
     ).toBe('/catalog?category=arroces');
   });
 
+  it('writes the headline and subtitle over the image when the slide has them', () => {
+    render(
+      <LinkedBannerPicture
+        slide={{
+          ...banner(null),
+          title: 'Todo para el hogar',
+          subtitle: 'Hasta 20 % menos',
+        }}
+        eager
+      />,
+    );
+
+    expect(screen.getByText('Todo para el hogar')).toBeTruthy();
+    expect(screen.getByText('Hasta 20 % menos')).toBeTruthy();
+  });
+
+  it('leaves the image alone when the art already carries the text', () => {
+    const { container } = render(
+      <LinkedBannerPicture slide={banner(null)} eager />,
+    );
+
+    expect(container.querySelector('p')).toBeNull();
+  });
+
   it('keeps a banner without a destination non-interactive', () => {
     render(<LinkedBannerPicture slide={banner(null)} eager />);
 

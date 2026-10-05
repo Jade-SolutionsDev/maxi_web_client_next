@@ -1,6 +1,7 @@
 'use client';
 
 import { MapPin } from 'lucide-react';
+import { plazoEnDiasHabiles } from '@/lib/plazo';
 import { cn } from '@/lib/utils';
 import type { PickupPoint } from '../type/fulfillment.type';
 
@@ -9,6 +10,11 @@ interface PickupPointSelectorProps {
   value?: string;
   onChange: (id: string) => void;
   disabled?: boolean;
+  /**
+   * El plazo de la recogida (MxH-0118). Va aquí y no en cada punto porque sale
+   * de los ajustes de entrega: es el mismo en todos los mostradores.
+   */
+  promiseDays?: number | null;
 }
 
 export const PickupPointSelector = ({
@@ -16,11 +22,18 @@ export const PickupPointSelector = ({
   value,
   onChange,
   disabled,
+  promiseDays,
 }: PickupPointSelectorProps) => (
   <fieldset className='flex flex-col gap-2' disabled={disabled}>
     <legend className='mb-2 text-sm font-medium text-heading'>
       ¿Dónde lo recoges?
     </legend>
+
+    {promiseDays != null && promiseDays > 0 && (
+      <p className='-mt-1 mb-1 text-xs font-medium text-primary'>
+        Listo en {plazoEnDiasHabiles(promiseDays)} desde que recibamos el pago
+      </p>
+    )}
 
     {points.map((point) => {
       const selected = point.id === value;

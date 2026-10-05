@@ -17,9 +17,9 @@ import {
 import type { ContactFailure, ContactMotive } from '../type/contact.interface';
 
 const FAILURE_MESSAGE: Record<ContactFailure['kind'], string> = {
-  invalid: 'Revisá los datos del formulario e intentá de nuevo.',
-  'rate-limited': 'Enviaste varios mensajes seguidos. Esperá un minuto.',
-  unknown: 'No pudimos enviar tu mensaje. Intentá de nuevo.',
+  invalid: 'Revisa los datos del formulario e inténtalo de nuevo.',
+  'rate-limited': 'Enviaste varios mensajes seguidos. Espera un minuto.',
+  unknown: 'No pudimos enviar tu mensaje. Inténtalo de nuevo.',
 };
 
 const emptyValues = (anonymous: boolean): ContactFormValues => ({
@@ -131,7 +131,7 @@ export const ContactForm = ({ motives, isSignedIn }: ContactFormProps) => {
               />
             </div>
             <p className='text-xs text-muted'>
-              Dejanos al menos un correo o un teléfono para poder responderte.
+              Déjanos al menos un correo o un teléfono para poder responderte.
             </p>
           </>
         )}
@@ -146,7 +146,7 @@ export const ContactForm = ({ motives, isSignedIn }: ContactFormProps) => {
           name='message'
           label='Mensaje'
           rows={6}
-          placeholder='Contanos en qué podemos ayudarte…'
+          placeholder='Cuéntanos en qué podemos ayudarte…'
           required
         />
 

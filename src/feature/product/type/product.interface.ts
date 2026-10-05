@@ -52,6 +52,7 @@ export interface ProductFilters {
   minPrice?: number;
   maxPrice?: number;
   featured?: boolean;
+  ids?: string[];
   onSale?: boolean;
   /** Include products with no stock. Defaults to false on the API. */
   includeOutOfStock?: boolean;

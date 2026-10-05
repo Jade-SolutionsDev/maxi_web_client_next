@@ -35,6 +35,7 @@ const offer = {
       label: 'Mensajería',
       description: null,
       fee: 5,
+      promiseDays: null,
     },
   ],
   pickupPoints: [
@@ -48,6 +49,7 @@ const offer = {
   ],
   pickupEnabled: true,
   unavailableMessage: null,
+  pickupPromiseDays: null,
 };
 
 const addresses = [
@@ -448,6 +450,7 @@ describe('CheckoutForm', () => {
           pickupPoints: [],
           pickupEnabled: false,
           unavailableMessage: 'Escríbenos y coordinamos tu compra.',
+          pickupPromiseDays: null,
         }}
         addresses={addresses}
         catalog={catalog}

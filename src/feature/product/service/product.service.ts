@@ -3,6 +3,7 @@ import 'server-only';
 import { cacheLife, cacheTag } from 'next/cache';
 import { cache } from 'react';
 import { type ApiResponse, api, type Paginated } from '@/api/http';
+import { pickByIds } from '@/helpers';
 import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { toProduct } from '../adapter/product.adapter';
 import type {
@@ -22,6 +23,7 @@ const toProductParams = (filters: ProductFilters) => ({
   minPrice: filters.minPrice,
   maxPrice: filters.maxPrice,
   featured: filters.featured,
+  ids: filters.ids?.length ? filters.ids.join(',') : undefined,
   onSale: filters.onSale,
   includeOutOfStock: filters.includeOutOfStock,
   page: filters.page,
@@ -47,6 +49,29 @@ export const getProducts = async (
   );
 
   return toProductPage(data);
+};
+
+export const FEATURED_PRODUCTS_LIMIT = 24;
+
+export const getFeaturedProducts = async (
+  productIds: string[],
+  municipalityId?: string,
+): Promise<Product[]> => {
+  if (!productIds.length) {
+    const { items } = await getProducts({
+      featured: true,
+      limit: FEATURED_PRODUCTS_LIMIT,
+      municipalityId,
+    });
+    return items;
+  }
+
+  const { items } = await getProducts({
+    ids: productIds,
+    limit: productIds.length,
+    municipalityId,
+  });
+  return pickByIds(items, productIds);
 };
 
 export const getFreshProducts = async (

@@ -5,7 +5,7 @@ export const ContactBaseSchema = z.object({
   message: z
     .string()
     .trim()
-    .min(10, { message: 'Contanos un poco más (mínimo 10 caracteres)' })
+    .min(10, { message: 'Cuéntanos un poco más (mínimo 10 caracteres)' })
     .max(2000, { message: 'Máximo 2000 caracteres' }),
   website: z.string().max(255).optional(),
 });
@@ -36,7 +36,7 @@ export const AnonymousContactSchema = ContactBaseSchema.extend({
     .optional()
     .or(z.literal('')),
 }).refine((data) => Boolean(data.email) || Boolean(data.phone), {
-  message: 'Dejanos un correo o un teléfono para responderte',
+  message: 'Déjanos un correo o un teléfono para responderte',
   path: ['email'],
 });
 
@@ -77,7 +77,7 @@ export const ContactFormSchema = ContactBaseSchema.extend({
     ctx.addIssue({
       code: 'custom',
       path: ['email'],
-      message: 'Dejanos un correo o un teléfono para responderte',
+      message: 'Déjanos un correo o un teléfono para responderte',
     });
   }
   if (data.phone && data.phone.length < 6) {

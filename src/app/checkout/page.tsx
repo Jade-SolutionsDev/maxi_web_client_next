@@ -27,6 +27,7 @@ const EMPTY_OFFER: FulfillmentOffer = {
   pickupPoints: [],
   pickupEnabled: false,
   unavailableMessage: null,
+  pickupPromiseDays: null,
 };
 
 const fetchAddresses = async () => {

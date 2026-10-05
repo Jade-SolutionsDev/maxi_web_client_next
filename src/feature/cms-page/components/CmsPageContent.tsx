@@ -1,13 +1,19 @@
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { Container } from '@/app/components/layout/Container';
 import { Markdown } from '@/app/components/ui/markdown';
 import { PageHero } from '@/app/components/ui/page-hero';
 import { getCmsPage } from '@/shared/cms/service/cms.service';
-import { TITLE_ID } from '../constants/cms-page.constants';
+import {
+  cmsPageHref,
+  hasDedicatedRoute,
+  TITLE_ID,
+} from '../constants/cms-page.constants';
 import type { CmsPageProps } from '../type/cms-page.interface';
 
 export async function CmsPageContent({ params }: CmsPageProps) {
   const { slug } = await params;
+  if (hasDedicatedRoute(slug)) permanentRedirect(cmsPageHref(slug));
+
   const page = await getCmsPage(slug);
 
   if (!page) notFound();

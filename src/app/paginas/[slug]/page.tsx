@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { CmsPageContent } from '@/feature/cms-page/components/CmsPageContent';
 import { CmsPageSkeleton } from '@/feature/cms-page/components/CmsPageSkeleton';
+import { hasDedicatedRoute } from '@/feature/cms-page/constants/cms-page.constants';
 import type { CmsPageProps } from '@/feature/cms-page/type/cms-page.interface';
 import { getCmsPages } from '@/shared/cms/service/cms.service';
 
@@ -9,7 +10,9 @@ export { generateCmsPageMetadata as generateMetadata } from '@/feature/cms-page/
 export async function generateStaticParams() {
   const pages = await getCmsPages();
 
-  return pages.map(({ slug }) => ({ slug }));
+  return pages
+    .filter(({ slug }) => !hasDedicatedRoute(slug))
+    .map(({ slug }) => ({ slug }));
 }
 
 export default function CmsInfoPage({ params }: CmsPageProps) {

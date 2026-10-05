@@ -191,6 +191,7 @@ export const CheckoutForm = ({
           value={pickupAddressId}
           onChange={(id) => form.setValue('pickupAddressId', id)}
           disabled={busy}
+          promiseDays={offer.pickupPromiseDays}
         />
       ) : (
         <>

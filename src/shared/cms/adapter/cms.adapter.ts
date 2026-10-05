@@ -1,3 +1,4 @@
+import { trimToUndefined } from '@/helpers';
 import { DEFAULT_SITE_SETTINGS } from '../constants/site-settings.constants';
 import type {
   BannerSlide,
@@ -9,6 +10,8 @@ import type {
   CmsServiceResponse,
   CmsStaffMemberResponse,
   FaqCategory,
+  HomeNotice,
+  HomeNoticeResponse,
   ServiceItem,
   SiteSettings,
   SiteSettingsResponse,
@@ -36,6 +39,8 @@ export const toFaqCategory = (
 export const toBannerSlide = (banner: CmsBannerResponse): BannerSlide => ({
   id: banner.id,
   alt: banner.alt.trim(),
+  title: trimToUndefined(banner.title),
+  subtitle: trimToUndefined(banner.subtitle),
   desktop: banner.desktop,
   tablet: banner.tablet,
   mobile: banner.mobile,
@@ -78,6 +83,9 @@ export const toSiteSettings = (
       settings.contact?.hours?.trim() || DEFAULT_SITE_SETTINGS.contact.hours,
   },
   payments: { ...DEFAULT_SITE_SETTINGS.payments, ...settings.payments },
+  // Una lista vacía es una respuesta válida —una tienda puede no tener redes—,
+  // así que solo se cae en las de por defecto cuando el campo no viene.
+  social: settings.social ?? DEFAULT_SITE_SETTINGS.social,
   services: {
     heading:
       settings.services?.heading?.trim() ||
@@ -99,3 +107,19 @@ export const toCmsPageLink = (page: CmsPageResponse): CmsPageLink => ({
   slug: page.slug,
   title: page.title.trim(),
 });
+
+const hasText = ({ content }: { content: string }) =>
+  Boolean(trimToUndefined(content));
+
+export const toPublishedCmsPage = (page: CmsPageResponse): CmsPage | null =>
+  hasText(page) ? toCmsPage(page) : null;
+
+export const toCmsPageLinks = (pages: CmsPageResponse[]): CmsPageLink[] =>
+  pages.filter(hasText).map(toCmsPageLink);
+
+export const toHomeNotices = (notices: HomeNoticeResponse[]): HomeNotice[] =>
+  notices.filter(hasText).map((notice) => ({
+    id: notice.id,
+    title: notice.title.trim(),
+    content: notice.content,
+  }));

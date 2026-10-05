@@ -9,9 +9,23 @@ interface CopyButtonProps {
   value: string;
   label: string;
   className?: string;
+  /**
+   * Enseña el texto del botón, no solo el icono.
+   *
+   * El botón nació para copiar datos de pago, donde va pegado al valor que
+   * copia y el icono se entiende solo. Para el enlace de seguimiento no vale:
+   * Merly pidió «un botón con un nombre intuitivo», y un icono suelto no lo es
+   * para quien no lo conoce de antes.
+   */
+  withText?: boolean;
 }
 
-export const CopyButton = ({ value, label, className }: CopyButtonProps) => {
+export const CopyButton = ({
+  value,
+  label,
+  className,
+  withText = false,
+}: CopyButtonProps) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -32,7 +46,8 @@ export const CopyButton = ({ value, label, className }: CopyButtonProps) => {
       onClick={handleCopy}
       aria-label={label}
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-lg border border-input p-2 text-muted transition-colors hover:bg-surface hover:text-heading focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none',
+        'inline-flex shrink-0 items-center justify-center rounded-lg border border-input text-muted transition-colors hover:bg-surface hover:text-heading focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none',
+        withText ? 'gap-2 px-3 py-2 text-sm font-semibold' : 'p-2',
         className,
       )}
     >
@@ -41,6 +56,7 @@ export const CopyButton = ({ value, label, className }: CopyButtonProps) => {
       ) : (
         <Copy className='size-4' aria-hidden='true' />
       )}
+      {withText && <span>{copied ? 'Copiado' : label}</span>}
     </button>
   );
 };
