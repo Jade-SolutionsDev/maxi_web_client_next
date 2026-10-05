@@ -1,8 +1,8 @@
-import "server-only";
+import 'server-only';
 
-import { cacheLife, cacheTag } from "next/cache";
-import { draftMode } from "next/headers";
-import { type ApiResponse, api } from "@/api/http";
+import { cacheLife, cacheTag } from 'next/cache';
+import { draftMode } from 'next/headers';
+import { type ApiResponse, api } from '@/api/http';
 import {
   toCmsPageLinks,
   toFaqCategory,
@@ -11,10 +11,10 @@ import {
   toServiceItem,
   toSiteSettings,
   toStaffMember,
-} from "../adapter/cms.adapter";
-import { toHomeContent } from "../adapter/home.adapter";
-import { DEFAULT_HOME_CONTENT } from "../constants/home.constants";
-import { DEFAULT_SITE_SETTINGS } from "../constants/site-settings.constants";
+} from '../adapter/cms.adapter';
+import { toHomeContent } from '../adapter/home.adapter';
+import { DEFAULT_HOME_CONTENT } from '../constants/home.constants';
+import { DEFAULT_SITE_SETTINGS } from '../constants/site-settings.constants';
 import type {
   CmsFaqCategoryResponse,
   CmsHomeResponse,
@@ -31,7 +31,7 @@ import type {
   SiteSettings,
   SiteSettingsResponse,
   StaffMember,
-} from "../type/cms.interface";
+} from '../type/cms.interface';
 
 /**
  * Whether the FAQ page has anything to show: at least one active category
@@ -45,13 +45,13 @@ export const hasFaqContent = async (): Promise<boolean> => {
 };
 
 export const getFaqCategories = async (): Promise<FaqCategory[]> => {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("cms");
+  'use cache';
+  cacheLife('hours');
+  cacheTag('cms');
 
   try {
     const { data } =
-      await api<ApiResponse<CmsFaqCategoryResponse[]>>("/public/cms/faqs");
+      await api<ApiResponse<CmsFaqCategoryResponse[]>>('/public/cms/faqs');
     return data.map(toFaqCategory);
   } catch {
     return [];
@@ -59,13 +59,13 @@ export const getFaqCategories = async (): Promise<FaqCategory[]> => {
 };
 
 export const getSiteSettings = async (): Promise<SiteSettings> => {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("cms");
+  'use cache';
+  cacheLife('hours');
+  cacheTag('cms');
 
   try {
     const { data } = await api<ApiResponse<SiteSettingsResponse>>(
-      "/public/cms/settings",
+      '/public/cms/settings',
     );
     return toSiteSettings(data);
   } catch {
@@ -75,17 +75,17 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
 
 const fetchHome = async (draft: boolean): Promise<HomeContent> => {
   const { data } = draft
-    ? await api<ApiResponse<CmsHomeResponse>>("/public/cms/home/draft", {
-        headers: { "x-storefront-secret": process.env.REVALIDATE_SECRET ?? "" },
+    ? await api<ApiResponse<CmsHomeResponse>>('/public/cms/home/draft', {
+        headers: { 'x-storefront-secret': process.env.REVALIDATE_SECRET ?? '' },
       })
-    : await api<ApiResponse<CmsHomeResponse>>("/public/cms/home");
+    : await api<ApiResponse<CmsHomeResponse>>('/public/cms/home');
   return toHomeContent(data);
 };
 
 export const getHomeContent = async (): Promise<HomeContent> => {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("cms");
+  'use cache';
+  cacheLife('hours');
+  cacheTag('cms');
 
   const { isEnabled } = await draftMode();
   try {
@@ -97,19 +97,19 @@ export const getHomeContent = async (): Promise<HomeContent> => {
 };
 
 export const isPreviewingHome = async (): Promise<boolean> => {
-  "use cache";
+  'use cache';
   const { isEnabled } = await draftMode();
   return isEnabled;
 };
 
 export const getCmsServices = async (): Promise<ServiceItem[]> => {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("cms");
+  'use cache';
+  cacheLife('hours');
+  cacheTag('cms');
 
   try {
     const { data } = await api<ApiResponse<CmsServiceResponse[]>>(
-      "/public/cms/services",
+      '/public/cms/services',
     );
     return data.map(toServiceItem);
   } catch {
@@ -118,13 +118,13 @@ export const getCmsServices = async (): Promise<ServiceItem[]> => {
 };
 
 export const getStaff = async (): Promise<StaffMember[]> => {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("cms");
+  'use cache';
+  cacheLife('hours');
+  cacheTag('cms');
 
   try {
     const { data } =
-      await api<ApiResponse<CmsStaffMemberResponse[]>>("/public/cms/staff");
+      await api<ApiResponse<CmsStaffMemberResponse[]>>('/public/cms/staff');
     return data.map(toStaffMember);
   } catch {
     return [];
@@ -132,13 +132,13 @@ export const getStaff = async (): Promise<StaffMember[]> => {
 };
 
 export const getCmsPages = async (): Promise<CmsPageLink[]> => {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("cms");
+  'use cache';
+  cacheLife('hours');
+  cacheTag('cms');
 
   try {
     const { data } =
-      await api<ApiResponse<CmsPageResponse[]>>("/public/cms/pages");
+      await api<ApiResponse<CmsPageResponse[]>>('/public/cms/pages');
     return toCmsPageLinks(data);
   } catch {
     return [];
@@ -146,9 +146,9 @@ export const getCmsPages = async (): Promise<CmsPageLink[]> => {
 };
 
 export const getCmsPage = async (slug: string): Promise<CmsPage | null> => {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("cms");
+  'use cache';
+  cacheLife('hours');
+  cacheTag('cms');
 
   try {
     const { data } = await api<ApiResponse<CmsPageResponse>>(
@@ -161,13 +161,13 @@ export const getCmsPage = async (slug: string): Promise<CmsPage | null> => {
 };
 
 export const getHomeNotices = async (): Promise<HomeNotice[]> => {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("cms");
+  'use cache';
+  cacheLife('minutes');
+  cacheTag('cms');
 
   try {
     const { data } = await api<ApiResponse<HomeNoticeResponse[]>>(
-      "/public/cms/home-notices",
+      '/public/cms/home-notices',
     );
     return toHomeNotices(data);
   } catch {

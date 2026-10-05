@@ -1,4 +1,5 @@
-import { redesSociales } from './constants/redes-sociales';
+import { DEFAULT_SITE_SETTINGS } from '@/shared/cms/constants/site-settings.constants';
+import type { SiteSocialLink } from '@/shared/cms/type/cms.interface';
 
 /**
  * Los logos van incrustados y no vienen de lucide-react: esa librería retiró
@@ -39,18 +40,37 @@ export const LogoRed = ({
  * Los enlaces a las redes. El nombre va en `aria-label` porque el logo solo no
  * dice nada a quien navega con lector de pantalla.
  */
-export const RedesSociales = ({ className }: { className?: string }) => (
+export const RedesSociales = ({
+  className,
+  redes,
+}: {
+  className?: string;
+  /**
+   * Las que estén configuradas en el panel. Si no llegan —una página que
+   * todavía no las pide— se usan las de siempre, que es lo que había hasta
+   * MxH-0119.
+   */
+  redes?: SiteSocialLink[];
+}) => (
   <ul className={className}>
-    {redesSociales.map((red) => (
-      <li key={red.nombre}>
+    {(redes ?? DEFAULT_SITE_SETTINGS.social).map((red) => (
+      <li key={red.label}>
         <a
-          href={red.href}
+          href={red.url}
           target='_blank'
           rel='noopener noreferrer'
-          aria-label={`Maxi Habana en ${red.nombre}`}
+          aria-label={`Maxi Habana en ${red.label}`}
           className='flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange'
         >
-          <LogoRed nombre={red.nombre} className='size-5' />
+          {/*
+            Si la red no tiene logo —el panel permite añadir cualquiera, y los
+            trazos van incrustados— se enseña su nombre. Un enlace sin icono y
+            sin texto sería un botón invisible.
+          */}
+          <LogoRed nombre={red.label} className='size-5' />
+          {!LOGOS[red.label] && (
+            <span className='text-xs font-semibold'>{red.label}</span>
+          )}
         </a>
       </li>
     ))}

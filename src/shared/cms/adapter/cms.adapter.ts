@@ -83,6 +83,9 @@ export const toSiteSettings = (
       settings.contact?.hours?.trim() || DEFAULT_SITE_SETTINGS.contact.hours,
   },
   payments: { ...DEFAULT_SITE_SETTINGS.payments, ...settings.payments },
+  // Una lista vacía es una respuesta válida —una tienda puede no tener redes—,
+  // así que solo se cae en las de por defecto cuando el campo no viene.
+  social: settings.social ?? DEFAULT_SITE_SETTINGS.social,
   services: {
     heading:
       settings.services?.heading?.trim() ||
