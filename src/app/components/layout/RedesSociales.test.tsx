@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { RedesSociales } from './RedesSociales';
 
 describe('RedesSociales', () => {
@@ -39,5 +39,38 @@ describe('RedesSociales', () => {
     for (const logo of logos) {
       expect(logo.getAttribute('d')?.length ?? 0).toBeGreaterThan(50);
     }
+  });
+});
+
+describe('RedesSociales · las que vienen del panel (MxH-0119)', () => {
+  // Este fichero no limpia el DOM entre pruebas, y sin esto cada render se
+  // suma al anterior: «se encontraron varios elementos» no sería un fallo del
+  // componente sino de la medición.
+  beforeEach(cleanup);
+
+  it('pinta las configuradas y no las de código', () => {
+    render(
+      <RedesSociales
+        redes={[{ label: 'TikTok', url: 'https://www.tiktok.com/@maxihabana' }]}
+      />,
+    );
+    const enlace = screen.getByRole('link', { name: /TikTok/ });
+    expect(enlace.getAttribute('href')).toBe(
+      'https://www.tiktok.com/@maxihabana',
+    );
+    expect(screen.queryByRole('link', { name: /Facebook/ })).toBeNull();
+  });
+
+  it('una red sin logo enseña su nombre, no un botón invisible', () => {
+    render(
+      <RedesSociales redes={[{ label: 'TikTok', url: 'https://x.com' }]} />,
+    );
+    // Los trazos van incrustados y TikTok no está entre ellos.
+    expect(screen.getByText('TikTok')).toBeTruthy();
+  });
+
+  it('sin redes configuradas no pinta ninguna', () => {
+    const { container } = render(<RedesSociales redes={[]} />);
+    expect(container.querySelectorAll('a')).toHaveLength(0);
   });
 });

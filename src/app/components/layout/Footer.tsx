@@ -17,11 +17,12 @@ const contactClass =
   'flex items-center gap-3 text-sm text-white/80 transition-colors hover:text-white hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange rounded-sm';
 
 export const Footer = async () => {
-  const [{ footer, contact }, departmentLinks, cmsPages] = await Promise.all([
-    getSiteSettings(),
-    getFooterDepartmentLinks(),
-    getCmsPages(),
-  ]);
+  const [{ footer, contact, social }, departmentLinks, cmsPages] =
+    await Promise.all([
+      getSiteSettings(),
+      getFooterDepartmentLinks(),
+      getCmsPages(),
+    ]);
 
   const legalLinks = buildFooterLegalLinks(footer.legalLinks, cmsPages);
 
@@ -60,7 +61,7 @@ export const Footer = async () => {
               </p>
             </address>
 
-            <RedesSociales className='flex gap-3' />
+            <RedesSociales className='flex gap-3' redes={social} />
           </div>
 
           <FooterLinkColumn title='Enlaces' label='Enlaces' links={siteLinks} />

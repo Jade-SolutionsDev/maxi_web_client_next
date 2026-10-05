@@ -163,6 +163,12 @@ export interface SiteLegalLink {
   slug: string;
 }
 
+/** Una red social de la tienda, editable desde el panel (MxH-0119). */
+export interface SiteSocialLink {
+  label: string;
+  url: string;
+}
+
 export interface SiteSettings {
   footer: {
     blurb: string;
@@ -184,6 +190,7 @@ export interface SiteSettings {
     heading: string;
     subheading: string;
   };
+  social: SiteSocialLink[];
 }
 
 export interface SiteSettingsResponse {
@@ -191,4 +198,5 @@ export interface SiteSettingsResponse {
   contact?: Partial<SiteSettings['contact']>;
   payments?: Partial<SiteSettings['payments']>;
   services?: Partial<SiteSettings['services']>;
+  social?: SiteSocialLink[];
 }

@@ -2,8 +2,8 @@ import { auth } from '@clerk/nextjs/server';
 import { Mail, Phone } from 'lucide-react';
 import { Container } from '@/app/components/layout/Container';
 import { LogoRed } from '@/app/components/layout/RedesSociales';
-import { toTelHref } from '@/helpers';
 import { CONTACT_PAGE_SLUG } from '@/feature/cms-page/constants/cms-page.constants';
+import { toTelHref } from '@/helpers';
 import { getCmsPage, getSiteSettings } from '@/shared/cms/service/cms.service';
 import { getContactMotives } from '../service/contact.service';
 import { ContactForm } from './ContactForm';
@@ -13,7 +13,7 @@ const cardClass =
   'flex flex-col items-center gap-3 rounded-2xl border border-black/5 bg-white px-6 py-10 text-center shadow-sm transition hover:-translate-y-0.5 hover:shadow-md motion-reduce:transform-none';
 
 export async function ContactSection() {
-  const [{ contact }, intro, motives, { userId }] = await Promise.all([
+  const [{ contact, social }, intro, motives, { userId }] = await Promise.all([
     getSiteSettings(),
     getCmsPage(CONTACT_PAGE_SLUG),
     getContactMotives(),
@@ -41,31 +41,27 @@ export async function ContactSection() {
           <p className='text-sm text-muted'>{contact.phone}</p>
         </a>
 
-        <a
-          href='https://www.facebook.com/profile.php?id=61550740714835'
-          target='_blank'
-          rel='noopener noreferrer'
-          className={cardClass}
-        >
-          <span className='flex size-14 items-center justify-center rounded-full bg-surface text-accent'>
-            <LogoRed nombre='Facebook' className='size-6' />
-          </span>
-          <h2 className='font-bold text-heading'>Facebook</h2>
-          <p className='text-sm text-muted'>Escríbenos por Messenger</p>
-        </a>
-
-        <a
-          href='https://www.instagram.com/maxihabana'
-          target='_blank'
-          rel='noopener noreferrer'
-          className={cardClass}
-        >
-          <span className='flex size-14 items-center justify-center rounded-full bg-surface text-accent'>
-            <LogoRed nombre='Instagram' className='size-6' />
-          </span>
-          <h2 className='font-bold text-heading'>Instagram</h2>
-          <p className='text-sm text-muted'>@maxihabana</p>
-        </a>
+        {/*
+          Las redes salen de los ajustes del sitio, igual que el pie: hasta
+          MxH-0119 estaban escritas aquí a mano, y cambiar un perfil obligaba a
+          tocar el código. La descripción es genérica a propósito: el panel
+          guarda nombre y dirección, no un texto por red.
+        */}
+        {social.map((red) => (
+          <a
+            key={red.label}
+            href={red.url}
+            target='_blank'
+            rel='noopener noreferrer'
+            className={cardClass}
+          >
+            <span className='flex size-14 items-center justify-center rounded-full bg-surface text-accent'>
+              <LogoRed nombre={red.label} className='size-6' />
+            </span>
+            <h2 className='font-bold text-heading'>{red.label}</h2>
+            <p className='text-sm text-muted'>Síguenos y escríbenos</p>
+          </a>
+        ))}
       </div>
 
       <section
