@@ -101,9 +101,11 @@ Característica: Comprar con la sesión iniciada
     Y elige su dirección guardada
     Y confirma el pedido
     Y pulsa cancelar el pedido
-    Entonces se le advierte que se libera el stock reservado
+    Entonces se le advierte que los productos vuelven al carrito
     Cuando confirma la cancelación
     Entonces el pedido está "Cancelado"
+    Cuando abre el carrito
+    Entonces el carrito recupera sus productos
 
   Escenario: Finalizar la compra sin nada en el carrito devuelve al catálogo
     Cuando el cliente abre "/checkout"
