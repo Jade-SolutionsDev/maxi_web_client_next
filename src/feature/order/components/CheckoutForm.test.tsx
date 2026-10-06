@@ -45,6 +45,7 @@ const offer = {
       locationName: 'Almacén Centro',
       label: 'Mostrador',
       address: 'Calle 1 #2',
+      hours: null,
     },
   ],
   pickupEnabled: true,

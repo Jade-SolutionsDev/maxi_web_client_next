@@ -46,6 +46,16 @@ const Destino = ({ order }: { order: Order }) => {
           </div>
         )}
         <dd>{pickup.address}</dd>
+        {/*
+          El horario, congelado al comprar (MxH-0160). Los pedidos anteriores no
+          lo traen y entonces no sale ninguna línea.
+        */}
+        {line(pickup.hours) && (
+          <div className='flex gap-1.5'>
+            <dt className='font-semibold'>Horario:</dt>
+            <dd>{line(pickup.hours)}</dd>
+          </div>
+        )}
       </dl>
     ) : (
       <p className='text-sm text-muted'>Sin punto de recogida registrado.</p>
