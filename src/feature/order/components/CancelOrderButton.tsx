@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ConfirmDialog } from '@/app/components/form/ConfirmDialog';
 import { Button } from '@/app/components/ui/button';
+import { useCartActions } from '@/feature/cart/hook/useCart';
 import { cancelOrderAction } from '../action/order.action';
 import {
   notifyOrderCancelled,
@@ -13,6 +14,7 @@ import {
 
 export const CancelOrderButton = ({ orderId }: { orderId: string }) => {
   const router = useRouter();
+  const { loadAccountCart } = useCartActions();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,6 +26,14 @@ export const CancelOrderButton = ({ orderId }: { orderId: string }) => {
 
     if (result.order) {
       notifyOrderCancelled();
+      /**
+       * Al cancelar, la API devuelve las líneas al carrito (MxH-0099). El
+       * carrito vive en el cliente, así que `router.refresh()` no lo entera:
+       * sin esto el cliente no ve sus productos hasta que recargue o cambie de
+       * pestaña, y lo que ve mientras tanto es un carrito vacío — justo lo que
+       * esta tarjeta viene a quitar.
+       */
+      void loadAccountCart();
       router.refresh();
       return;
     }
@@ -50,7 +60,7 @@ export const CancelOrderButton = ({ orderId }: { orderId: string }) => {
         icon={Ban}
         variant='warning'
         title='¿Cancelar este pedido?'
-        description='Se libera el stock reservado y el pedido no podrá reactivarse.'
+        description='El pedido no podrá reactivarse, pero los productos vuelven a tu carrito para que no tengas que armarlo otra vez.'
         submitText='Cancelar pedido'
         cancelText='Volver'
       />
