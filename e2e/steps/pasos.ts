@@ -463,6 +463,25 @@ Then("el carrito queda vacío", async ({ page }) => {
   ).toBeVisible();
 });
 
+/**
+ * MxH-0099: al cancelar un pedido pendiente, sus líneas vuelven al carrito.
+ *
+ * Se mide por el contador de la cabecera y no por un texto de la página: el
+ * aviso de carrito vacío puede tardar en irse y un texto suelto no dice cuántas
+ * líneas hay. El contador sale del `aria-label` del botón, que es el mismo dato
+ * que ve el cliente.
+ */
+Then("el carrito recupera sus productos", async ({ page }) => {
+  await expect
+    .poll(() => lineasEnCabecera(page), { timeout: 15_000 })
+    .toBeGreaterThan(0);
+  await expect(
+    page
+      .getByText(/carrito est[áa] vac[íi]o|no hay productos|agrega productos/i)
+      .first(),
+  ).toBeHidden();
+});
+
 // ------------------------------------------------- Categorias y contenido
 
 When(

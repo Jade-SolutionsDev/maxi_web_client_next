@@ -161,8 +161,11 @@ Then("el historial incluye ese pedido", async ({ page }) => {
   await expect(page.getByText(/ORD-\d+/).first()).toBeVisible();
 });
 
-Then("se le advierte que se libera el stock reservado", async ({ page }) => {
-  await expect(page.getByText(/se libera el stock reservado/i)).toBeVisible();
+Then("se le advierte que los productos vuelven al carrito", async ({ page }) => {
+  // MxH-0099: el diálogo avisaba de que «se libera el stock reservado», que es
+  // verdad y no es lo que le importa a quien va a cancelar. Ahora dice que sus
+  // productos vuelven al carrito, que es lo que decide si cancela o no.
+  await expect(page.getByText(/vuelven a tu carrito/i)).toBeVisible();
 });
 
 Then("acaba en el catálogo", async ({ page }) => {
