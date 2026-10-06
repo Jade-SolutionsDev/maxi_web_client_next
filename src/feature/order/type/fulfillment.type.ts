@@ -18,6 +18,11 @@ export interface PickupPoint {
   locationName: string;
   label: string | null;
   address: string;
+  /**
+   * Cuándo se puede pasar a recogerlo (MxH-0160). `null` si el mostrador no
+   * tiene horario publicado: entonces no se enseña nada.
+   */
+  hours: string | null;
 }
 
 export interface FulfillmentOffer {

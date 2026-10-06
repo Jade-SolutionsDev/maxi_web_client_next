@@ -28,6 +28,7 @@ const punto: PickupPoint = {
   locationName: 'Almacén Centro',
   label: 'Mostrador',
   address: 'Calle 1 #2',
+  hours: null,
 };
 
 const pedido = (overrides: Partial<Order> = {}): Order =>
