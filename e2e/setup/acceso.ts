@@ -9,8 +9,15 @@ import { municipioConCobertura } from "../helpers";
  * cliente en la base. Se puede cambiar con E2E_EMAIL / E2E_PASSWORD.
  */
 export const ARCHIVO_SESION = "e2e/.auth/cliente.json";
-export const CORREO = process.env.E2E_EMAIL ?? "qa.direcciones@maxihabana.com";
-const CLAVE = process.env.E2E_PASSWORD ?? "MaxiDirecciones2026";
+/**
+ * `||` y no `??`: en GitHub Actions un secreto que no existe no llega como
+ * `undefined`, llega como **cadena vacia**, y `??` solo atrapa lo primero. Con
+ * `??` el entorno acababa intentando entrar con un correo vacio y el fallo no
+ * decia que faltara un secreto, decia que el acceso no funcionaba.
+ */
+export const CORREO =
+  process.env.E2E_EMAIL || "qa.direcciones@maxihabana.com";
+const CLAVE = process.env.E2E_PASSWORD || "MaxiDirecciones2026";
 
 export async function iniciarSesion(page: Page, context: BrowserContext) {
   /**
