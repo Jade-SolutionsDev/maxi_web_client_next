@@ -44,4 +44,11 @@ export interface FulfillmentOffer {
 export interface PublicFulfillment {
   fulfillable: boolean;
   unavailableMessage: string | null;
+  /**
+   * Subtotal en USD desde el que el envío sale gratis, o `null` si no hay
+   * promoción. Viaja con la disponibilidad porque quien pregunta «¿se puede
+   * entregar aquí?» es el mismo que necesita saber «¿y cuánto me falta para
+   * que salga gratis?» (MxH-0043, MxH-0045).
+   */
+  freeDeliveryThreshold: number | null;
 }

@@ -5,7 +5,10 @@ import { Container } from '@/app/components/layout/Container';
 import type { Address } from '@/feature/address/type/address.interface';
 import type { Cart } from '@/feature/cart/type/cart.interface';
 import type { LocationCatalog } from '@/shared/location/type/location.interface';
-import type { FulfillmentOffer } from '../type/fulfillment.type';
+import type {
+  FulfillmentOffer,
+  FulfillmentType,
+} from '../type/fulfillment.type';
 import type { PaymentMethod } from '../type/order.type';
 import { CheckoutFormBoundary } from './CheckoutFormBoundary';
 import { CheckoutSummary } from './CheckoutSummary';
@@ -18,6 +21,8 @@ interface CheckoutLayoutProps {
   catalog: LocationCatalog;
   zone: { municipalityId: string; municipalityName: string } | null;
   cartKey: string;
+  /** Subtotal desde el que el envío sale gratis, o `null` si no hay promoción. */
+  freeDeliveryThreshold: number | null;
 }
 
 export const CheckoutLayout = ({
@@ -28,8 +33,12 @@ export const CheckoutLayout = ({
   catalog,
   zone,
   cartKey,
+  freeDeliveryThreshold,
 }: CheckoutLayoutProps) => {
-  const [deliveryFee, setDeliveryFee] = useState(0);
+  const [entrega, setEntrega] = useState<{
+    fee: number;
+    tipo: FulfillmentType;
+  }>({ fee: 0, tipo: 'pickup' });
 
   return (
     <Container className='grid gap-6 py-8 lg:grid-cols-[1fr_minmax(320px,420px)] lg:items-start'>
@@ -50,11 +59,16 @@ export const CheckoutLayout = ({
           catalog={catalog}
           zone={zone}
           cartKey={cartKey}
-          onDeliveryFeeChange={setDeliveryFee}
+          onEntregaChange={setEntrega}
         />
       </section>
 
-      <CheckoutSummary cart={cart} deliveryFee={deliveryFee} />
+      <CheckoutSummary
+        cart={cart}
+        deliveryFee={entrega.fee}
+        fulfillmentType={entrega.tipo}
+        freeDeliveryThreshold={freeDeliveryThreshold}
+      />
     </Container>
   );
 };
