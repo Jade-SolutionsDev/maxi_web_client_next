@@ -149,11 +149,26 @@ When("el cliente abre {string}", async ({ page }, ruta: string) => {
 
 When("pulsa sobre el producto {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
-  const enLaPagina = () => page.getByText(producto!.nombreReal).first();
 
-  // Mismo rescate que en «ve el producto»: la pagina puede haber llegado de la
-  // cache vieja, y entonces no hay nada que pulsar hasta pedirla otra vez.
-  if (!(await enLaPagina().isVisible())) await page.reload();
+  /**
+   * El enlace de la tarjeta, no el texto suelto. El nombre del producto sale
+   * **dos veces** en cada tarjeta —el `alt` de la imagen y el título—, y
+   * `getByText(...).first()` se quedaba con el nodo que no se ve:
+   *
+   *     locator resolved to <h3 class="line-clamp-3 ...">Cola E2E 90362158</h3>
+   *     element is not visible
+   *
+   * Se buscó la caché fría durante un rato por este fallo, y la tarjeta estaba
+   * en la página todo el tiempo: la captura del fallo la enseña.
+   */
+  const enLaPagina = () =>
+    page.getByRole("link", { name: producto!.nombreReal }).first();
+
+  // La pagina puede haber llegado de la cache vieja, y entonces no hay nada
+  // que pulsar hasta pedirla otra vez.
+  await conRecargaSiHaceFalta(page, () =>
+    expect(enLaPagina()).toBeVisible({ timeout: 10_000 }),
+  );
   await enLaPagina().click();
 });
 

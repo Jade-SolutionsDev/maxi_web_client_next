@@ -87,8 +87,13 @@ When("marca {string} como predeterminada", async ({ page }, nombre: string) => {
   await tarjeta(page, nombre)
     .getByRole("button", { name: /predeterminada/i })
     .click();
-  await expect(tarjeta(page, nombre).getByText(/^Predeterminada$/)).toBeVisible(
-    { timeout: 15_000 },
+  // La lista tarda lo que tarde en llegar de nuevo, igual que al guardar. Este
+  // paso se me quedó fuera cuando puse la red en los demás, y fue el único de
+  // las direcciones que cayó en la corrida del conjunto.
+  await conRecargaSiHaceFalta(page, () =>
+    expect(tarjeta(page, nombre).getByText(/^Predeterminada$/)).toBeVisible({
+      timeout: 10_000,
+    }),
   );
 });
 
