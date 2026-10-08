@@ -346,3 +346,39 @@ export function sembrarDireccion(
             'Merlinda Vargas', '85072045678', '+53 5251 9414')
     RETURNING id`);
 }
+
+/**
+ * Comprueba algo de una pagina que la tienda puede estar sirviendo vieja, y la
+ * vuelve a pedir si no se cumple.
+ *
+ * Son tres cosas distintas las que obligan a esto, y las tres se arreglan igual:
+ *
+ * 1. El catalogo se sirve con `stale-while-revalidate` y **cada combinacion de
+ *    filtros tiene su propia entrada**. `invalidarCatalogo` calienta /catalog,
+ *    pero una URL con filtros llega fria igual: devuelve lo viejo y regenera por
+ *    detras. Esperar no sirve, porque la respuesta vieja ya esta en la pagina.
+ * 2. Al filtrar desde la propia pagina, nuqs escribe la URL antes de que llegue
+ *    la lista nueva, asi que la comprobacion siguiente se puede encontrar
+ *    todavia con la lista anterior.
+ * 3. Lo mismo le pasa a la lista de direcciones despues de guardar una: el
+ *    escenario corriendo solo pasa siempre, y dentro de la suite se encuentra la
+ *    lista del escenario anterior.
+ *
+ * Tres intentos y no uno: una sola recarga vuelve a caer en la respuesta vieja
+ * si la regeneracion aun no habia terminado.
+ */
+export const conRecargaSiHaceFalta = async (
+  page: import("@playwright/test").Page,
+  comprobar: () => Promise<void>,
+) => {
+  const INTENTOS = 3;
+  for (let intento = 1; intento <= INTENTOS; intento += 1) {
+    try {
+      await comprobar();
+      return;
+    } catch (err) {
+      if (intento === INTENTOS) throw err;
+      await page.reload();
+    }
+  }
+};
