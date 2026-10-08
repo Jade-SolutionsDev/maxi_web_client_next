@@ -104,6 +104,7 @@ Característica: Comprar con la sesión iniciada
     Entonces se le advierte que los productos vuelven al carrito
     Cuando confirma la cancelación
     Entonces el pedido está "Cancelado"
+    Y el pedido ya no se puede cancelar
     Cuando abre el carrito
     Entonces el carrito recupera sus productos
 

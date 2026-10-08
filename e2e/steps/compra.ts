@@ -118,8 +118,19 @@ When("pulsa seguir comprando", async ({ page }) => {
 
 When("confirma el pedido", async ({ page }) => {
   await page.getByRole("button", { name: /confirmar pedido/i }).click();
-  // Al crearse, el pedido tiene pagina propia.
-  await page.waitForURL(/\/pedidos\/[0-9a-f-]{36}/, { timeout: 30_000 });
+  /**
+   * Al crearse, el pedido tiene pagina propia.
+   *
+   * `waitForURL` espera por defecto al evento `load`, no a que cambie la
+   * direccion: la pagina del pedido trae la foto de cada linea, y con una sola
+   * descarga lenta la espera se agotaba aunque ya estuvieramos alli. Pasaba a
+   * ratos y se leia como «no se creo el pedido», cuando el pedido estaba
+   * creado en la base.
+   */
+  await page.waitForURL(/\/pedidos\/[0-9a-f-]{36}/, {
+    timeout: 30_000,
+    waitUntil: "domcontentloaded",
+  });
 });
 
 When("abre su historial de pedidos", async ({ page }) => {
@@ -151,6 +162,19 @@ Then("el pedido está {string}", async ({ page }, estado: string) => {
   await expect(page.getByText(estado, { exact: true }).first()).toBeVisible({
     timeout: 15_000,
   });
+});
+
+/**
+ * Que el rótulo diga «Cancelado» no prueba que se haya cancelado: el texto se
+ * busca en toda la página, y la corrida del 7-oct lo dio por bueno en un
+ * pedido que seguía pendiente —en la base no hubo ni una cancelación esa
+ * noche—. Un pedido cancelado sí pierde su botón de cancelar, y eso no se
+ * puede fingir con un texto suelto.
+ */
+Then("el pedido ya no se puede cancelar", async ({ page }) => {
+  await expect(
+    page.getByRole("button", { name: /cancelar pedido/i }),
+  ).toHaveCount(0, { timeout: 15_000 });
 });
 
 Then("el pedido espera el pago", async ({ page }) => {

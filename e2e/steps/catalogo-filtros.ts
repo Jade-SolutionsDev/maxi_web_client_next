@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
 import {
+  abrir,
   almacenDeLasPruebas,
   API,
   invalidarCatalogo,
@@ -85,7 +86,7 @@ Given(
  * lista solo contiene lo suyo y el orden vuelve a ser comprobable.
  */
 When("el cliente abre el catálogo con solo sus productos", async ({ page }) => {
-  await page.goto(`/catalog?q=${encodeURIComponent(`E2E ${sufijo()}`)}`);
+  await abrir(page, `/catalog?q=${encodeURIComponent(`E2E ${sufijo()}`)}`);
 });
 
 When(
