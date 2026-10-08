@@ -36,7 +36,12 @@ interface CheckoutFormProps {
   addresses: Address[];
   catalog: LocationCatalog;
   zone: { municipalityId: string; municipalityName: string } | null;
-  onDeliveryFeeChange?: (fee: number) => void;
+  /**
+   * El coste y **el método**. El resumen necesita los dos para decir la verdad:
+   * cero euros de envío no significa lo mismo si es que no hay envío (recogida)
+   * que si es que se regaló (MxH-0045).
+   */
+  onEntregaChange?: (entrega: { fee: number; tipo: FulfillmentType }) => void;
 }
 
 const zoneProvinceId = (catalog: LocationCatalog, municipalityId: string) =>
@@ -59,7 +64,7 @@ export const CheckoutForm = ({
   addresses: allAddresses,
   catalog,
   zone,
-  onDeliveryFeeChange,
+  onEntregaChange,
 }: CheckoutFormProps) => {
   const router = useRouter();
   const { markCheckedOut } = useCartActions();
@@ -130,8 +135,8 @@ export const CheckoutForm = ({
           ?.fee ?? 0);
 
   useEffect(() => {
-    onDeliveryFeeChange?.(selectedFee);
-  }, [selectedFee, onDeliveryFeeChange]);
+    onEntregaChange?.({ fee: selectedFee, tipo: fulfillmentType });
+  }, [selectedFee, fulfillmentType, onEntregaChange]);
 
   if (offer.unavailableMessage || methods.length === 0) {
     return (

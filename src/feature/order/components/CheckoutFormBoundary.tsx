@@ -2,7 +2,10 @@
 
 import type { Address } from '@/feature/address/type/address.interface';
 import type { LocationCatalog } from '@/shared/location/type/location.interface';
-import type { FulfillmentOffer } from '../type/fulfillment.type';
+import type {
+  FulfillmentOffer,
+  FulfillmentType,
+} from '../type/fulfillment.type';
 import type { PaymentMethod } from '../type/order.type';
 import { CheckoutForm } from './CheckoutForm';
 
@@ -13,7 +16,7 @@ interface CheckoutFormBoundaryProps {
   catalog: LocationCatalog;
   zone: { municipalityId: string; municipalityName: string } | null;
   cartKey: string;
-  onDeliveryFeeChange?: (fee: number) => void;
+  onEntregaChange?: (entrega: { fee: number; tipo: FulfillmentType }) => void;
 }
 
 export const CheckoutFormBoundary = ({

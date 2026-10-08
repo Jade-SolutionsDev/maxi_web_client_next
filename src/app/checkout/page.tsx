@@ -7,6 +7,7 @@ import { getAddresses } from '@/feature/address/service/address.service';
 import { getCart } from '@/feature/cart/service/cart.service';
 import type { Cart } from '@/feature/cart/type/cart.interface';
 import {
+  fetchDisponibilidadDeLaZona,
   fetchFulfillmentOffer,
   fetchPaymentMethods,
 } from '@/feature/order/action/order.action';
@@ -69,12 +70,17 @@ async function CheckoutContent() {
   if (cart.lines.length === 0) redirect('/catalog');
 
   const municipalityId = await readMunicipalityId();
-  const [paymentMethods, offer, addresses, catalog] = await Promise.all([
-    fetchPaymentMethods(),
-    fetchFulfillmentOffer(municipalityId ?? undefined),
-    fetchAddresses(),
-    getLocationCatalog(),
-  ]);
+  // El umbral del envío gratis viaja con la disponibilidad de la zona, que ya
+  // se pide para avisar en el carrito: una llamada menos que pedirlo aparte, y
+  // aquí en el servidor, donde no cuesta una espera al cliente.
+  const [paymentMethods, offer, addresses, catalog, disponibilidad] =
+    await Promise.all([
+      fetchPaymentMethods(),
+      fetchFulfillmentOffer(municipalityId ?? undefined),
+      fetchAddresses(),
+      getLocationCatalog(),
+      fetchDisponibilidadDeLaZona(),
+    ]);
 
   return (
     <CheckoutLayout
@@ -85,6 +91,7 @@ async function CheckoutContent() {
       catalog={catalog}
       zone={resolveZone(catalog, municipalityId)}
       cartKey={cartKey(cart)}
+      freeDeliveryThreshold={disponibilidad?.freeDeliveryThreshold ?? null}
     />
   );
 }
