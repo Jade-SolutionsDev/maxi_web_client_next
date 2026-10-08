@@ -36,3 +36,12 @@ export interface FulfillmentOffer {
    */
   pickupPromiseDays: number | null;
 }
+
+/**
+ * Lo que la tienda puede saber **sin sesión** sobre si en una zona se puede
+ * recibir algo. A propósito no trae mostradores ni direcciones.
+ */
+export interface PublicFulfillment {
+  fulfillable: boolean;
+  unavailableMessage: string | null;
+}

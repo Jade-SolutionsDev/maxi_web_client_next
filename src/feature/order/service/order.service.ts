@@ -1,7 +1,10 @@
 import 'server-only';
 
-import { type ApiResponse, apiAuth } from '@/api/http';
-import type { FulfillmentOffer } from '../type/fulfillment.type';
+import { type ApiResponse, api, apiAuth } from '@/api/http';
+import type {
+  FulfillmentOffer,
+  PublicFulfillment,
+} from '../type/fulfillment.type';
 import type { Order, PaymentCharge, PaymentMethod } from '../type/order.type';
 
 const ORDERS_PATH = '/storefront/orders';
@@ -43,6 +46,22 @@ export interface CheckoutPayload {
   customerNotes?: string;
   paymentMethod?: string;
 }
+
+/**
+ * Si en esta zona se puede recibir algo. Va por la ruta pública y con `api()`,
+ * no `apiAuth()`: quien está llenando el carrito puede no haber entrado todavía
+ * y es justo a quien hay que avisarle antes de que llegue al final (P-046).
+ */
+export const getDisponibilidadDeLaZona = async (
+  municipalityId?: string,
+): Promise<PublicFulfillment> => {
+  const response = await api<ApiResponse<PublicFulfillment>>(
+    '/public/fulfillment/availability',
+    municipalityId ? { params: { municipalityId } } : undefined,
+  );
+
+  return response.data;
+};
 
 export const getFulfillmentOffer = async (
   municipalityId?: string,
