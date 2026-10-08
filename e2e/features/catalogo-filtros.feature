@@ -21,10 +21,15 @@ Característica: Ordenar, filtrar y pasar de página en el catálogo
     Y ordena por "Precio: mayor a menor"
     Entonces el primer producto de la lista es "Caro"
 
+  # Sobre los productos de la siembra, no sobre el catálogo entero: la lista
+  # pagina de 12 en 12 y la base de staging ya tiene veinte productos, así que
+  # «ve el producto» sobre el catálogo completo depende de en qué página haya
+  # caído. Es lo que hacía fallar «Quitar el filtro» todas las noches: el
+  # producto estaba, pero en la segunda página.
   Escenario: Filtrar por ofertas deja solo lo rebajado
     Dado que existe un producto "Rebajado" de US$100 con 10 unidades y un 30% de rebaja
     Y que existe un producto "Entero" de US$100 con 10 unidades
-    Cuando el cliente abre el catálogo
+    Cuando el cliente abre el catálogo con solo sus productos
     Y filtra por productos en oferta
     Entonces ve el producto "Rebajado"
     Y no ve el producto "Entero"
@@ -32,7 +37,7 @@ Característica: Ordenar, filtrar y pasar de página en el catálogo
   Escenario: Quitar el filtro de ofertas devuelve el catálogo entero
     Dado que existe un producto "Rebajado" de US$100 con 10 unidades y un 30% de rebaja
     Y que existe un producto "Entero" de US$100 con 10 unidades
-    Cuando el cliente abre el catálogo
+    Cuando el cliente abre el catálogo con solo sus productos
     Y filtra por productos en oferta
     Y quita el filtro de ofertas
     Entonces ve el producto "Rebajado"

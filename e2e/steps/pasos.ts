@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
 import {
+  conRecargaSiHaceFalta,
   almacenDeLasPruebas,
   API,
   invalidarCatalogo,
@@ -173,26 +174,20 @@ When("se consultan los productos públicos de la API", async ({ request }) => {
 
 Then("ve el producto {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
-  const enLaPagina = () => page.getByText(producto!.nombreReal).first();
-
-  try {
-    await expect(enLaPagina()).toBeVisible({ timeout: 10_000 });
-  } catch {
-    /**
-     * La tienda sirve con `stale-while-revalidate`, y cada combinacion de
-     * filtros tiene su propia entrada: `invalidarCatalogo` calienta /catalog,
-     * pero una URL con filtros llega fria igual y devuelve lo viejo mientras
-     * regenera por detras. Esperar no sirve —la respuesta ya esta en la pagina—;
-     * hay que volver a pedirla una vez.
-     */
-    await page.reload();
-    await expect(enLaPagina()).toBeVisible({ timeout: 15_000 });
-  }
+  await conRecargaSiHaceFalta(page, () =>
+    expect(page.getByText(producto!.nombreReal).first()).toBeVisible({
+      timeout: 10_000,
+    }),
+  );
 });
 
 Then("no ve el producto {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
-  await expect(page.getByText(producto!.nombreReal)).toHaveCount(0);
+  await conRecargaSiHaceFalta(page, () =>
+    expect(page.getByText(producto!.nombreReal)).toHaveCount(0, {
+      timeout: 10_000,
+    }),
+  );
 });
 
 Then("ve el precio {string}", async ({ page }, precio: string) => {
@@ -286,7 +281,10 @@ Then("no se le pide que elija su zona", async ({ page }) => {
 });
 
 Then("la cabecera muestra su zona", async ({ page }) => {
-  await expect(page.getByText("Disponible en:")).toBeVisible();
+  // Dos veces, no una: la cabecera lleva el rótulo suelto y otra copia dentro
+  // del botón de ubicación, y el locator a secas da «strict mode violation».
+  // Que esté una vez es lo que el escenario comprueba.
+  await expect(page.getByText("Disponible en:").first()).toBeVisible();
 });
 
 // ---------------------------------------------------------------- El carrito
@@ -297,11 +295,27 @@ When("añade el primer producto al carrito", async ({ page }) => {
   const lineasAntes = await lineasEnCabecera(page);
 
   const boton = page.getByRole("button", { name: /^a[ñn]adir/i }).first();
-  // El catalogo puede tardar en pintar sus tarjetas; sin esta espera el aviso
-  // se pierde entre la carga y el clic.
-  await boton.waitFor({ state: "visible", timeout: 15_000 });
-  await boton.scrollIntoViewIfNeeded();
-  await boton.hover();
+  /**
+   * El catalogo puede tardar en pintar sus tarjetas; sin esta espera el aviso
+   * se pierde entre la carga y el clic.
+   *
+   * Y se reintenta una vez: el catalogo hidrata despues de pintar, asi que
+   * entre que el boton se ve y se le hace scroll React puede reemplazar la
+   * tarjeta entera. El elemento que teniamos deja de estar en el documento y la
+   * accion muere con «Element is not attached to the DOM» —un fallo de la
+   * prueba, no de la tienda—. El locator se vuelve a resolver solo, asi que
+   * basta con pedirlo otra vez.
+   */
+  const prepararElBoton = async () => {
+    await boton.waitFor({ state: "visible", timeout: 15_000 });
+    await boton.scrollIntoViewIfNeeded();
+    await boton.hover();
+  };
+  try {
+    await prepararElBoton();
+  } catch {
+    await prepararElBoton();
+  }
   /**
    * El carrito hidrata despues de pintar la pagina, y el anunciador toma el
    * primer estado que ve como "el de partida": si se pulsa antes de eso, el
@@ -473,15 +487,18 @@ Then("el carrito queda vacío", async ({ page }) => {
 /**
  * MxH-0099: al cancelar un pedido pendiente, sus líneas vuelven al carrito.
  *
- * Se mide por el contador de la cabecera y no por un texto de la página: el
- * aviso de carrito vacío puede tardar en irse y un texto suelto no dice cuántas
- * líneas hay. El contador sale del `aria-label` del botón, que es el mismo dato
- * que ve el cliente.
+ * Se cuentan las líneas **dentro del carrito abierto**, por su botón de
+ * eliminar, que solo existe una vez por línea. Antes se leía el contador de la
+ * cabecera, y eso no podía funcionar aquí: el escenario acaba de abrir el
+ * carrito, el panel es modal y deja la cabecera entera en `aria-hidden`, así
+ * que el botón del contador no se encuentra y la cuenta sale 0 aunque el
+ * carrito tenga sus productos de vuelta. El fallo era de la medida, no de la
+ * tienda: en la captura del fallo el producto estaba listado.
  */
 Then("el carrito recupera sus productos", async ({ page }) => {
-  await expect
-    .poll(() => lineasEnCabecera(page), { timeout: 15_000 })
-    .toBeGreaterThan(0);
+  await expect(
+    page.getByRole("button", { name: /eliminar .* del carrito/i }).first(),
+  ).toBeVisible({ timeout: 15_000 });
   await expect(
     page
       .getByText(/carrito est[áa] vac[íi]o|no hay productos|agrega productos/i)
