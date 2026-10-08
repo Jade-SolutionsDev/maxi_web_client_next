@@ -36,18 +36,43 @@ When(
   "añade {int} unidades desde la ficha",
   async ({ page }, unidades: number) => {
     const producto = productoSembrado(await nombreEnCurso(page));
+    const mas = page.getByRole("button", {
+      name: `Agregar una unidad de ${producto.nombreReal}`,
+    });
+    /** El botón de añadir dice cuántas unidades lleva: es el contador visible. */
+    const anadirCon = (cantidad: number) =>
+      page.getByRole("button", { name: new RegExp(`añadir ${cantidad} `, "i") });
 
-    for (let i = 1; i < unidades; i++) {
-      await page
-        .getByRole("button", {
-          name: `Agregar una unidad de ${producto.nombreReal}`,
-        })
-        .click();
+    /**
+     * Pulsar y **comprobar que subió**, en vez de pulsar y seguir.
+     *
+     * El `+` vive en un componente de cliente. Hasta que React no engancha su
+     * manejador, el botón ya está pintado, visible y habilitado —usa
+     * `aria-disabled`, no `disabled`—, así que Playwright lo da por pulsable y
+     * pulsa sobre algo que todavía no hace nada.
+     *
+     * No es una suposición: en el fallo del 8-oct-2026 el volcado marcaba ese
+     * botón como `document.activeElement`, o sea que el clic llegó y lo dejó
+     * enfocado, y la cantidad seguía en 1. Se descartó que fuera el tope
+     * porque el `+` salía activo y el deshabilitado era el `−`.
+     *
+     * Se mira **antes** de pulsar para no pasarse: si la cantidad ya está, no
+     * se vuelve a tocar. Y se reintenta acotado, no con una espera a ciegas:
+     * si tras tres intentos no sube, es un fallo de verdad y la aserción lo
+     * cuenta con el número que esperaba.
+     */
+    for (let cantidad = 2; cantidad <= unidades; cantidad++) {
+      for (let intento = 1; intento <= 3; intento++) {
+        if ((await anadirCon(cantidad).count()) > 0) break;
+        await mas.click();
+        await anadirCon(cantidad)
+          .waitFor({ state: "visible", timeout: 5_000 })
+          .catch(() => undefined);
+      }
+      await expect(anadirCon(cantidad)).toBeVisible({ timeout: 5_000 });
     }
 
-    await page
-      .getByRole("button", { name: new RegExp(`añadir ${unidades} `, "i") })
-      .click();
+    await anadirCon(unidades).click();
   },
 );
 
