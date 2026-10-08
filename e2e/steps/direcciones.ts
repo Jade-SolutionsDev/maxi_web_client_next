@@ -1,6 +1,10 @@
 import { expect } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
-import { provinciaDeLaDireccion, sql } from "../helpers";
+import {
+  conRecargaSiHaceFalta,
+  provinciaDeLaDireccion,
+  sql,
+} from "../helpers";
 
 const { Given, When, Then } = createBdd();
 
@@ -34,7 +38,12 @@ When(
 
     await dialogo.getByRole("button", { name: /guardar dirección/i }).click();
     await expect(dialogo).toBeHidden({ timeout: 15_000 });
-    await expect(tarjeta(page, nombre).first()).toBeVisible();
+    // La lista puede llegar servida de antes —el escenario corriendo solo pasa
+    // siempre, y dentro de la suite se encontraba la del escenario anterior—,
+    // asi que si la direccion recien guardada no esta, se vuelve a pedir.
+    await conRecargaSiHaceFalta(page, () =>
+      expect(tarjeta(page, nombre).first()).toBeVisible({ timeout: 10_000 }),
+    );
   },
 );
 
@@ -78,8 +87,13 @@ When("marca {string} como predeterminada", async ({ page }, nombre: string) => {
   await tarjeta(page, nombre)
     .getByRole("button", { name: /predeterminada/i })
     .click();
-  await expect(tarjeta(page, nombre).getByText(/^Predeterminada$/)).toBeVisible(
-    { timeout: 15_000 },
+  // La lista tarda lo que tarde en llegar de nuevo, igual que al guardar. Este
+  // paso se me quedó fuera cuando puse la red en los demás, y fue el único de
+  // las direcciones que cayó en la corrida del conjunto.
+  await conRecargaSiHaceFalta(page, () =>
+    expect(tarjeta(page, nombre).getByText(/^Predeterminada$/)).toBeVisible({
+      timeout: 10_000,
+    }),
   );
 });
 
@@ -135,21 +149,29 @@ Then("ve su municipio y provincia", async ({ page }) => {
   ).toBeVisible();
 });
 
+// La etiqueta tarda en moverse de una tarjeta a otra tanto como tarde la lista
+// en llegar de nuevo, asi que estas dos comprobaciones vuelven a pedir la
+// pagina igual que la de guardar.
 Then(
   "la dirección {string} está marcada como predeterminada",
   async ({ page }, nombre: string) => {
-    await expect(
-      tarjeta(page, nombre).getByText(/^Predeterminada$/),
-    ).toBeVisible();
+    await conRecargaSiHaceFalta(page, () =>
+      expect(
+        tarjeta(page, nombre).getByText(/^Predeterminada$/),
+      ).toBeVisible({ timeout: 10_000 }),
+    );
   },
 );
 
 Then(
   "la dirección {string} no está marcada como predeterminada",
   async ({ page }, nombre: string) => {
-    await expect(
-      tarjeta(page, nombre).getByText(/^Predeterminada$/),
-    ).toHaveCount(0);
+    await conRecargaSiHaceFalta(page, () =>
+      expect(tarjeta(page, nombre).getByText(/^Predeterminada$/)).toHaveCount(
+        0,
+        { timeout: 10_000 },
+      ),
+    );
   },
 );
 

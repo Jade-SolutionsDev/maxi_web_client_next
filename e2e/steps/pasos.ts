@@ -1,7 +1,10 @@
 import { expect } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
 import {
+  abrir,
+  conRecargaSiHaceFalta,
   almacenDeLasPruebas,
+  lineasGuardadasDe,
   API,
   invalidarCatalogo,
   municipioConCobertura,
@@ -13,6 +16,7 @@ import {
   sembrarProducto,
   sql,
 } from "../helpers";
+import { CORREO } from "../setup/acceso";
 
 const { Given, When, Then, Before, After } = createBdd();
 
@@ -135,7 +139,7 @@ Given(
 // ------------------------------------------------------------------- Acciones
 
 When("el cliente abre el catálogo", async ({ page }) => {
-  await page.goto("/catalog");
+  await abrir(page, "/catalog");
 });
 
 When("el cliente abre {string}", async ({ page }, ruta: string) => {
@@ -145,11 +149,26 @@ When("el cliente abre {string}", async ({ page }, ruta: string) => {
 
 When("pulsa sobre el producto {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
-  const enLaPagina = () => page.getByText(producto!.nombreReal).first();
 
-  // Mismo rescate que en «ve el producto»: la pagina puede haber llegado de la
-  // cache vieja, y entonces no hay nada que pulsar hasta pedirla otra vez.
-  if (!(await enLaPagina().isVisible())) await page.reload();
+  /**
+   * El enlace de la tarjeta, no el texto suelto. El nombre del producto sale
+   * **dos veces** en cada tarjeta —el `alt` de la imagen y el título—, y
+   * `getByText(...).first()` se quedaba con el nodo que no se ve:
+   *
+   *     locator resolved to <h3 class="line-clamp-3 ...">Cola E2E 90362158</h3>
+   *     element is not visible
+   *
+   * Se buscó la caché fría durante un rato por este fallo, y la tarjeta estaba
+   * en la página todo el tiempo: la captura del fallo la enseña.
+   */
+  const enLaPagina = () =>
+    page.getByRole("link", { name: producto!.nombreReal }).first();
+
+  // La pagina puede haber llegado de la cache vieja, y entonces no hay nada
+  // que pulsar hasta pedirla otra vez.
+  await conRecargaSiHaceFalta(page, () =>
+    expect(enLaPagina()).toBeVisible({ timeout: 10_000 }),
+  );
   await enLaPagina().click();
 });
 
@@ -159,7 +178,7 @@ When(
     // El termino puede no ser un producto: hay un escenario que busca algo
     // que no existe justo para ver que la pagina lo dice.
     const texto = quizaSembrado(termino)?.nombreReal ?? termino;
-    await page.goto(`/catalog?q=${encodeURIComponent(texto)}`);
+    await abrir(page, `/catalog?q=${encodeURIComponent(texto)}`);
   },
 );
 
@@ -173,26 +192,20 @@ When("se consultan los productos públicos de la API", async ({ request }) => {
 
 Then("ve el producto {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
-  const enLaPagina = () => page.getByText(producto!.nombreReal).first();
-
-  try {
-    await expect(enLaPagina()).toBeVisible({ timeout: 10_000 });
-  } catch {
-    /**
-     * La tienda sirve con `stale-while-revalidate`, y cada combinacion de
-     * filtros tiene su propia entrada: `invalidarCatalogo` calienta /catalog,
-     * pero una URL con filtros llega fria igual y devuelve lo viejo mientras
-     * regenera por detras. Esperar no sirve —la respuesta ya esta en la pagina—;
-     * hay que volver a pedirla una vez.
-     */
-    await page.reload();
-    await expect(enLaPagina()).toBeVisible({ timeout: 15_000 });
-  }
+  await conRecargaSiHaceFalta(page, () =>
+    expect(page.getByText(producto!.nombreReal).first()).toBeVisible({
+      timeout: 10_000,
+    }),
+  );
 });
 
 Then("no ve el producto {string}", async ({ page }, nombre: string) => {
   const producto = productoSembrado(nombre);
-  await expect(page.getByText(producto!.nombreReal)).toHaveCount(0);
+  await conRecargaSiHaceFalta(page, () =>
+    expect(page.getByText(producto!.nombreReal)).toHaveCount(0, {
+      timeout: 10_000,
+    }),
+  );
 });
 
 Then("ve el precio {string}", async ({ page }, precio: string) => {
@@ -286,7 +299,10 @@ Then("no se le pide que elija su zona", async ({ page }) => {
 });
 
 Then("la cabecera muestra su zona", async ({ page }) => {
-  await expect(page.getByText("Disponible en:")).toBeVisible();
+  // Dos veces, no una: la cabecera lleva el rótulo suelto y otra copia dentro
+  // del botón de ubicación, y el locator a secas da «strict mode violation».
+  // Que esté una vez es lo que el escenario comprueba.
+  await expect(page.getByText("Disponible en:").first()).toBeVisible();
 });
 
 // ---------------------------------------------------------------- El carrito
@@ -295,18 +311,25 @@ When("añade el primer producto al carrito", async ({ page }) => {
   // Cuantas unidades hay antes, para esperar a que suban de verdad.
   const antes = await unidadesEnCarrito(page);
   const lineasAntes = await lineasEnCabecera(page);
+  /**
+   * Con sesion el carrito vive en el servidor; sin ella, en `localStorage`.
+   * La cookie de Clerk es la que lo distingue, y hace falta saberlo antes de
+   * decidir a quien se le pregunta si el producto entro.
+   */
+  const conSesion = (await page.context().cookies()).some(
+    (galleta) => galleta.name === "__session",
+  );
+  const guardadasAntes = conSesion ? lineasGuardadasDe(CORREO) : 0;
 
-  const boton = page.getByRole("button", { name: /^a[ñn]adir/i }).first();
-  // El catalogo puede tardar en pintar sus tarjetas; sin esta espera el aviso
-  // se pierde entre la carga y el clic.
-  await boton.waitFor({ state: "visible", timeout: 15_000 });
-  await boton.scrollIntoViewIfNeeded();
-  await boton.hover();
   /**
    * El carrito hidrata despues de pintar la pagina, y el anunciador toma el
    * primer estado que ve como "el de partida": si se pulsa antes de eso, el
    * aviso de producto añadido no llega a emitirse (MxH-0089). La senal de que
    * ya hidrato es su propio almacen: zustand lo escribe al rehidratarse.
+   *
+   * Va **antes** de tocar el boton: el catalogo se vuelve a pintar al hidratar
+   * y al revalidarse, asi que un elemento agarrado antes se queda huerfano.
+   * «Element is not attached to the DOM» al desplazarse hasta el, cada noche.
    */
   await page
     .waitForFunction(
@@ -320,7 +343,23 @@ When("añade el primer producto al carrito", async ({ page }) => {
       // Con sesion el carrito vive en el servidor y esa clave no aparece.
     });
 
-  await boton.click();
+  /**
+   * Un localizador, no un elemento: Playwright lo resuelve de nuevo en cada
+   * intento, asi que sobrevive a que el catalogo se repinte. Y `click()` ya
+   * espera a que sea visible y se desplaza solo, de modo que el
+   * `scrollIntoViewIfNeeded` + `hover` que habia aqui solo anadia dos sitios
+   * mas donde el elemento podia desaparecer entre medias.
+   *
+   * El `hover` ademas hacia dano: el boton no depende de el —en
+   * `ProductCard.tsx` no hay `opacity-0` ni `invisible`, del `group-hover`
+   * solo cuelga la escala de la imagen—, pero la tarjeta lleva
+   * `hover:-translate-y-1` con 300 ms de transicion. Pasar el raton por
+   * encima **la mueve**, y Playwright espera a que el elemento se quede
+   * quieto: era una espera de regalo y una ventana mas para que la tarjeta se
+   * reemplazara justo ahi.
+   */
+  const boton = page.getByRole("button", { name: /^a[ñn]adir/i }).first();
+  await boton.click({ timeout: 20_000 });
 
   // El aviso se desvanece solo, asi que se anota aqui, en el instante en que
   // aparece. Comprobarlo mas tarde seria una carrera perdida.
@@ -343,14 +382,45 @@ When("añade el primer producto al carrito", async ({ page }) => {
    * hay sesion, y en el servidor si la hay. La cabecera cuenta lineas, asi que
    * anadir dos veces el mismo producto solo se nota en las unidades.
    */
-  await expect
+  /**
+   * El carrito vive en dos sitios y se pinta en un tercero: en `localStorage`
+   * si no hay sesion, en el servidor si la hay, y en el contador de la
+   * cabecera en ambos casos. Primero se espera a lo que se ve, que es lo que
+   * le importa al cliente.
+   */
+  const seVe = await expect
     .poll(
       async () =>
         (await unidadesEnCarrito(page)) > antes ||
         (await lineasEnCabecera(page)) > lineasAntes,
       { timeout: 15_000 },
     )
-    .toBe(true);
+    .toBe(true)
+    .then(() => true)
+    .catch(() => false);
+
+  /**
+   * Y si no se ve, se pregunta por el dato antes de dar el paso por fallido.
+   * Con sesion el contador de la cabecera se queda en cero mientras el
+   * carrito no este «asentado», asi que una respuesta lenta lo dejaba a cero
+   * sin que nada estuviera roto: el paso culpaba a la tienda de no anadir un
+   * producto que si estaba anadido. Se consulta **una vez**, al final, y no
+   * dentro del sondeo: cada consulta abre un `psql` y meterla en el bucle
+   * ralentizaba justo lo que se esta midiendo.
+   *
+   * **Esta consulta no es la comprobacion, es el desempate**, y este paso es
+   * preparacion: lo que mide es que el producto entro, no que la tienda lo
+   * pinte. Que el cliente lo vea lo comprueba «el carrito contiene N
+   * articulos», que abre el carrito y lee lo que hay escrito, y que se usa en
+   * nueve escenarios con sesion y sin ella. Si la tienda dejara de refrescar
+   * el carrito, esos se pondrian rojos; el desempate de aqui no lo puede
+   * tapar. Si algun dia este paso deja de tener esa red detras, hay que
+   * quitarlo.
+   */
+  if (!seVe) {
+    expect(conSesion, "el carrito de invitado no llego a cambiar").toBe(true);
+    expect(lineasGuardadasDe(CORREO)).toBeGreaterThan(guardadasAntes);
+  }
 });
 
 /** Lineas que declara la cabecera, con sesion o sin ella. */
@@ -473,15 +543,18 @@ Then("el carrito queda vacío", async ({ page }) => {
 /**
  * MxH-0099: al cancelar un pedido pendiente, sus líneas vuelven al carrito.
  *
- * Se mide por el contador de la cabecera y no por un texto de la página: el
- * aviso de carrito vacío puede tardar en irse y un texto suelto no dice cuántas
- * líneas hay. El contador sale del `aria-label` del botón, que es el mismo dato
- * que ve el cliente.
+ * Se cuentan las líneas **dentro del carrito abierto**, por su botón de
+ * eliminar, que solo existe una vez por línea. Antes se leía el contador de la
+ * cabecera, y eso no podía funcionar aquí: el escenario acaba de abrir el
+ * carrito, el panel es modal y deja la cabecera entera en `aria-hidden`, así
+ * que el botón del contador no se encuentra y la cuenta sale 0 aunque el
+ * carrito tenga sus productos de vuelta. El fallo era de la medida, no de la
+ * tienda: en la captura del fallo el producto estaba listado.
  */
 Then("el carrito recupera sus productos", async ({ page }) => {
-  await expect
-    .poll(() => lineasEnCabecera(page), { timeout: 15_000 })
-    .toBeGreaterThan(0);
+  await expect(
+    page.getByRole("button", { name: /eliminar .* del carrito/i }).first(),
+  ).toBeVisible({ timeout: 15_000 });
   await expect(
     page
       .getByText(/carrito est[áa] vac[íi]o|no hay productos|agrega productos/i)
@@ -495,7 +568,7 @@ When(
   "el cliente abre el catálogo filtrando por la categoría de {string}",
   async ({ page }, nombre: string) => {
     const producto = productoSembrado(nombre);
-    await page.goto(`/catalog?categorySlug=${producto!.categoriaSlug}`);
+    await abrir(page, `/catalog?categorySlug=${producto!.categoriaSlug}`);
   },
 );
 

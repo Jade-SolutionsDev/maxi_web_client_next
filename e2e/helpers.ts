@@ -346,3 +346,96 @@ export function sembrarDireccion(
             'Merlinda Vargas', '85072045678', '+53 5251 9414')
     RETURNING id`);
 }
+
+/**
+ * Comprueba algo de una pagina que la tienda puede estar sirviendo vieja, y la
+ * vuelve a pedir si no se cumple.
+ *
+ * Son tres cosas distintas las que obligan a esto, y las tres se arreglan igual:
+ *
+ * 1. El catalogo se sirve con `stale-while-revalidate` y **cada combinacion de
+ *    filtros tiene su propia entrada**. `invalidarCatalogo` calienta /catalog,
+ *    pero una URL con filtros llega fria igual: devuelve lo viejo y regenera por
+ *    detras. Esperar no sirve, porque la respuesta vieja ya esta en la pagina.
+ * 2. Al filtrar desde la propia pagina, nuqs escribe la URL antes de que llegue
+ *    la lista nueva, asi que la comprobacion siguiente se puede encontrar
+ *    todavia con la lista anterior.
+ * 3. Lo mismo le pasa a la lista de direcciones despues de guardar una: el
+ *    escenario corriendo solo pasa siempre, y dentro de la suite se encuentra la
+ *    lista del escenario anterior.
+ *
+ * Tres intentos y no uno: una sola recarga vuelve a caer en la respuesta vieja
+ * si la regeneracion aun no habia terminado.
+ */
+export const conRecargaSiHaceFalta = async (
+  page: import("@playwright/test").Page,
+  comprobar: () => Promise<void>,
+) => {
+  const INTENTOS = 3;
+  for (let intento = 1; intento <= INTENTOS; intento += 1) {
+    try {
+      await comprobar();
+      return;
+    } catch (err) {
+      if (intento === INTENTOS) throw err;
+      await page.reload();
+    }
+  }
+};
+
+/**
+ * Abrir una pagina de la tienda sin esperar a `load`.
+ *
+ * Por defecto `page.goto` espera al evento `load`, que no llega hasta que han
+ * terminado **todas** las imagenes. El catalogo trae una por producto, y la
+ * noche del 7-oct una de esas descargas se quedo colgada: la navegacion agoto
+ * los 90 s del escenario entero. Medido despues contra la misma direccion,
+ * `load` tardaba 598 ms y `domcontentloaded` 75 ms, o sea que la espera larga
+ * no aporta nada: lo que cada escenario necesita ver ya lo espera por su
+ * cuenta con su propia asercion.
+ */
+export async function abrir(
+  page: import("@playwright/test").Page,
+  ruta: string,
+) {
+  /**
+   * Y antes de mirar, una vuelta en vacio para las paginas del catalogo.
+   *
+   * `getProducts` se cachea con `cacheLife('minutes')`, que **sirve lo viejo
+   * mientras regenera**. `invalidarCatalogo` ya hace esa vuelta, pero solo
+   * sobre `/catalog` pelado: cada combinacion de filtros es su propia entrada
+   * de cache, asi que `/catalog?q=...` y `/catalog?categorySlug=...` seguian
+   * devolviendo la lista de antes la primera vez que alguien las pedia. De ahi
+   * los dos fallos del 7-oct: un producto recien sembrado que no aparecia y
+   * otro filtrado que seguia apareciendo.
+   *
+   * Pidiendola aqui primero —y consumiendo el cuerpo, que hasta entonces la
+   * tienda no ha terminado— la peticion del navegador ya es la segunda.
+   */
+  if (ruta.startsWith("/catalog")) {
+    await fetch(`${TIENDA}${ruta}`, {
+      headers: { cookie: `maxi_location=${municipioConCobertura()}` },
+    })
+      .then((r) => r.text())
+      .catch(() => undefined);
+  }
+  return page.goto(ruta, { waitUntil: "domcontentloaded" });
+}
+
+/**
+ * Lineas que la API tiene guardadas en el carrito de un cliente.
+ *
+ * Con sesion el carrito vive en el servidor, no en `localStorage`, y el unico
+ * rastro que quedaba en el navegador era el contador de la cabecera. Ese
+ * contador sale de `useCartData()` y se queda en cero mientras el carrito no
+ * este «asentado», asi que una peticion lenta lo deja a cero sin que nada
+ * falle de verdad: la prueba culpaba a la tienda de no anadir un producto que
+ * si estaba anadido. Esto pregunta por el dato, no por su pintura.
+ */
+export function lineasGuardadasDe(correoCliente: string): number {
+  const salida = sql(`
+    SELECT count(*) FROM cart_items ci
+      JOIN clients c ON c.id = ci.client_id
+     WHERE c.email = '${correoCliente}'`);
+  return Number(salida) || 0;
+}

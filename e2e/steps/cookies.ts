@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
+import { conRecargaSiHaceFalta } from "../helpers";
 
 const { When, Then } = createBdd();
 
@@ -7,7 +8,12 @@ const aviso = (page: import("@playwright/test").Page) =>
   page.getByRole("region", { name: /aviso de cookies/i });
 
 Then("se le muestra el aviso de cookies", async ({ page }) => {
-  await expect(aviso(page)).toBeVisible({ timeout: 20_000 });
+  // Este escenario pasa siempre corriendo solo y caia dentro de la suite: la
+  // pagina llegaba servida de antes y la barra no estaba en ella. Volver a
+  // pedirla es lo mismo que se hace en el catalogo y en las direcciones.
+  await conRecargaSiHaceFalta(page, () =>
+    expect(aviso(page)).toBeVisible({ timeout: 20_000 }),
+  );
 });
 
 /**
