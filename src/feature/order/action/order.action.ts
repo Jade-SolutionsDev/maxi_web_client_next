@@ -10,7 +10,10 @@ import {
 } from '../schema/order-action.schema';
 import type { CheckoutAddressPayload } from '../service/order.service';
 import * as orders from '../service/order.service';
-import type { FulfillmentOffer } from '../type/fulfillment.type';
+import type {
+  FulfillmentOffer,
+  PublicFulfillment,
+} from '../type/fulfillment.type';
 import type {
   OrderListResult,
   OrderResult,
@@ -98,6 +101,27 @@ export const checkoutAction = async (input: unknown): Promise<OrderResult> => {
     return { failure: toOrderFailure(error) };
   }
 };
+
+/**
+ * Para avisar en el carrito, antes de que la persona llegue al checkout y se
+ * encuentre con que no hay por dónde (P-046). Es una acción y no una llamada
+ * desde el navegador porque la zona vive en una cookie `httpOnly`: el cliente
+ * no puede leerla, el servidor sí.
+ *
+ * Si falla, se calla: un aviso que no se puede comprobar es peor que ninguno,
+ * porque pararía una compra que quizá sí se podía hacer.
+ */
+export const fetchDisponibilidadDeLaZona =
+  async (): Promise<PublicFulfillment | null> => {
+    try {
+      const municipalityId = await readMunicipalityId();
+      return await orders.getDisponibilidadDeLaZona(
+        municipalityId ?? undefined,
+      );
+    } catch {
+      return null;
+    }
+  };
 
 export const fetchFulfillmentOffer = async (
   municipalityId?: string,
