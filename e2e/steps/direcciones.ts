@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
-import { sql } from "../helpers";
+import { provinciaDeLaDireccion, sql } from "../helpers";
 
 const { Given, When, Then } = createBdd();
 
@@ -126,8 +126,12 @@ Then("ve la calle {string}", async ({ page }, calle: string) => {
 
 Then("ve su municipio y provincia", async ({ page }) => {
   // La API devuelve ambos resueltos: la tarjeta los imprime separados por coma.
+  // La provincia se pregunta, no se fija: depende de que almacen cubre que zona
+  // en cada entorno, y una lista fija deja la prueba en rojo con la pantalla
+  // correcta delante.
+  const provincia = provinciaDeLaDireccion("qa.direcciones@maxihabana.com");
   await expect(
-    page.getByText(/,\s*(La Habana|Artemisa)/).first(),
+    page.getByText(new RegExp(`,\\s*${provincia}`, "i")).first(),
   ).toBeVisible();
 });
 

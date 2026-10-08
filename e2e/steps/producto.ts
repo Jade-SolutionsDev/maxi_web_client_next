@@ -14,6 +14,13 @@ When(
   "el cliente abre la ficha de {string}",
   async ({ page }, nombre: string) => {
     await page.goto(direccionDe(nombre));
+    // Esperar al titulo de la ficha, no solo a que `goto` vuelva: con el App
+    // Router la respuesta llega antes que el contenido, y el paso siguiente
+    // llegaba a leer todavia el h1 del catalogo («Descubre nuestros
+    // productos»), que no es ningun producto sembrado.
+    await expect(
+      page.getByRole("heading", { level: 1, name: new RegExp(nombre, "i") }),
+    ).toBeVisible({ timeout: 20_000 });
   },
 );
 
