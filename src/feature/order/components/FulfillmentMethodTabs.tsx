@@ -11,9 +11,25 @@ interface FulfillmentMethodTabsProps {
   disabled?: boolean;
 }
 
+/**
+ * «Recoger en tienda» nombraba algo que no existe: Maxi no tiene tiendas, tiene
+ * puntos de recogida en sus almacenes. Lo llamaban así solo aquí — el panel
+ * gestiona «puntos de recogida», los datos dicen «Mostrador Cárdenas» y tres
+ * pasos más abajo este mismo checkout pregunta «¿dónde quieres recoger tu
+ * pedido?»—, así que quien lo leía podía salir a buscar un comercio que no hay.
+ *
+ * Y los subtítulos no aportaban nada: uno repetía la etiqueta y el otro, «lo
+ * buscas tú», sonaba a reproche, como si recoger fuera la opción de segunda.
+ */
 const COPY: Record<FulfillmentType, { label: string; hint: string }> = {
-  delivery: { label: 'Entrega a domicilio', hint: 'Te lo llevamos' },
-  pickup: { label: 'Recoger en tienda', hint: 'Lo buscas tú' },
+  delivery: {
+    label: 'Entrega a domicilio',
+    hint: 'Enviamos el pedido a la dirección que indiques',
+  },
+  pickup: {
+    label: 'Recogida en el local',
+    hint: 'Pasas a buscarlo por el punto que elijas',
+  },
 };
 
 const ICONS = { delivery: Truck, pickup: Store };
@@ -29,7 +45,7 @@ export const FulfillmentMethodTabs = ({
   return (
     <fieldset className='flex flex-col gap-2' disabled={disabled}>
       <legend className='mb-2 text-sm font-medium text-heading'>
-        ¿Cómo quieres recibirlo?
+        Forma de entrega
       </legend>
 
       <div className='grid grid-cols-1 gap-2 sm:grid-cols-2'>

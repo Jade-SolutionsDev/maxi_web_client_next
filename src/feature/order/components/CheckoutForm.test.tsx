@@ -352,7 +352,7 @@ describe('CheckoutForm', () => {
       />,
     );
 
-    await user.click(screen.getByText(/Recoger en tienda/));
+    await user.click(screen.getByText(/Recogida en el local/));
     await fillRecipient(user);
     await user.click(screen.getByRole('button', { name: /Confirmar pedido/ }));
 

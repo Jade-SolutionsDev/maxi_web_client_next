@@ -88,9 +88,15 @@ Then("se le dice que falta el nombre", async ({ page }) => {
   ).toBeVisible({ timeout: 15_000 });
 });
 
-When("elige recoger en tienda", async ({ page }) => {
+/**
+ * Por «recog», no por el rótulo entero: la opción se ha llamado «Recoger en
+ * tienda» y hoy se llama «Recogida en el local» —Maxi no tiene tiendas, tiene
+ * puntos de recogida en sus almacenes—, y la prueba no debería caerse cada vez
+ * que se afine una palabra.
+ */
+When("elige la recogida", async ({ page }) => {
   await page
-    .getByText(/recoger en tienda/i)
+    .getByText(/recog/i)
     .first()
     .click();
 });
@@ -207,8 +213,8 @@ Then("ve cómo pagar el pedido", async ({ page }) => {
 
 When("elige recoger en el almacén", async ({ page }) => {
   await page
-    .getByRole("tab", { name: /recoger/i })
-    .or(page.getByText(/recoger en tienda/i))
+    .getByRole("tab", { name: /recog/i })
+    .or(page.getByText(/recog/i))
     .first()
     .click();
   // Se espera a la consecuencia de haber elegido recogida —que aparezcan los
