@@ -115,6 +115,39 @@ describe('CheckoutSummary · la línea del envío', () => {
     expect(screen.queryByText(/Se aplicó/)).toBeNull();
   });
 
+  /**
+   * El umbral es de **cada** forma de entrega, no de la tienda: una Express
+   * puede regalarse a partir de 200 y la normal a partir de 50. Aquí llega ya
+   * resuelto el de la opción elegida, y lo que se fija es que el resumen use
+   * ese y no otro.
+   */
+  it('cada forma de entrega trae el suyo', () => {
+    const { unmount } = render(
+      <CheckoutSummary
+        cart={carrito(60)}
+        deliveryFee={10}
+        fulfillmentType='delivery'
+        freeDeliveryThreshold={200}
+      />,
+    );
+
+    expect(
+      screen.getByText(/Te faltan \$140\.00 para el envío gratis/),
+    ).toBeTruthy();
+    unmount();
+
+    render(
+      <CheckoutSummary
+        cart={carrito(60)}
+        deliveryFee={0}
+        fulfillmentType='delivery'
+        freeDeliveryThreshold={50}
+      />,
+    );
+
+    expect(screen.getByText(/Se aplicó el envío gratis/)).toBeTruthy();
+  });
+
   it('el total suma el envío que de verdad se cobra', () => {
     render(
       <CheckoutSummary

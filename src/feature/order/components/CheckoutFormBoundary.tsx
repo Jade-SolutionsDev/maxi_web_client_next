@@ -16,7 +16,11 @@ interface CheckoutFormBoundaryProps {
   catalog: LocationCatalog;
   zone: { municipalityId: string; municipalityName: string } | null;
   cartKey: string;
-  onEntregaChange?: (entrega: { fee: number; tipo: FulfillmentType }) => void;
+  onEntregaChange?: (entrega: {
+    fee: number;
+    tipo: FulfillmentType;
+    umbral: number | null;
+  }) => void;
 }
 
 export const CheckoutFormBoundary = ({

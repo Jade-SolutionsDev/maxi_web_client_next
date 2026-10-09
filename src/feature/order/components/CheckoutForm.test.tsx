@@ -36,6 +36,7 @@ const offer = {
       description: null,
       fee: 5,
       promiseDays: null,
+      freeDeliveryThreshold: null,
     },
   ],
   pickupPoints: [
