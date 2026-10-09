@@ -47,7 +47,18 @@ export async function api<T>(
     isAbsolute(path) ? path : `${API_BASE}/${path.replace(/^\/+/, '')}`,
   );
   for (const [k, v] of Object.entries(params ?? {})) {
-    if (v !== undefined) url.searchParams.set(k, String(v));
+    /**
+     * La cadena vacía **no es un filtro**, es la ausencia de filtro. Antes solo
+     * se descartaba `undefined`, así que un campo sin rellenar viajaba como
+     * `?municipalityId=` y la API lo rechazaba entero:
+     *
+     *     400  {"message":["municipalityId must be a UUID"]}
+     *
+     * `@IsOptional()` de class-validator deja pasar `undefined` y `null`, pero
+     * no `''`, que sí llega a validarse. Comprobado contra staging: con el
+     * parámetro vacío da 400 y sin él, 200 (MxH-0133, punto 4).
+     */
+    if (v !== undefined && v !== '') url.searchParams.set(k, String(v));
   }
 
   let res: Response;
