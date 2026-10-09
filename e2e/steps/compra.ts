@@ -221,7 +221,17 @@ When("elige recoger en el almacén", async ({ page }) => {
 });
 
 Then("el envío no se cobra", async ({ page }) => {
-  await expect(page.getByText(/gratis/i).first()).toBeVisible({
-    timeout: 15_000,
-  });
+  /**
+   * Lo que importa no es la palabra, es que no haya importe que pagar.
+   *
+   * Esto buscaba «gratis» en cualquier parte de la página, y se rompió al
+   * distinguir los tres ceros posibles en la línea del envío (MxH-0045):
+   * recogiendo ahora dice «No aplica», porque no hay envío que valorar, y
+   * «Gratis» quedó para cuando de verdad se regala algo. El escenario sigue
+   * siendo cierto —recoger no se cobra—, así que se comprueba eso y no cómo se
+   * escribe hoy.
+   */
+  const lineaDelEnvio = page.getByText("Envío", { exact: true }).locator("..");
+  await expect(lineaDelEnvio).toBeVisible({ timeout: 15_000 });
+  await expect(lineaDelEnvio).not.toContainText("$");
 });
