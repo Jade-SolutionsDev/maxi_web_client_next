@@ -3,12 +3,19 @@ import { PackageOpen } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import type { SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 import { Container } from '@/app/components/layout/Container';
 import { buttonVariants } from '@/app/components/ui/button';
 import { PageHero } from '@/app/components/ui/page-hero';
 import { OrderCard } from '@/feature/order/components/OrderCard';
 import { OrderListSkeleton } from '@/feature/order/components/OrderListSkeleton';
+import { OrderPagination } from '@/feature/order/components/OrderPagination';
+import {
+  buildOrdersPageHref,
+  ORDERS_PAGE_SIZE,
+  parseOrdersPage,
+} from '@/feature/order/lib/orders-pagination';
 import { getOrders } from '@/feature/order/service/order.service';
 
 export const metadata: Metadata = {
@@ -16,14 +23,19 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-async function OrdersContent() {
+type OrdersPageProps = {
+  searchParams: Promise<SearchParams>;
+};
+
+async function OrdersContent({ searchParams }: OrdersPageProps) {
   const { userId } = await auth();
 
   if (!userId) redirect('/login');
 
-  const { data: orders } = await getOrders(1, 50);
+  const page = parseOrdersPage((await searchParams).page);
+  const { data: orders, meta } = await getOrders(page, ORDERS_PAGE_SIZE);
 
-  if (orders.length === 0) {
+  if (meta.total === 0) {
     return (
       <Container className='py-16'>
         <div className='mx-auto flex max-w-md flex-col items-center gap-4 text-center'>
@@ -44,18 +56,21 @@ async function OrdersContent() {
     );
   }
 
+  if (page > meta.totalPages) redirect(buildOrdersPageHref(meta.totalPages));
+
   return (
-    <Container className='py-8'>
+    <Container className='flex flex-col gap-6 py-8'>
       <ul className='flex flex-col gap-3' aria-label='Historial de pedidos'>
         {orders.map((order) => (
           <OrderCard key={order.id} order={order} />
         ))}
       </ul>
+      <OrderPagination page={page} totalPages={meta.totalPages} />
     </Container>
   );
 }
 
-export default function OrdersPage() {
+export default function OrdersPage({ searchParams }: OrdersPageProps) {
   return (
     <main>
       <PageHero
@@ -63,7 +78,7 @@ export default function OrdersPage() {
         breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Mis pedidos' }]}
       />
       <Suspense fallback={<OrderListSkeleton />}>
-        <OrdersContent />
+        <OrdersContent searchParams={searchParams} />
       </Suspense>
     </main>
   );

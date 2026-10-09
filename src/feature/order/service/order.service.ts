@@ -14,7 +14,7 @@ const orderPath = (orderId: string) =>
 
 interface OrdersPage {
   data: Order[];
-  meta: { total: number };
+  meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
 export interface CheckoutAddressPayload {
