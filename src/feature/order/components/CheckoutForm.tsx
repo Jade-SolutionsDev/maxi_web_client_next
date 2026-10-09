@@ -37,11 +37,16 @@ interface CheckoutFormProps {
   catalog: LocationCatalog;
   zone: { municipalityId: string; municipalityName: string } | null;
   /**
-   * El coste y **el método**. El resumen necesita los dos para decir la verdad:
-   * cero euros de envío no significa lo mismo si es que no hay envío (recogida)
-   * que si es que se regaló (MxH-0045).
+   * El coste, **el método** y **el umbral de esa opción**. El resumen necesita
+   * los tres para decir la verdad: cero de envío no significa lo mismo si es
+   * que no hay envío (recogida) que si se regaló, y cuánto falta para que se
+   * regale depende de la opción elegida, no de la tienda entera (MxH-0043).
    */
-  onEntregaChange?: (entrega: { fee: number; tipo: FulfillmentType }) => void;
+  onEntregaChange?: (entrega: {
+    fee: number;
+    tipo: FulfillmentType;
+    umbral: number | null;
+  }) => void;
 }
 
 const zoneProvinceId = (catalog: LocationCatalog, municipalityId: string) =>
@@ -128,15 +133,24 @@ export const CheckoutForm = ({
     }
   }, [offer.deliveryOptions, deliveryOptionId, form]);
 
+  const opcionElegida = offer.deliveryOptions.find(
+    (option) => option.id === deliveryOptionId,
+  );
   const selectedFee =
+    fulfillmentType === 'pickup' ? 0 : (opcionElegida?.fee ?? 0);
+  // Recogiendo no hay envío, así que tampoco hay promoción de envío.
+  const umbralDeLaOpcion =
     fulfillmentType === 'pickup'
-      ? 0
-      : (offer.deliveryOptions.find((option) => option.id === deliveryOptionId)
-          ?.fee ?? 0);
+      ? null
+      : (opcionElegida?.freeDeliveryThreshold ?? null);
 
   useEffect(() => {
-    onEntregaChange?.({ fee: selectedFee, tipo: fulfillmentType });
-  }, [selectedFee, fulfillmentType, onEntregaChange]);
+    onEntregaChange?.({
+      fee: selectedFee,
+      tipo: fulfillmentType,
+      umbral: umbralDeLaOpcion,
+    });
+  }, [selectedFee, fulfillmentType, umbralDeLaOpcion, onEntregaChange]);
 
   if (offer.unavailableMessage || methods.length === 0) {
     return (

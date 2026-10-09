@@ -10,6 +10,12 @@ export interface DeliveryOption {
    * ninguno: entonces no se inventa un plazo ni se deja el hueco.
    */
   promiseDays: number | null;
+  /**
+   * Subtotal en USD desde el que **esta** opción sale gratis, o `null` si no
+   * tiene promoción. Es por opción y no de la tienda entera: la promoción es
+   * del envío, así que la recogida no tiene ninguna.
+   */
+  freeDeliveryThreshold: number | null;
 }
 
 export interface PickupPoint {
@@ -44,11 +50,4 @@ export interface FulfillmentOffer {
 export interface PublicFulfillment {
   fulfillable: boolean;
   unavailableMessage: string | null;
-  /**
-   * Subtotal en USD desde el que el envío sale gratis, o `null` si no hay
-   * promoción. Viaja con la disponibilidad porque quien pregunta «¿se puede
-   * entregar aquí?» es el mismo que necesita saber «¿y cuánto me falta para
-   * que salga gratis?» (MxH-0043, MxH-0045).
-   */
-  freeDeliveryThreshold: number | null;
 }

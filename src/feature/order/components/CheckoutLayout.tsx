@@ -21,8 +21,6 @@ interface CheckoutLayoutProps {
   catalog: LocationCatalog;
   zone: { municipalityId: string; municipalityName: string } | null;
   cartKey: string;
-  /** Subtotal desde el que el envío sale gratis, o `null` si no hay promoción. */
-  freeDeliveryThreshold: number | null;
 }
 
 export const CheckoutLayout = ({
@@ -33,12 +31,12 @@ export const CheckoutLayout = ({
   catalog,
   zone,
   cartKey,
-  freeDeliveryThreshold,
 }: CheckoutLayoutProps) => {
   const [entrega, setEntrega] = useState<{
     fee: number;
     tipo: FulfillmentType;
-  }>({ fee: 0, tipo: 'pickup' });
+    umbral: number | null;
+  }>({ fee: 0, tipo: 'pickup', umbral: null });
 
   return (
     <Container className='grid gap-6 py-8 lg:grid-cols-[1fr_minmax(320px,420px)] lg:items-start'>
@@ -67,7 +65,7 @@ export const CheckoutLayout = ({
         cart={cart}
         deliveryFee={entrega.fee}
         fulfillmentType={entrega.tipo}
-        freeDeliveryThreshold={freeDeliveryThreshold}
+        freeDeliveryThreshold={entrega.umbral}
       />
     </Container>
   );

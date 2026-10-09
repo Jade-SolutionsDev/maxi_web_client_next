@@ -19,6 +19,7 @@ const opcion = (overrides: Partial<DeliveryOption> = {}): DeliveryOption => ({
   description: null,
   fee: 5,
   promiseDays: 2,
+  freeDeliveryThreshold: null,
   ...overrides,
 });
 
@@ -41,6 +42,7 @@ const pedido = (overrides: Partial<Order> = {}): Order =>
     deliveryFee: 0,
     total: 60,
     promiseDays: null,
+    freeDeliveryThreshold: null,
     promisedAt: null,
     createdAt: '2026-09-18T20:48:00.000Z',
     updatedAt: '2026-09-18T20:48:00.000Z',

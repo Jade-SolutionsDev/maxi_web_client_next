@@ -7,7 +7,6 @@ import { getAddresses } from '@/feature/address/service/address.service';
 import { getCart } from '@/feature/cart/service/cart.service';
 import type { Cart } from '@/feature/cart/type/cart.interface';
 import {
-  fetchDisponibilidadDeLaZona,
   fetchFulfillmentOffer,
   fetchPaymentMethods,
 } from '@/feature/order/action/order.action';
@@ -70,17 +69,14 @@ async function CheckoutContent() {
   if (cart.lines.length === 0) redirect('/catalog');
 
   const municipalityId = await readMunicipalityId();
-  // El umbral del envío gratis viaja con la disponibilidad de la zona, que ya
-  // se pide para avisar en el carrito: una llamada menos que pedirlo aparte, y
-  // aquí en el servidor, donde no cuesta una espera al cliente.
-  const [paymentMethods, offer, addresses, catalog, disponibilidad] =
-    await Promise.all([
-      fetchPaymentMethods(),
-      fetchFulfillmentOffer(municipalityId ?? undefined),
-      fetchAddresses(),
-      getLocationCatalog(),
-      fetchDisponibilidadDeLaZona(),
-    ]);
+  // El umbral del envío gratis ya no se pide aparte: viene en cada opción de
+  // la oferta, porque es de cada forma de entrega y no de la tienda entera.
+  const [paymentMethods, offer, addresses, catalog] = await Promise.all([
+    fetchPaymentMethods(),
+    fetchFulfillmentOffer(municipalityId ?? undefined),
+    fetchAddresses(),
+    getLocationCatalog(),
+  ]);
 
   return (
     <CheckoutLayout
@@ -91,7 +87,6 @@ async function CheckoutContent() {
       catalog={catalog}
       zone={resolveZone(catalog, municipalityId)}
       cartKey={cartKey(cart)}
-      freeDeliveryThreshold={disponibilidad?.freeDeliveryThreshold ?? null}
     />
   );
 }
