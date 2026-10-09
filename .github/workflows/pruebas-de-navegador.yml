@@ -67,6 +67,11 @@ jobs:
         with:
           repository: Jade-SolutionsDev/maxi_api_nestjs
           ref: develop
+          # Cae DENTRO del arbol de la tienda, y `next build` comprueba los
+          # tipos de todo lo que su `include` barre —`**/*.ts`—, asi que se
+          # metia a compilar codigo de Nest y fallaba por codigo ajeno. Esta
+          # excluido en `tsconfig.json`; si se cambia este `path`, hay que
+          # cambiarlo alli tambien.
           path: api
 
       - uses: actions/setup-node@v4
