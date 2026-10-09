@@ -12,14 +12,19 @@ interface FulfillmentMethodTabsProps {
 }
 
 /**
- * «Recoger en tienda» nombraba algo que no existe: Maxi no tiene tiendas, tiene
- * puntos de recogida en sus almacenes. Lo llamaban así solo aquí — el panel
- * gestiona «puntos de recogida», los datos dicen «Mostrador Cárdenas» y tres
- * pasos más abajo este mismo checkout pregunta «¿dónde quieres recoger tu
- * pedido?»—, así que quien lo leía podía salir a buscar un comercio que no hay.
+ * «Recogida en la tienda» lo decide Jade (9-oct-2026), y es la forma que se usa
+ * en todas partes: aquí, en el panel y en los dos PDF de pedidos. Antes cada
+ * sitio decía una cosa —«Recoger en tienda», «Recogida en el local», «Recogida
+ * en mostrador»—, y el cliente que lee una y el empleado que lee otra no saben
+ * que hablan de lo mismo.
  *
- * Y los subtítulos no aportaban nada: uno repetía la etiqueta y el otro, «lo
- * buscas tú», sonaba a reproche, como si recoger fuera la opción de segunda.
+ * Esta pestaña había llegado a «el local» por un razonamiento que ya no vale:
+ * que Maxi no tiene tiendas, solo puntos de recogida en sus almacenes. Es el
+ * dueño quien nombra su negocio; queda escrito aquí para que nadie lo vuelva a
+ * cambiar por el mismo motivo.
+ *
+ * Los subtítulos sí siguen el criterio de antes: ninguno repite la etiqueta, y
+ * el de recogida no dice «lo buscas tú», que sonaba a reproche.
  */
 const COPY: Record<FulfillmentType, { label: string; hint: string }> = {
   delivery: {
@@ -27,7 +32,7 @@ const COPY: Record<FulfillmentType, { label: string; hint: string }> = {
     hint: 'Enviamos el pedido a la dirección que indiques',
   },
   pickup: {
-    label: 'Recogida en el local',
+    label: 'Recogida en la tienda',
     hint: 'Pasas a buscarlo por el punto que elijas',
   },
 };
