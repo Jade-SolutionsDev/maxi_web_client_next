@@ -45,12 +45,12 @@ Característica: Comprar con la sesión iniciada
     Entonces el pedido no se crea
     Y se le dice que falta el carnet
 
-  Escenario: Recoger en tienda también pide quién recoge
+  Escenario: La recogida también pide quién recoge
     Cuando el cliente abre el catálogo
     Y añade el primer producto al carrito
     Y abre el carrito
     Y pulsa proceder al pago
-    Y elige recoger en tienda
+    Y elige la recogida
     Entonces también le piden quién recoge
 
   Escenario: Volver a por más cosas sin perder lo que ya se lleva
