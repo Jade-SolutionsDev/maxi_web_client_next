@@ -90,9 +90,9 @@ Then("se le dice que falta el nombre", async ({ page }) => {
 
 /**
  * Por «recog», no por el rótulo entero: la opción se ha llamado «Recoger en
- * tienda» y hoy se llama «Recogida en el local» —Maxi no tiene tiendas, tiene
- * puntos de recogida en sus almacenes—, y la prueba no debería caerse cada vez
- * que se afine una palabra.
+ * tienda», luego «Recogida en el local» y hoy «Recogida en la tienda». Tres
+ * nombres en un mes, y la prueba no debería caerse cada vez que se afine una
+ * palabra.
  */
 When("elige la recogida", async ({ page }) => {
   await page

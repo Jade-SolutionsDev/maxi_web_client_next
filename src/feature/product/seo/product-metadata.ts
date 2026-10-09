@@ -15,8 +15,9 @@ const buildDescription = ({ name, description }: Product) => {
    * promesa que la tienda no puede cumplir, y a la vista de cualquiera.
    *
    * Tampoco se promete recogida: así sirve igual el día que haya reparto, sin
-   * tener que volver aquí. «Tienda en línea» sí es exacto — lo que no existe
-   * es una tienda física donde recoger.
+   * tener que volver aquí. Que el negocio llame «la tienda» al sitio donde se
+   * recoge no cambia nada de esto: una descripción de producto no es el lugar
+   * para prometer una forma de entrega concreta.
    */
   return own
     ? truncate(own, DESCRIPTION_MAX)

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: '%s | MaxiHabana',
   },
   description:
-    'Compra online en MaxiHabana: departamentos, productos destacados y las mejores ofertas del día, con recogida en nuestros locales.',
+    'Compra online en MaxiHabana: departamentos, productos destacados y las mejores ofertas del día, con recogida en la tienda.',
   applicationName: 'MaxiHabana',
   keywords: ['tienda online', 'ofertas', 'productos', 'compras', 'MaxiHabana'],
   openGraph: {
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: 'MaxiHabana',
     title: 'MaxiHabana — Tu supermercado online',
     description:
-      'Compra online en MaxiHabana: departamentos, productos destacados y las mejores ofertas del día, con recogida en nuestros locales.',
+      'Compra online en MaxiHabana: departamentos, productos destacados y las mejores ofertas del día, con recogida en la tienda.',
     url: SITE_URL,
     locale: 'es_CU',
   },
