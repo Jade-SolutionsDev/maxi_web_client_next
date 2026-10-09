@@ -55,3 +55,24 @@ bun.lock
 /blob-report/
 /e2e/.generado/
 /e2e/.auth/
+
+# pruebas de navegador: todo esto lleva una sesión de verdad dentro
+#
+# `e2e/.auth/cliente.json` es el estado de sesión que escribe el proyecto
+# `acceso` al iniciar sesión con la cuenta de prueba: lleva la cookie
+# `__session` y el token de refresco de Clerk, vivos. Los `trace.zip` de
+# `test-results/` llevan lo mismo, porque la traza graba cada peticion con sus
+# cabeceras.
+#
+# Nunca se ha comprometido ninguno —comprobado en toda la historia del
+# repositorio—, pero tampoco estaban ignorados: un `git add -A` distraido los
+# habria subido, y este repositorio es publico. Esto cierra esa puerta.
+e2e/.auth/
+test-results/
+playwright-report/
+e2e/.generado/
+
+# El flujo de las pruebas en GitHub clona la API aqui dentro (`path: api`).
+# Sin esto, correr esos pasos en local deja el codigo entero de otro
+# repositorio listo para comprometerse.
+/api/
