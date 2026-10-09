@@ -76,6 +76,33 @@ export const getMunicipalities = async (
   }
 };
 
+/**
+ * Todos los municipios con cobertura, en **una** petición.
+ *
+ * El catálogo pedía uno por provincia —un `Promise.all` sobre la lista—, así
+ * que cada render con la caché fría disparaba tantas peticiones como provincias
+ * con cobertura. La API limita a 120 por minuto y **todas las llamadas de
+ * servidor de la tienda comparten cubo**: desde dentro no hay cliente a quien
+ * atribuirlas, así que la cuenta es de la tienda entera, no de cada visitante.
+ *
+ * Y se junta con lo de arriba: como el fallo ya no se cachea —a propósito—,
+ * cada visita siguiente volvía a intentarlo entero. Medido en staging: 1.615
+ * respuestas 429 en siete días, 830 de ellas durante una sola corrida de las
+ * pruebas de navegador, que falsearon escenarios durante semanas.
+ *
+ * `GET /municipalities` ya devuelve el conjunto entero con `provinceId` en cada
+ * fila, de modo que agrupar aquí no cuesta nada.
+ */
+const pedirTodosLosMunicipios = async (): Promise<Municipality[]> => {
+  'use cache';
+  cacheLife('days');
+  cacheTag('location-catalog');
+
+  const { data } =
+    await api<ApiResponse<MunicipalityResponse[]>>('/municipalities');
+  return data.map(toMunicipality);
+};
+
 const pedirCatalogo = async (): Promise<LocationCatalog> => {
   'use cache';
   cacheLife('days');
@@ -84,16 +111,23 @@ const pedirCatalogo = async (): Promise<LocationCatalog> => {
   // Las que lanzan, no las que se callan: si aquí se compusiera a partir de las
   // listas vacías de cortesía, el catálogo entero volvería a guardar el vacío
   // y no habríamos arreglado nada.
-  const provinces = await pedirProvincias();
-  const lists = await Promise.all(
-    provinces.map((province) => pedirMunicipios(province.id)),
+  const [provinces, municipios] = await Promise.all([
+    pedirProvincias(),
+    pedirTodosLosMunicipios(),
+  ]);
+
+  // Se siembra una entrada por provincia para no cambiar la forma del catálogo:
+  // quien lee `municipalitiesByProvince[id]` sigue encontrando una lista.
+  const porProvincia = new Map<string, Municipality[]>(
+    provinces.map((province) => [province.id, []]),
   );
+  for (const municipio of municipios) {
+    porProvincia.get(municipio.provinceId)?.push(municipio);
+  }
 
   return {
     provinces,
-    municipalitiesByProvince: Object.fromEntries(
-      provinces.map((province, index) => [province.id, lists[index]]),
-    ),
+    municipalitiesByProvince: Object.fromEntries(porProvincia),
   };
 };
 
