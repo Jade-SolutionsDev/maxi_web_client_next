@@ -8,11 +8,13 @@
 # Se dispara a mano y una vez al día. Cuando se demuestre estable, se añade a
 # las propuestas hacia `main` para que nada llegue a producción sin pasarla.
 #
-# Necesita cuatro secretos en el repositorio; sin ellos el trabajo se salta
-# solo, en vez de fallar en rojo todas las noches:
-#   E2E_REPO_TOKEN   — token con permiso de lectura sobre maxi_api_nestjs
-#   CLERK_PUBLISHABLE_KEY / CLERK_SECRET_KEY — las de prueba (pk_test/sk_test)
-#   E2E_EMAIL / E2E_PASSWORD — la cuenta con la que las pruebas inician sesión
+# Para encenderlo basta con la variable `E2E_LISTO = si`. Los secretos de
+# Clerk ya estan puestos; `E2E_EMAIL` / `E2E_PASSWORD` son opcionales y, si
+# faltan, se usan los valores por defecto de `e2e/setup/acceso.ts`.
+#
+# Antes pedia ademas un `E2E_REPO_TOKEN` para clonar la API. No hacia falta
+# —el repositorio es publico— y era lo unico que faltaba: el trabajo lleva
+# desde septiembre saltandose solo por un secreto innecesario.
 name: Pruebas de navegador
 
 on:
@@ -57,12 +59,14 @@ jobs:
       - name: Traer la tienda
         uses: actions/checkout@v4
 
+      # Sin `token`: `maxi_api_nestjs` es publico y el `GITHUB_TOKEN` por
+      # defecto basta para clonarlo. Pedir un secreto que no hace falta era
+      # justo lo que tenia este trabajo parado desde septiembre.
       - name: Traer la API
         uses: actions/checkout@v4
         with:
           repository: Jade-SolutionsDev/maxi_api_nestjs
           ref: develop
-          token: ${{ secrets.E2E_REPO_TOKEN }}
           path: api
 
       - uses: actions/setup-node@v4
