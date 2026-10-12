@@ -1,11 +1,13 @@
 import { expect } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
 import { sql } from "../helpers";
-import { iniciarSesion } from "../setup/acceso";
+import { CORREO, iniciarSesion } from "../setup/acceso";
 
 const { When, Then, After } = createBdd();
 
-const CORREO_CLIENTE = "qa.direcciones@maxihabana.com";
+// El mismo correo que usa el acceso, no una copia: desde MxH-0169 sale del
+// entorno, así que un literal aquí podría apuntar a otra cuenta sin avisar.
+const CORREO_CLIENTE = CORREO;
 
 /** El dialogo de dirección, localizado por el campo que solo el tiene. */
 const formularioDireccion = (page: import("@playwright/test").Page) =>

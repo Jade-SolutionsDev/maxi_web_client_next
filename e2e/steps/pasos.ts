@@ -21,7 +21,9 @@ import { CORREO } from "../setup/acceso";
 const { Given, When, Then, Before, After } = createBdd();
 
 /** El cliente con el que se inicia sesion en las pruebas con sesion. */
-const CORREO_CLIENTE = "qa.direcciones@maxihabana.com";
+// El mismo correo que usa el acceso, no una copia: desde MxH-0169 sale del
+// entorno, así que un literal aquí podría apuntar a otra cuenta sin avisar.
+const CORREO_CLIENTE = CORREO;
 
 /**
  * Estado compartido entre los pasos de un escenario. Es seguro tenerlo en el
