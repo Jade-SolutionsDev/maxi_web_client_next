@@ -5,6 +5,7 @@ import {
   provinciaDeLaDireccion,
   sql,
 } from "../helpers";
+import { CORREO } from "../setup/acceso";
 
 const { Given, When, Then } = createBdd();
 
@@ -14,7 +15,7 @@ const tarjeta = (page: import("@playwright/test").Page, nombre: string) =>
 
 Given("que el cliente no tiene ninguna dirección guardada", async () => {
   sql(
-    "DELETE FROM client_addresses WHERE client_id IN (SELECT id FROM clients WHERE email = 'qa.direcciones@maxihabana.com')",
+    `DELETE FROM client_addresses WHERE client_id IN (SELECT id FROM clients WHERE email = '${CORREO}')`,
   );
 });
 
@@ -143,7 +144,7 @@ Then("ve su municipio y provincia", async ({ page }) => {
   // La provincia se pregunta, no se fija: depende de que almacen cubre que zona
   // en cada entorno, y una lista fija deja la prueba en rojo con la pantalla
   // correcta delante.
-  const provincia = provinciaDeLaDireccion("qa.direcciones@maxihabana.com");
+  const provincia = provinciaDeLaDireccion(CORREO);
   await expect(
     page.getByText(new RegExp(`,\\s*${provincia}`, "i")).first(),
   ).toBeVisible();

@@ -9,15 +9,37 @@ import { municipioConCobertura } from "../helpers";
  * cliente en la base. Se puede cambiar con E2E_EMAIL / E2E_PASSWORD.
  */
 export const ARCHIVO_SESION = "e2e/.auth/cliente.json";
+
 /**
- * `||` y no `??`: en GitHub Actions un secreto que no existe no llega como
- * `undefined`, llega como **cadena vacia**, y `??` solo atrapa lo primero. Con
- * `??` el entorno acababa intentando entrar con un correo vacio y el fallo no
- * decia que faltara un secreto, decia que el acceso no funcionaba.
+ * El acceso **no lleva valores por omision**, y es a proposito.
+ *
+ * Hasta el 12-oct-2026 estos dos caian a un literal si faltaba la variable, y
+ * ese literal era la contrasena de la cuenta de pruebas **en un repositorio
+ * publico** (MxH-0169): como ni el cron del VPS ni el flujo de GitHub definian
+ * las variables, el literal era el que se usaba siempre. La clave se roto y
+ * ahora vive en dos sitios que no se leen: el secreto `E2E_PASSWORD` del
+ * repositorio y `~/.config/maxi/e2e.env` con permisos cerrados.
+ *
+ * Falta a gritos y no en silencio. En GitHub Actions un secreto que no existe
+ * **no llega como `undefined`, llega como cadena vacia**, asi que un `??` no
+ * lo atraparia y el entorno acabaria intentando entrar con la clave vacia —
+ * y el fallo diria «el acceso no funciona» en vez de «falta un secreto». De
+ * ahi que se compruebe la cadena vacia y no solo la ausencia.
  */
-export const CORREO =
-  process.env.E2E_EMAIL || "qa.direcciones@maxihabana.com";
-const CLAVE = process.env.E2E_PASSWORD || "MaxiDirecciones2026";
+function delEntorno(variable: "E2E_EMAIL" | "E2E_PASSWORD"): string {
+  const valor = process.env[variable];
+  if (!valor) {
+    throw new Error(
+      `Falta ${variable}. En el servidor viene de ~/.config/maxi/e2e.env; ` +
+        `en GitHub Actions, del secreto del repositorio. No hay valor por ` +
+        `omision a proposito: la contrasena no vuelve al codigo.`,
+    );
+  }
+  return valor;
+}
+
+export const CORREO = delEntorno("E2E_EMAIL");
+const CLAVE = delEntorno("E2E_PASSWORD");
 
 export async function iniciarSesion(page: Page, context: BrowserContext) {
   /**
