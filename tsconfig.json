@@ -30,5 +30,14 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    // Las pruebas de navegador clonan la API aquí dentro (`path: api` en
+    // `.github/workflows/pruebas-de-navegador.yml`), y `next build`
+    // comprueba los tipos de todo el árbol: `include` barre `**/*.ts`. El
+    // código de Nest usa decoradores que el tsconfig de la tienda no admite,
+    // así que la compilación de la tienda fallaba por código que no es suyo.
+    // Si se cambia el `path:` del flujo, hay que cambiar esto también.
+    "api"
+  ]
 }

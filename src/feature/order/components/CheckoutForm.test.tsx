@@ -36,6 +36,7 @@ const offer = {
       description: null,
       fee: 5,
       promiseDays: null,
+      freeDeliveryThreshold: null,
     },
   ],
   pickupPoints: [
@@ -45,6 +46,7 @@ const offer = {
       locationName: 'Almacén Centro',
       label: 'Mostrador',
       address: 'Calle 1 #2',
+      hours: null,
     },
   ],
   pickupEnabled: true,
@@ -351,7 +353,7 @@ describe('CheckoutForm', () => {
       />,
     );
 
-    await user.click(screen.getByText(/Recoger en tienda/));
+    await user.click(screen.getByText(/Recogida en la tienda/));
     await fillRecipient(user);
     await user.click(screen.getByRole('button', { name: /Confirmar pedido/ }));
 

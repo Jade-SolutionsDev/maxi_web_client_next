@@ -101,6 +101,11 @@ export interface OrderPickupAddress {
   locationName?: string;
   label?: string | null;
   address?: string;
+  /**
+   * El horario del mostrador, congelado al comprar junto a la dirección
+   * (MxH-0160). Los pedidos anteriores no lo traen.
+   */
+  hours?: string | null;
 }
 
 export interface Order {

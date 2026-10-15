@@ -69,6 +69,8 @@ async function CheckoutContent() {
   if (cart.lines.length === 0) redirect('/catalog');
 
   const municipalityId = await readMunicipalityId();
+  // El umbral del envío gratis ya no se pide aparte: viene en cada opción de
+  // la oferta, porque es de cada forma de entrega y no de la tienda entera.
   const [paymentMethods, offer, addresses, catalog] = await Promise.all([
     fetchPaymentMethods(),
     fetchFulfillmentOffer(municipalityId ?? undefined),

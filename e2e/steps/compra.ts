@@ -1,10 +1,13 @@
 import { expect } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
 import { sembrarDireccion, sql } from "../helpers";
+import { CORREO } from "../setup/acceso";
 
 const { Given, When, Then } = createBdd();
 
-const CORREO_CLIENTE = "qa.direcciones@maxihabana.com";
+// El mismo correo que usa el acceso, no una copia: desde MxH-0169 sale del
+// entorno, así que un literal aquí podría apuntar a otra cuenta sin avisar.
+const CORREO_CLIENTE = CORREO;
 
 Given("que el cliente no tiene pedidos ni carrito", async () => {
   const cliente = `(SELECT id FROM clients WHERE email = '${CORREO_CLIENTE}')`;
@@ -88,15 +91,24 @@ Then("se le dice que falta el nombre", async ({ page }) => {
   ).toBeVisible({ timeout: 15_000 });
 });
 
-When("elige recoger en tienda", async ({ page }) => {
+/**
+ * Por «recog», no por el rótulo entero: la opción se ha llamado «Recoger en
+ * tienda», luego «Recogida en el local» y hoy «Recogida en la tienda». Tres
+ * nombres en un mes, y la prueba no debería caerse cada vez que se afine una
+ * palabra.
+ */
+When("elige la recogida", async ({ page }) => {
   await page
-    .getByText(/recoger en tienda/i)
+    .getByText(/recog/i)
     .first()
     .click();
 });
 
 Then("también le piden quién recoge", async ({ page }) => {
-  await expect(page.getByText(/datos del cliente/i).first()).toBeVisible({
+  // «Datos del beneficiario», no «del cliente»: el rótulo se cambió a propósito
+  // porque aquí quien paga y quien recoge suelen ser personas distintas, y el
+  // carnet que acaba en el pedido es el que se pide en el almacén al entregar.
+  await expect(page.getByText(/datos del beneficiario/i).first()).toBeVisible({
     timeout: 15_000,
   });
   await expect(page.getByLabel(/carnet de identidad/i)).toBeVisible();
@@ -115,8 +127,19 @@ When("pulsa seguir comprando", async ({ page }) => {
 
 When("confirma el pedido", async ({ page }) => {
   await page.getByRole("button", { name: /confirmar pedido/i }).click();
-  // Al crearse, el pedido tiene pagina propia.
-  await page.waitForURL(/\/pedidos\/[0-9a-f-]{36}/, { timeout: 30_000 });
+  /**
+   * Al crearse, el pedido tiene pagina propia.
+   *
+   * `waitForURL` espera por defecto al evento `load`, no a que cambie la
+   * direccion: la pagina del pedido trae la foto de cada linea, y con una sola
+   * descarga lenta la espera se agotaba aunque ya estuvieramos alli. Pasaba a
+   * ratos y se leia como «no se creo el pedido», cuando el pedido estaba
+   * creado en la base.
+   */
+  await page.waitForURL(/\/pedidos\/[0-9a-f-]{36}/, {
+    timeout: 30_000,
+    waitUntil: "domcontentloaded",
+  });
 });
 
 When("abre su historial de pedidos", async ({ page }) => {
@@ -150,6 +173,19 @@ Then("el pedido está {string}", async ({ page }, estado: string) => {
   });
 });
 
+/**
+ * Que el rótulo diga «Cancelado» no prueba que se haya cancelado: el texto se
+ * busca en toda la página, y la corrida del 7-oct lo dio por bueno en un
+ * pedido que seguía pendiente —en la base no hubo ni una cancelación esa
+ * noche—. Un pedido cancelado sí pierde su botón de cancelar, y eso no se
+ * puede fingir con un texto suelto.
+ */
+Then("el pedido ya no se puede cancelar", async ({ page }) => {
+  await expect(
+    page.getByRole("button", { name: /cancelar pedido/i }),
+  ).toHaveCount(0, { timeout: 15_000 });
+});
+
 Then("el pedido espera el pago", async ({ page }) => {
   await expect(page.getByText("Pago pendiente").first()).toBeVisible();
 });
@@ -161,8 +197,11 @@ Then("el historial incluye ese pedido", async ({ page }) => {
   await expect(page.getByText(/ORD-\d+/).first()).toBeVisible();
 });
 
-Then("se le advierte que se libera el stock reservado", async ({ page }) => {
-  await expect(page.getByText(/se libera el stock reservado/i)).toBeVisible();
+Then("se le advierte que los productos vuelven al carrito", async ({ page }) => {
+  // MxH-0099: el diálogo avisaba de que «se libera el stock reservado», que es
+  // verdad y no es lo que le importa a quien va a cancelar. Ahora dice que sus
+  // productos vuelven al carrito, que es lo que decide si cancela o no.
+  await expect(page.getByText(/vuelven a tu carrito/i)).toBeVisible();
 });
 
 Then("acaba en el catálogo", async ({ page }) => {
@@ -177,18 +216,31 @@ Then("ve cómo pagar el pedido", async ({ page }) => {
 
 When("elige recoger en el almacén", async ({ page }) => {
   await page
-    .getByRole("tab", { name: /recoger/i })
-    .or(page.getByText(/recoger en tienda/i))
+    .getByRole("tab", { name: /recog/i })
+    .or(page.getByText(/recog/i))
     .first()
     .click();
-  // El punto de recogida se elige solo cuando solo hay uno.
-  await expect(page.getByText(/mostrador|recogida/i).first()).toBeVisible({
+  // Se espera a la consecuencia de haber elegido recogida —que aparezcan los
+  // datos de quien recoge— y no al rotulo del punto de recogida: ese solo se
+  // pinta cuando hay un unico almacen, asi que la prueba se caia al añadir
+  // almacenes a staging, con la pantalla correcta delante.
+  await expect(page.getByText(/datos del beneficiario/i).first()).toBeVisible({
     timeout: 15_000,
   });
 });
 
 Then("el envío no se cobra", async ({ page }) => {
-  await expect(page.getByText(/gratis/i).first()).toBeVisible({
-    timeout: 15_000,
-  });
+  /**
+   * Lo que importa no es la palabra, es que no haya importe que pagar.
+   *
+   * Esto buscaba «gratis» en cualquier parte de la página, y se rompió al
+   * distinguir los tres ceros posibles en la línea del envío (MxH-0045):
+   * recogiendo ahora dice «No aplica», porque no hay envío que valorar, y
+   * «Gratis» quedó para cuando de verdad se regala algo. El escenario sigue
+   * siendo cierto —recoger no se cobra—, así que se comprueba eso y no cómo se
+   * escribe hoy.
+   */
+  const lineaDelEnvio = page.getByText("Envío", { exact: true }).locator("..");
+  await expect(lineaDelEnvio).toBeVisible({ timeout: 15_000 });
+  await expect(lineaDelEnvio).not.toContainText("$");
 });

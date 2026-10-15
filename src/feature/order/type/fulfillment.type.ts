@@ -10,6 +10,12 @@ export interface DeliveryOption {
    * ninguno: entonces no se inventa un plazo ni se deja el hueco.
    */
   promiseDays: number | null;
+  /**
+   * Subtotal en USD desde el que **esta** opción sale gratis, o `null` si no
+   * tiene promoción. Es por opción y no de la tienda entera: la promoción es
+   * del envío, así que la recogida no tiene ninguna.
+   */
+  freeDeliveryThreshold: number | null;
 }
 
 export interface PickupPoint {
@@ -18,6 +24,11 @@ export interface PickupPoint {
   locationName: string;
   label: string | null;
   address: string;
+  /**
+   * Cuándo se puede pasar a recogerlo (MxH-0160). `null` si el mostrador no
+   * tiene horario publicado: entonces no se enseña nada.
+   */
+  hours: string | null;
 }
 
 export interface FulfillmentOffer {
@@ -30,4 +41,13 @@ export interface FulfillmentOffer {
    * de entrega y vale para todos los mostradores.
    */
   pickupPromiseDays: number | null;
+}
+
+/**
+ * Lo que la tienda puede saber **sin sesión** sobre si en una zona se puede
+ * recibir algo. A propósito no trae mostradores ni direcciones.
+ */
+export interface PublicFulfillment {
+  fulfillable: boolean;
+  unavailableMessage: string | null;
 }

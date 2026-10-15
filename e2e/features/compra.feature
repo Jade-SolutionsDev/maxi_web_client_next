@@ -45,12 +45,12 @@ Característica: Comprar con la sesión iniciada
     Entonces el pedido no se crea
     Y se le dice que falta el carnet
 
-  Escenario: Recoger en tienda también pide quién recoge
+  Escenario: La recogida también pide quién recoge
     Cuando el cliente abre el catálogo
     Y añade el primer producto al carrito
     Y abre el carrito
     Y pulsa proceder al pago
-    Y elige recoger en tienda
+    Y elige la recogida
     Entonces también le piden quién recoge
 
   Escenario: Volver a por más cosas sin perder lo que ya se lleva
@@ -101,9 +101,12 @@ Característica: Comprar con la sesión iniciada
     Y elige su dirección guardada
     Y confirma el pedido
     Y pulsa cancelar el pedido
-    Entonces se le advierte que se libera el stock reservado
+    Entonces se le advierte que los productos vuelven al carrito
     Cuando confirma la cancelación
     Entonces el pedido está "Cancelado"
+    Y el pedido ya no se puede cancelar
+    Cuando abre el carrito
+    Entonces el carrito recupera sus productos
 
   Escenario: Finalizar la compra sin nada en el carrito devuelve al catálogo
     Cuando el cliente abre "/checkout"

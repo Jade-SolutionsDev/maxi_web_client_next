@@ -69,6 +69,16 @@ export const PickupPointSelector = ({
               {point.label ? ` · ${point.label}` : ''}
             </span>
             <span className='block text-sm text-muted'>{point.address}</span>
+            {/*
+              El horario del mostrador (MxH-0160). Antes no existía en ninguna
+              parte del sistema y la gente lo preguntaba por correo después de
+              comprar; aquí llega antes de confirmar, que es cuando decide.
+            */}
+            {point.hours && (
+              <span className='mt-0.5 block text-xs font-medium text-primary'>
+                {point.hours}
+              </span>
+            )}
           </span>
         </label>
       );

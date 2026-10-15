@@ -1,13 +1,14 @@
 'use client';
 
 import { useAuth } from '@clerk/nextjs';
-import { ArrowRight, PiggyBank } from 'lucide-react';
+import { ArrowRight, LifeBuoy, PiggyBank } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { SheetClose, SheetFooter } from '@/app/components/ui/sheet';
 import { CuentasNoDisponibles } from '@/feature/auth/components/CuentasNoDisponibles';
 import { useClerkDisponible } from '@/feature/auth/hook/useClerkDisponible';
+import { fetchDisponibilidadDeLaZona } from '@/feature/order/action/order.action';
 import { formatPrice } from '@/helpers';
 import { notify } from '@/lib/notify';
 import { useCartData } from '../hook/useCart';
@@ -24,6 +25,7 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
   const mode = useCartStore((state) => state.mode);
   const adoptGuestCart = useCartStore((state) => state.actions.adoptGuestCart);
   const [isPreparing, setIsPreparing] = useState(false);
+  const [avisoDeZona, setAvisoDeZona] = useState<string | null>(null);
   const [isNavigating, startNavigation] = useTransition();
   const closeSheetRef = useRef(closeSheet);
   const hasLeftForCheckout = useRef(false);
@@ -39,6 +41,27 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
   useEffect(() => {
     closeSheetRef.current = closeSheet;
   });
+
+  /**
+   * P-046: en el catálogo cabe ver productos de una zona a la que la tienda no
+   * puede hacer llegar nada —cubrirla no es poder despacharla—, y eso solo se
+   * sabía al final, con el carrito hecho. Se pregunta al abrir el carrito, que
+   * es el último momento tranquilo antes de pagar.
+   */
+  useEffect(() => {
+    let vigente = true;
+    fetchDisponibilidadDeLaZona().then((respuesta) => {
+      if (vigente && respuesta && !respuesta.fulfillable) {
+        setAvisoDeZona(
+          respuesta.unavailableMessage ??
+            'Por el momento no podemos entregar en tu zona. Escríbenos y lo coordinamos.',
+        );
+      }
+    });
+    return () => {
+      vigente = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!hasLeftForCheckout.current || isNavigating) return;
@@ -116,6 +139,16 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
       {hasUnavailableLines && (
         <p className='rounded-xl bg-destructive/10 px-3 py-2 text-sm font-semibold text-destructive'>
           Ajusta o quita los productos sin stock para continuar.
+        </p>
+      )}
+
+      {avisoDeZona && (
+        <p className='flex items-start gap-2 rounded-xl bg-surface px-3 py-2 text-sm text-pretty text-heading'>
+          <LifeBuoy
+            className='mt-0.5 size-4.5 shrink-0 text-primary'
+            aria-hidden='true'
+          />
+          {avisoDeZona}
         </p>
       )}
 

@@ -12,7 +12,7 @@ import { Section } from '../components/layout/Section';
 
 const title = 'Catálogo de productos';
 const description =
-  'Explora el catálogo de MaxiHabana: filtra por departamento, categoría y precio, y encuentra las mejores ofertas con recogida en tienda.';
+  'Explora el catálogo de MaxiHabana: filtra por departamento, categoría y precio, y encuentra las mejores ofertas del día.';
 
 export const metadata: Metadata = {
   title,

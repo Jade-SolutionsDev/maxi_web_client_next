@@ -5,7 +5,10 @@ import { Container } from '@/app/components/layout/Container';
 import type { Address } from '@/feature/address/type/address.interface';
 import type { Cart } from '@/feature/cart/type/cart.interface';
 import type { LocationCatalog } from '@/shared/location/type/location.interface';
-import type { FulfillmentOffer } from '../type/fulfillment.type';
+import type {
+  FulfillmentOffer,
+  FulfillmentType,
+} from '../type/fulfillment.type';
 import type { PaymentMethod } from '../type/order.type';
 import { CheckoutFormBoundary } from './CheckoutFormBoundary';
 import { CheckoutSummary } from './CheckoutSummary';
@@ -29,7 +32,11 @@ export const CheckoutLayout = ({
   zone,
   cartKey,
 }: CheckoutLayoutProps) => {
-  const [deliveryFee, setDeliveryFee] = useState(0);
+  const [entrega, setEntrega] = useState<{
+    fee: number;
+    tipo: FulfillmentType;
+    umbral: number | null;
+  }>({ fee: 0, tipo: 'pickup', umbral: null });
 
   return (
     <Container className='grid gap-6 py-8 lg:grid-cols-[1fr_minmax(320px,420px)] lg:items-start'>
@@ -50,11 +57,16 @@ export const CheckoutLayout = ({
           catalog={catalog}
           zone={zone}
           cartKey={cartKey}
-          onDeliveryFeeChange={setDeliveryFee}
+          onEntregaChange={setEntrega}
         />
       </section>
 
-      <CheckoutSummary cart={cart} deliveryFee={deliveryFee} />
+      <CheckoutSummary
+        cart={cart}
+        deliveryFee={entrega.fee}
+        fulfillmentType={entrega.tipo}
+        freeDeliveryThreshold={entrega.umbral}
+      />
     </Container>
   );
 };
