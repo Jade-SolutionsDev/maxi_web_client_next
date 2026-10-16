@@ -37,10 +37,12 @@ export const metadata: Metadata = {
     description:
       'Compra online en Maxi: departamentos, productos destacados y las mejores ofertas del día.',
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  // Sin bloque `robots` a propósito: `index, follow` es lo que un buscador hace
+  // por omisión, así que declararlo no ganaba nada y se emitía en **todas** las
+  // páginas, también en las de «no encontrado», que sirven su propio `noindex`.
+  // Las dos metas juntas obligaban a Google a desempatar por la más restrictiva.
+  // Medido el 16-oct-2026: sin este bloque, una ficha inexistente emite solo
+  // `noindex` y la portada no emite ninguna. Ver P-027 y MxH-0087.
 };
 
 const geistSans = Geist({
