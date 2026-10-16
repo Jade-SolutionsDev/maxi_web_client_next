@@ -160,4 +160,21 @@ describe('CheckoutSummary · la línea del envío', () => {
 
     expect(screen.getByText('$43.00')).toBeTruthy();
   });
+
+  it('alcanzado el umbral, la tarifa de la opción no se cobra ni se enseña', () => {
+    render(
+      <CheckoutSummary
+        cart={carrito(216)}
+        deliveryFee={10}
+        fulfillmentType='delivery'
+        freeDeliveryThreshold={100}
+      />,
+    );
+
+    expect(lineaDelEnvio()).toContain('Gratis');
+    expect(lineaDelEnvio()).not.toContain('$10.00');
+    expect(screen.getByText(/Se aplicó el envío gratis/)).toBeTruthy();
+    expect(screen.getAllByText('$216.00')).toHaveLength(2);
+    expect(screen.queryByText('$226.00')).toBeNull();
+  });
 });
