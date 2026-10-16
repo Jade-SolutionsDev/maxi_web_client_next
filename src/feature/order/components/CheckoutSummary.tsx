@@ -51,9 +51,14 @@ export const CheckoutSummary = ({
   fulfillmentType = 'pickup',
   freeDeliveryThreshold = null,
 }: CheckoutSummaryProps) => {
+  const envioCobrado =
+    fulfillmentType === 'pickup' ||
+    (freeDeliveryThreshold != null && cart.subtotal >= freeDeliveryThreshold)
+      ? 0
+      : deliveryFee;
   const envio = laLineaDelEnvio(
     fulfillmentType,
-    deliveryFee,
+    envioCobrado,
     freeDeliveryThreshold,
     cart.subtotal,
   );
@@ -140,7 +145,7 @@ export const CheckoutSummary = ({
         <div className='flex items-baseline justify-between'>
           <dt className='text-base font-bold text-heading'>Total</dt>
           <dd className='text-xl font-bold text-total tabular-nums'>
-            {formatPrice(cart.subtotal + deliveryFee)}
+            {formatPrice(cart.subtotal + envioCobrado)}
           </dd>
         </div>
       </dl>
