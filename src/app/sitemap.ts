@@ -11,7 +11,19 @@ import { getCmsPages, hasFaqContent } from "@/shared/cms/service/cms.service";
 import { absoluteUrl } from "@/shared/seo/site-url";
 import { getDepartments } from "@/shared/taxonomy/service/taxonomy.service";
 
-const PRODUCT_PAGE_SIZE = 200;
+/**
+ * La API corta el tamaño de página en 100 (`MAX_PAGE_LIMIT`, un `@Max` sobre
+ * `limit` en `pagination-query.dto.ts`), y pedir más no se redondea: devuelve
+ * `400 limit must not be greater than 100`.
+ *
+ * Esto estaba en 200, así que `collectProducts` lanzaba en la **primera**
+ * página, el `catch` de `productEntries` lo convertía en lista vacía y el
+ * sitemap de una tienda salía **sin una sola ficha de producto**. Un fallo
+ * silencioso: la compilación terminaba bien y el XML era válido.
+ */
+const PRODUCT_PAGE_SIZE = 100;
+
+/** Techo de páginas a recorrer, para que un `totalPages` raro no cuelgue. */
 const PRODUCT_PAGE_CAP = 100;
 
 type Entry = MetadataRoute.Sitemap[number];
