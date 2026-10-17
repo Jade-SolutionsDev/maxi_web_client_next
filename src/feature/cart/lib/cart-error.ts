@@ -29,5 +29,14 @@ export const toCartFailure = (error: unknown): CartFailure => {
     if (available !== null) return { kind: 'insufficient-stock', available };
   }
 
+  if (
+    error.status === 408 ||
+    error.status === 502 ||
+    error.status === 0 ||
+    error.status >= 500
+  ) {
+    return { kind: 'gateway-unavailable' };
+  }
+
   return { kind: 'unknown' };
 };

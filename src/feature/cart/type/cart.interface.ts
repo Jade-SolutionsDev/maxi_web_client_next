@@ -66,6 +66,7 @@ export type CartFailure =
   | { kind: 'insufficient-stock'; available: number }
   | { kind: 'not-found' }
   | { kind: 'unauthenticated' }
+  | { kind: 'gateway-unavailable' }
   | { kind: 'unknown' };
 
 export type CartResult =
