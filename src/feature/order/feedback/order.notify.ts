@@ -41,9 +41,6 @@ export const notifyCheckoutFailure = (failure: OrderFailure) => {
   }
 
   if (failure.kind === 'gateway-unavailable') {
-    // No se dice «revisa tu conexión»: quien tardó fue el servidor. Y no se
-    // pide reintentar a secas, porque la petición que se abandonó pudo crear
-    // el pedido igual — reintentar a ciegas es como se duplica (D-055).
     notify.warning('Tardamos demasiado en responder', {
       id,
       description:
@@ -68,11 +65,6 @@ export const notifyPaymentFailure = (failure: OrderFailure) => {
   }
 
   if (failure.kind === 'gateway-unavailable') {
-    // Ni la causa ni el consejo de antes eran ciertos: decía «Esa forma de pago
-    // no está disponible» y mandaba cambiarla, cuando lo que pasa es que el
-    // servidor tardó más de la cuenta y cambiar de forma de pago no arregla eso
-    // (D-055). No se promete confirmación manual: el pago manual puede estar
-    // desactivado —lo está en producción— y entonces no llega nunca.
     notify.warning('Tardamos demasiado en responder', {
       id,
       description:

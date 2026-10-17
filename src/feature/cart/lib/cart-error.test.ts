@@ -36,6 +36,14 @@ describe('toCartFailure', () => {
     });
   });
 
+  it('separa el servidor caído o lento de un error cualquiera', () => {
+    for (const estado of [408, 502, 500, 503, 0]) {
+      expect(toCartFailure(new ApiError(estado, 'x'))).toEqual({
+        kind: 'gateway-unavailable',
+      });
+    }
+  });
+
   it('maps a missing product or line to not-found', () => {
     expect(toCartFailure(new ApiError(404, 'not found'))).toEqual({
       kind: 'not-found',
@@ -53,7 +61,7 @@ describe('toCartFailure', () => {
 
   it('does not mistake the request timeout for a cart problem', () => {
     expect(toCartFailure(new ApiError(408, 'timed out'))).toEqual({
-      kind: 'unknown',
+      kind: 'gateway-unavailable',
     });
   });
 

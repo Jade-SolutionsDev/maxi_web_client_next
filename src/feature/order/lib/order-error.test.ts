@@ -53,8 +53,6 @@ describe('toOrderFailure', () => {
   });
 
   it('un 400 con motivo lo conserva para poder enseñarlo', () => {
-    // El caso de MxH-0132: la API dice qué falta y la tienda lo tiraba, para
-    // acabar culpando a la conexión del cliente.
     expect(
       toOrderFailure(
         new ApiError(400, 'bad', {
@@ -68,8 +66,6 @@ describe('toOrderFailure', () => {
   });
 
   it('un 400 sin motivo presentable es un rechazo sin motivo, no un error de red', () => {
-    // Las validaciones de campos viajan en `details`, no en `message`: son un
-    // fallo nuestro y no se le enseñan a quien compra.
     expect(
       toOrderFailure(
         new ApiError(400, 'bad', {

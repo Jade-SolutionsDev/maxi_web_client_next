@@ -10,7 +10,6 @@ const notify = vi.hoisted(() => ({
 
 vi.mock('@/lib/notify', () => ({ notify }));
 
-/** Todo lo que el aviso le pone delante a quien compra, en una sola cadena. */
 const dicho = (llamada: ReturnType<typeof vi.fn>) => {
   const [titulo, opciones] = llamada.mock.calls.at(-1) as [
     string,
@@ -36,8 +35,6 @@ describe('notifyCheckoutFailure', () => {
   });
 
   it('nunca culpa a la conexión de un rechazo del servidor', () => {
-    // El fallo de MxH-0132: cualquier 400 acababa en «Revisa tu conexión», y
-    // por eso un fallo de la recogida pasó un día entero sin diagnosticar.
     for (const fallo of [
       { kind: 'rejected' } as const,
       { kind: 'rejected', reason: 'El municipio no coincide' } as const,
@@ -54,8 +51,6 @@ describe('notifyCheckoutFailure', () => {
   });
 
   it('ante un tiempo agotado avisa de revisar los pedidos antes de repetir', () => {
-    // La petición abandonada pudo crear el pedido igual: reintentar a ciegas
-    // es como se duplica (D-055).
     notifyCheckoutFailure({ kind: 'gateway-unavailable' });
 
     expect(dicho(notify.warning)).toContain('Mis pedidos');
@@ -72,8 +67,6 @@ describe('notifyCheckoutFailure', () => {
 
 describe('notifyPaymentFailure', () => {
   it('no echa la culpa a la forma de pago cuando el servidor tardó', () => {
-    // Antes decía «Esa forma de pago no está disponible» y mandaba cambiarla:
-    // las dos mitades eran falsas (D-055).
     notifyPaymentFailure({ kind: 'gateway-unavailable' });
 
     const texto = dicho(notify.warning);

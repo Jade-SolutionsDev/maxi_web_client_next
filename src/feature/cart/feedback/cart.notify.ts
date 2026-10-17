@@ -30,9 +30,19 @@ export const notifyCartFailure = (failure: CartFailure, name: string) => {
     return;
   }
 
+  if (failure.kind === 'gateway-unavailable') {
+    notify.warning('Tardamos demasiado en responder', {
+      id,
+      description:
+        'Vuelve a cargar el carrito para ver cómo quedó antes de repetir.',
+    });
+    return;
+  }
+
   notify.error('No pudimos actualizar tu carrito', {
     id,
-    description: 'Revisa tu conexión e inténtalo de nuevo.',
+    description:
+      'Inténtalo de nuevo en un momento. Si vuelve a pasar, escríbenos.',
   });
 };
 

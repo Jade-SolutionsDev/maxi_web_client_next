@@ -59,7 +59,7 @@ export const VERIFY_STATUS_VIEWS: Record<VerifyStatus, VerifyStatusView> = {
     icon: TriangleAlert,
     title: 'La verificación está tardando demasiado',
     description:
-      'No recibimos una respuesta. Revisa tu conexión y vuelve a abrir el enlace del correo.',
+      'No recibimos una respuesta a tiempo. Puede ser tu conexión o nuestro servicio de cuentas: vuelve a abrir el enlace del correo.',
     action: { href: '/register', label: 'Volver al registro' },
     hint: SUPPORT_HINT,
   },
