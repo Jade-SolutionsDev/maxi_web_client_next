@@ -153,6 +153,13 @@ export type OrderFailure =
   | { kind: 'not-found' }
   | { kind: 'already-paid' }
   | { kind: 'payment-conflict' }
+  /**
+   * La API rechazó el pedido y **dijo por qué**. `reason` es ese motivo, ya
+   * escrito para una persona; viene vacío cuando el 400 no trae un mensaje
+   * presentable (una validación de campos, que es un fallo nuestro y no algo
+   * que el cliente pueda arreglar).
+   */
+  | { kind: 'rejected'; reason?: string }
   | { kind: 'gateway-unavailable' }
   | { kind: 'no-payment' }
   | { kind: 'unknown' };

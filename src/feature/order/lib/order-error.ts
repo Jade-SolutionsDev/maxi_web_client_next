@@ -38,6 +38,20 @@ const readMessage = (body: unknown): string =>
     ? ((body as ErrorBody).error?.message as string)
     : '';
 
+/**
+ * Si el motivo se le puede enseñar tal cual a quien compra.
+ *
+ * Solo pasa el `message` del sobre, que lo escribe el código de la API a
+ * propósito para que alguien lo lea. Las validaciones de campos viajan aparte,
+ * en `details`, y son otra cosa: cadenas en inglés como «municipalityId must be
+ * a UUID», que delatan un fallo de la tienda y no le dicen nada al cliente.
+ *
+ * El tope de largo es una red de seguridad: un texto desmedido no es un motivo,
+ * y en un aviso no se lee.
+ */
+const presentable = (message: string): boolean =>
+  message.length > 0 && message.length <= 160;
+
 export const toOrderFailure = (error: unknown): OrderFailure => {
   if (error instanceof SessionRequiredError) return { kind: 'unauthenticated' };
 
@@ -56,7 +70,17 @@ export const toOrderFailure = (error: unknown): OrderFailure => {
     if (message.includes('already paid')) return { kind: 'already-paid' };
     if (message.includes('Cart is empty')) return { kind: 'empty-cart' };
 
-    return { kind: 'unknown' };
+    /**
+     * Un 400 es la API diciendo que **no acepta este pedido**, y casi siempre
+     * explica por qué: «Faltan los datos de quien recoge el pedido». Antes todo
+     * eso caía en `unknown`, que la tienda traduce a «Revisa tu conexión»:
+     * culpaba al internet del cliente de una decisión del servidor, y escondía
+     * lo único que decía qué arreglar (MxH-0132).
+     */
+    return {
+      kind: 'rejected',
+      ...(presentable(message) ? { reason: message } : {}),
+    };
   }
 
   if (error.status === 409) {
