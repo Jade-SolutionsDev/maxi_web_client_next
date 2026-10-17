@@ -1,3 +1,4 @@
+import { chmod } from "node:fs/promises";
 import { type BrowserContext, expect, type Page } from "@playwright/test";
 import { municipioConCobertura } from "../helpers";
 
@@ -75,4 +76,31 @@ export async function iniciarSesion(page: Page, context: BrowserContext) {
   await expect(page).not.toHaveURL(/\/login/, { timeout: 30_000 });
 
   await context.storageState({ path: ARCHIVO_SESION });
+  await cerrarPermisos(ARCHIVO_SESION);
+}
+
+/**
+ * El fichero de sesion lleva la cookie `__session` y el token de refresco de
+ * Clerk, los dos vivos: con el, cualquier usuario de la maquina entra como la
+ * cuenta de pruebas sin saber su clave.
+ *
+ * Playwright lo escribe con el umask de quien corra, que en el servidor deja
+ * `rw-rw-r--`. El 9-oct-2026 se cerro a mano (MxH-0169, punto 2) y la corrida
+ * de esa misma noche volvio a dejarlo legible para todos: un `chmod` no
+ * sobrevive al fichero que lo sustituye. Por eso se cierra aqui, donde se
+ * escribe, y no fuera.
+ *
+ * Que falle no debe tumbar la suite —en Windows `chmod` apenas hace nada—,
+ * pero tiene que decirse: un aviso se lee, un fallo silencioso no.
+ */
+async function cerrarPermisos(archivo: string): Promise<void> {
+  try {
+    await chmod(archivo, 0o600);
+  } catch (err) {
+    console.warn(
+      `No se pudieron cerrar los permisos de ${archivo}: ${
+        err instanceof Error ? err.message : String(err)
+      }`,
+    );
+  }
 }
