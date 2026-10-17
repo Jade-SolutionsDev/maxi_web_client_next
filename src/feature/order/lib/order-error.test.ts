@@ -52,6 +52,44 @@ describe('toOrderFailure', () => {
     ).toEqual({ kind: 'empty-cart' });
   });
 
+  it('un 400 con motivo lo conserva para poder enseñarlo', () => {
+    // El caso de MxH-0132: la API dice qué falta y la tienda lo tiraba, para
+    // acabar culpando a la conexión del cliente.
+    expect(
+      toOrderFailure(
+        new ApiError(400, 'bad', {
+          error: { message: 'Faltan los datos de quien recoge el pedido' },
+        }),
+      ),
+    ).toEqual({
+      kind: 'rejected',
+      reason: 'Faltan los datos de quien recoge el pedido',
+    });
+  });
+
+  it('un 400 sin motivo presentable es un rechazo sin motivo, no un error de red', () => {
+    // Las validaciones de campos viajan en `details`, no en `message`: son un
+    // fallo nuestro y no se le enseñan a quien compra.
+    expect(
+      toOrderFailure(
+        new ApiError(400, 'bad', {
+          error: {
+            code: 'BadRequestException',
+            details: [{ message: 'municipalityId must be a UUID' }],
+          },
+        }),
+      ),
+    ).toEqual({ kind: 'rejected' });
+  });
+
+  it('un motivo desmedido no se arrastra al aviso', () => {
+    const largo = 'x'.repeat(161);
+
+    expect(
+      toOrderFailure(new ApiError(400, 'bad', { error: { message: largo } })),
+    ).toEqual({ kind: 'rejected' });
+  });
+
   it('maps a no-payment 404 apart from a missing order', () => {
     expect(
       toOrderFailure(

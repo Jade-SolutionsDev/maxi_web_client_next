@@ -30,9 +30,32 @@ export const notifyCheckoutFailure = (failure: OrderFailure) => {
     return;
   }
 
+  if (failure.kind === 'rejected') {
+    notify.error('No pudimos crear tu pedido', {
+      id,
+      description:
+        failure.reason ??
+        'El pedido no pasó una comprobación nuestra. Inténtalo de nuevo y, si vuelve a pasar, escríbenos.',
+    });
+    return;
+  }
+
+  if (failure.kind === 'gateway-unavailable') {
+    // No se dice «revisa tu conexión»: quien tardó fue el servidor. Y no se
+    // pide reintentar a secas, porque la petición que se abandonó pudo crear
+    // el pedido igual — reintentar a ciegas es como se duplica (D-055).
+    notify.warning('Tardamos demasiado en responder', {
+      id,
+      description:
+        'Puede que tu pedido se haya creado igual. Revisa «Mis pedidos» antes de volver a intentarlo.',
+    });
+    return;
+  }
+
   notify.error('No pudimos crear tu pedido', {
     id,
-    description: 'Revisa tu conexión e inténtalo de nuevo.',
+    description:
+      'Inténtalo de nuevo en un momento. Si vuelve a pasar, escríbenos.',
   });
 };
 
@@ -45,12 +68,25 @@ export const notifyPaymentFailure = (failure: OrderFailure) => {
   }
 
   if (failure.kind === 'gateway-unavailable') {
-    // No se promete confirmación manual: el pago manual puede estar desactivado
-    // —lo está en producción— y entonces esa confirmación no llega nunca.
-    notify.info('Esa forma de pago no está disponible', {
+    // Ni la causa ni el consejo de antes eran ciertos: decía «Esa forma de pago
+    // no está disponible» y mandaba cambiarla, cuando lo que pasa es que el
+    // servidor tardó más de la cuenta y cambiar de forma de pago no arregla eso
+    // (D-055). No se promete confirmación manual: el pago manual puede estar
+    // desactivado —lo está en producción— y entonces no llega nunca.
+    notify.warning('Tardamos demasiado en responder', {
       id,
       description:
-        'Tu pedido queda reservado. Prueba con otra forma de pago o inténtalo en unos minutos.',
+        'Tu pedido sigue reservado. Espera un momento y vuelve a intentarlo.',
+    });
+    return;
+  }
+
+  if (failure.kind === 'rejected') {
+    notify.error('No pudimos actualizar el estado del pago', {
+      id,
+      description:
+        failure.reason ??
+        'El pago no pasó una comprobación nuestra. Inténtalo de nuevo y, si vuelve a pasar, escríbenos.',
     });
     return;
   }
@@ -61,7 +97,8 @@ export const notifyPaymentFailure = (failure: OrderFailure) => {
 
   notify.error('No pudimos actualizar el estado del pago', {
     id,
-    description: 'Revisa tu conexión e inténtalo de nuevo.',
+    description:
+      'Inténtalo de nuevo en un momento. Si vuelve a pasar, escríbenos.',
   });
 };
 
