@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import type { AddressLocation } from '@/feature/address/type/address.interface';
 import { readMunicipalityId } from '@/shared/location/cookie/location.cookie';
 import { toOrderFailure } from '../lib/order-error';
 import { CheckoutInputSchema } from '../schema/checkout.schema';
@@ -31,6 +32,7 @@ const toAddressPayload = (input: {
   reference?: string;
   municipalityId?: string;
   contactPhone?: string;
+  location?: AddressLocation | null;
   addressId?: string;
 }): CheckoutAddressPayload | undefined => {
   if (input.addressId || !input.street || !input.municipalityId) {
@@ -48,6 +50,10 @@ const toAddressPayload = (input: {
     reference: input.reference || undefined,
     municipalityId: input.municipalityId,
     contactPhone: input.contactPhone || undefined,
+    // Sin `|| undefined`: en una dirección que nace aquí no hay punto que
+    // borrar, pero el patrón de los demás campos convertiría un punto marcado
+    // en el mapa en nada si alguna vez llegara como `null`.
+    location: input.location ?? undefined,
   };
 };
 

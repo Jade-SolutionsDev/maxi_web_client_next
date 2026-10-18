@@ -1,3 +1,4 @@
+import type { AddressLocation } from '@/feature/address/type/address.interface';
 import 'server-only';
 
 import { type ApiResponse, api, apiAuth } from '@/api/http';
@@ -14,7 +15,7 @@ const orderPath = (orderId: string) =>
 
 interface OrdersPage {
   data: Order[];
-  meta: { total: number };
+  meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
 export interface CheckoutAddressPayload {
@@ -26,6 +27,8 @@ export interface CheckoutAddressPayload {
   reference?: string;
   municipalityId: string;
   contactPhone?: string;
+  /** El punto en el mapa, si lo marcó al pagar. */
+  location?: AddressLocation;
 }
 
 export interface CheckoutContactPayload {

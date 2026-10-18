@@ -3,6 +3,7 @@
 import { Check, MapPin, Plus } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { FormInput } from '@/app/components/form/FormInput';
+import { AddressLocationField } from '@/feature/address/components/AddressLocationField';
 import { AddressMunicipalityFields } from '@/feature/address/components/AddressMunicipalityFields';
 import type { Address } from '@/feature/address/type/address.interface';
 import { cn } from '@/lib/utils';
@@ -162,6 +163,11 @@ export const CheckoutAddressSelector = ({
             la línea de arriba ya explica en cuál estamos y cómo cambiarla.
           */}
           {!zone && <AddressMunicipalityFields catalog={catalog} />}
+
+          {/* El mapa también aquí, y no solo en «Mis direcciones»: la primera
+              dirección de casi todo cliente nace en el checkout, así que
+              dejarlo fuera haría que el punto casi nunca se marcara. */}
+          <AddressLocationField />
           <label className='flex cursor-pointer items-center gap-2 text-sm text-heading'>
             <input
               type='checkbox'

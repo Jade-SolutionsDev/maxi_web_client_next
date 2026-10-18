@@ -20,6 +20,22 @@ const optionalText = (max: number) =>
   z.string().trim().max(max).optional().or(z.literal(''));
 
 /**
+ * El punto en el mapa (MxH-0071). Las tres partes son obligatorias **dentro**
+ * del objeto, así que media coordenada no valida y no hace falta comprobar un
+ * campo contra otro.
+ *
+ * `nullable` además de `optional`, y la diferencia es de verdad: `null`
+ * significa «quita el punto» y la ausencia «déjalo como está». Lo que llega de
+ * la API tampoco se puede estrechar a `optional`, porque una dirección sin
+ * punto responde `location: null`.
+ */
+export const AddressLocationSchema = z.object({
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  source: z.enum(['device', 'manual']),
+});
+
+/**
  * The province is part of the form because it is how a person narrows down a
  * municipality, but it never travels to the API: an address stores only the
  * municipality and the API derives the province from it.
@@ -38,6 +54,7 @@ export const AddressFormSchema = z.object({
     .regex(/^[0-9+][0-9+\s-]{5,19}$/, 'Teléfono no válido')
     .optional()
     .or(z.literal('')),
+  location: AddressLocationSchema.nullable().optional(),
 });
 
 export type AddressFormValues = z.infer<typeof AddressFormSchema>;

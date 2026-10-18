@@ -18,5 +18,9 @@ export const toAddress = (response: AddressResponse): Address => ({
   recipientName: optional(response.recipientName),
   idCard: optional(response.idCard),
   contactPhone: optional(response.contactPhone),
+  // Tal cual: es objeto o `null`, no una cadena que pueda venir en blanco, y
+  // un `{ latitude: 0, longitude: 0 }` inventado centraría el mapa en medio
+  // del Atlántico. Sin punto es `null`, y quien lo pinta decide qué enseñar.
+  location: response.location ?? null,
   isDefault: response.isDefault,
 });

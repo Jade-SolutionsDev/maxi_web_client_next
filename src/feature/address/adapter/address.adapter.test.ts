@@ -15,6 +15,7 @@ const response: AddressResponse = {
   recipientName: null,
   idCard: null,
   contactPhone: null,
+  location: null,
   isDefault: true,
   createdAt: '2026-01-01T00:00:00.000Z',
 };
@@ -42,5 +43,29 @@ describe('toAddress', () => {
 
     expect(address.label).toBeUndefined();
     expect(address.reference).toBeUndefined();
+  });
+
+  // MxH-0072. El punto no pasa por `optional()` como los textos: aquí «sin
+  // punto» es un estado que se pinta, no una ausencia que se ignora, y un
+  // `{ latitude: 0, longitude: 0 }` inventado centraría el mapa en el Atlántico.
+  it('deja el punto en null cuando la dirección no tiene', () => {
+    expect(toAddress(response).location).toBeNull();
+  });
+
+  it('pasa el punto tal cual, con su procedencia', () => {
+    const address = toAddress({
+      ...response,
+      location: {
+        latitude: 23.102847,
+        longitude: -82.409263,
+        source: 'device',
+      },
+    });
+
+    expect(address.location).toEqual({
+      latitude: 23.102847,
+      longitude: -82.409263,
+      source: 'device',
+    });
   });
 });
