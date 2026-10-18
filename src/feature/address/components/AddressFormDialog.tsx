@@ -23,6 +23,7 @@ import {
   type AddressFormValues,
 } from '../schema/address.schema';
 import type { Address, AddressFailure } from '../type/address.interface';
+import { AddressLocationField } from './AddressLocationField';
 import { AddressMunicipalityFields } from './AddressMunicipalityFields';
 
 const EMPTY: AddressFormValues = {
@@ -33,6 +34,9 @@ const EMPTY: AddressFormValues = {
   provinceId: '',
   municipalityId: '',
   contactPhone: '',
+  // `null` y no `undefined`: una dirección nueva no tiene punto, y eso es un
+  // estado que se pinta («Sin ubicación»), no un campo por rellenar.
+  location: null,
 };
 
 const FAILURE_MESSAGE: Record<AddressFailure['kind'], string> = {
@@ -55,6 +59,7 @@ const toFormValues = (address: Address): AddressFormValues => ({
   provinceId: address.provinceId,
   municipalityId: address.municipalityId,
   contactPhone: address.contactPhone ?? '',
+  location: address.location,
 });
 
 interface AddressFormDialogProps {
@@ -177,6 +182,8 @@ export const AddressFormDialog = ({
             inputMode='tel'
             autoComplete='tel'
           />
+
+          <AddressLocationField />
 
           {failure && (
             <p role='alert' className='text-destructive text-sm'>

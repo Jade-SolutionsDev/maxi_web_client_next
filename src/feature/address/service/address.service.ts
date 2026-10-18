@@ -2,25 +2,17 @@ import 'server-only';
 
 import { type ApiResponse, apiAuth } from '@/api/http';
 import { toAddress } from '../adapter/address.adapter';
+import type { AddressPayload } from '../lib/address-payload';
 import type { Address, AddressResponse } from '../type/address.interface';
+
+// Reexportado: el tipo vive en `lib/` para poder probarlo sin `server-only`,
+// y quien ya lo importaba desde aquí sigue funcionando.
+export type { AddressPayload };
 
 const ADDRESSES_PATH = '/storefront/addresses';
 
 const addressPath = (id: string) =>
   `${ADDRESSES_PATH}/${encodeURIComponent(id)}`;
-
-/**
- * Body the API accepts. The province is deliberately absent: the API derives it
- * from the municipality, and sending it would create a second source of truth.
- */
-export interface AddressPayload {
-  label?: string;
-  street: string;
-  betweenStreets?: string;
-  reference?: string;
-  municipalityId: string;
-  contactPhone?: string;
-}
 
 export const getAddresses = async (): Promise<Address[]> => {
   const { data } =

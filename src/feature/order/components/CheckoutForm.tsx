@@ -106,6 +106,7 @@ export const CheckoutForm = ({
       paymentMethod: paymentMethods[0]?.code ?? '',
       provinceId: zone ? zoneProvinceId(catalog, zone.municipalityId) : '',
       municipalityId: zone?.municipalityId ?? '',
+      location: null,
     },
   });
 
