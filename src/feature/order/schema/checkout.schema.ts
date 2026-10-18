@@ -45,6 +45,13 @@ export const CheckoutInputSchema = z
      * el formulario y la acción sin que nada avisara.
      */
     location: AddressLocationSchema.nullable().optional(),
+    /**
+     * La clave del intento (MxH-0176). Hay que declararla aquí aunque la ponga
+     * el formulario justo antes de enviar: **zod descarta las claves que no
+     * están en el objeto**, así que sin esta línea se perdería entre el
+     * formulario y la acción, y nadie avisaría. Ya pasó con `location`.
+     */
+    idempotencyKey: z.string().trim().min(16).max(64).optional(),
   })
   .superRefine((value, ctx) => {
     if (value.fulfillmentType === 'pickup') {

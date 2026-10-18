@@ -92,6 +92,9 @@ export const checkoutAction = async (input: unknown): Promise<OrderResult> => {
         data.municipalityId || fallbackMunicipalityId || undefined,
       paymentMethod: data.paymentMethod || undefined,
       customerNotes: data.notas || undefined,
+      // La clave de este intento: con ella, un reintento tras el corte por
+      // tiempo devuelve el mismo pedido en vez de crear otro (MxH-0176).
+      idempotencyKey: data.idempotencyKey,
     });
 
     const payment = await openPaymentCharge(

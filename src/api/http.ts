@@ -29,10 +29,25 @@ export type Paginated<T> = {
   totalPages: number;
 };
 
+/**
+ * Ocho segundos para cualquier llamada. Es una lectura de catálogo lo que se
+ * mide con esto, y para eso está bien: si el catálogo no contesta en 8
+ * segundos, insistir no mejora nada.
+ *
+ * **Crear un pedido no es una lectura de catálogo** y por eso puede pedir más
+ * (MxH-0176): lleva reserva de inventario y apertura de cobro por medio, y
+ * rendirse a mitad no cancela nada —el corte es solo de este lado, la API sigue
+ * trabajando—, así que un corte temprano no evita el trabajo, solo hace que el
+ * cliente no se entere de cómo acabó.
+ */
+const ESPERA_POR_OMISION = 8000;
+
 export type ApiOptions = Omit<RequestInit, 'body'> & {
   params?: Record<string, string | number | boolean | undefined>;
   body?: unknown;
   next?: NextFetchRequestConfig;
+  /** Milisegundos antes de rendirse. Por omisión, `ESPERA_POR_OMISION`. */
+  timeoutMs?: number;
 };
 
 const isAbsolute = (path: string) => /^https?:\/\//.test(path);
@@ -41,7 +56,7 @@ export async function api<T>(
   path: string,
   options: ApiOptions = {},
 ): Promise<T> {
-  const { params, body, headers, ...init } = options;
+  const { params, body, headers, timeoutMs, ...init } = options;
   // An absolute URL escapes API_BASE: some resources live on a different host.
   const url = new URL(
     isAbsolute(path) ? path : `${API_BASE}/${path.replace(/^\/+/, '')}`,
@@ -73,7 +88,7 @@ export async function api<T>(
         ...headers,
       },
       body: isMultipart ? body : body ? JSON.stringify(body) : undefined,
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(timeoutMs ?? ESPERA_POR_OMISION),
     });
   } catch (err) {
     // AbortSignal.timeout rejects with a native DOMException whose `message` is

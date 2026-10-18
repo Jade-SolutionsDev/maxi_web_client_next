@@ -38,6 +38,11 @@ export interface CheckoutContactPayload {
 }
 
 export interface CheckoutPayload {
+  /**
+   * La clave de este intento de compra. Si el cliente reintenta tras un corte
+   * por tiempo, la API devuelve el **mismo** pedido en vez de crear otro.
+   */
+  idempotencyKey?: string;
   contact?: CheckoutContactPayload;
   fulfillmentType?: 'delivery' | 'pickup';
   deliveryOptionId?: string;
@@ -85,10 +90,25 @@ export const getPaymentMethods = async (): Promise<PaymentMethod[]> => {
   return response.data;
 };
 
+/**
+ * Crear el pedido espera más que el resto (MxH-0176).
+ *
+ * Los 8 segundos de siempre son para leer catálogo. Aquí hay reserva de
+ * inventario y apertura de cobro por medio, y **rendirse no cancela nada**: el
+ * corte es solo de este lado y la API sigue trabajando, así que cortar pronto
+ * no ahorra el pedido, solo hace que el cliente no sepa que se creó.
+ *
+ * Veinte segundos, no más: pasado ese punto lo que hay que hacer es contarlo,
+ * no seguir esperando. Y la `idempotencyKey` del payload es la que garantiza
+ * que, si el cliente reintenta, no compre dos veces.
+ */
+const ESPERA_DEL_CHECKOUT = 20_000;
+
 export const checkout = async (payload: CheckoutPayload): Promise<Order> => {
   const response = await apiAuth<ApiResponse<Order>>(ORDERS_PATH, {
     method: 'POST',
     body: payload,
+    timeoutMs: ESPERA_DEL_CHECKOUT,
   });
 
   return response.data;
