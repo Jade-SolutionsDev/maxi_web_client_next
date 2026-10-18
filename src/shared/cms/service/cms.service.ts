@@ -31,6 +31,7 @@ import type {
   SiteSettings,
   SiteSettingsResponse,
   StaffMember,
+  StorePopup,
 } from '../type/cms.interface';
 
 /**
@@ -155,6 +156,30 @@ export const getCmsPage = async (slug: string): Promise<CmsPage | null> => {
       `/public/cms/pages/${encodeURIComponent(slug)}`,
     );
     return toPublishedCmsPage(data);
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * El aviso emergente vigente, o `null` si no hay ninguno.
+ *
+ * Caché de minutos como los avisos de la portada, y no de horas: un aviso con
+ * fecha de fin tiene que apagarse cerca de la hora que eligieron, no cuando
+ * caduque una caché larga.
+ *
+ * Si la API falla, devuelve `null`: la portada se dibuja igual. Un anuncio
+ * nunca puede ser el motivo de que la tienda no cargue.
+ */
+export const getStorePopup = async (): Promise<StorePopup | null> => {
+  'use cache';
+  cacheLife('minutes');
+  cacheTag('cms');
+
+  try {
+    const { data } =
+      await api<ApiResponse<StorePopup | null>>('/public/cms/popup');
+    return data ?? null;
   } catch {
     return null;
   }

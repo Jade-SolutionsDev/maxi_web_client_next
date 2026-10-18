@@ -130,6 +130,31 @@ export interface HomeNotice {
   content: string;
 }
 
+/** Una medida de la imagen del aviso, con su tamaño real para el srcset. */
+export interface PopupAsset {
+  src: string;
+  width: number;
+  height: number;
+}
+
+/**
+ * El aviso emergente vigente, tal como lo sirve la API. `version` cambia
+ * cuando cambia el contenido: la tienda lo guarda junto al cierre para que un
+ * aviso editado vuelva a salirle a quien ya lo había cerrado.
+ */
+export interface StorePopup {
+  id: string;
+  title: string;
+  body: string;
+  buttonLabel: string | null;
+  buttonHref: string | null;
+  desktop: PopupAsset | null;
+  tablet: PopupAsset | null;
+  mobile: PopupAsset | null;
+  repeatAfterHours: number | null;
+  version: string;
+}
+
 export interface CmsFaqQuestionResponse {
   id: string;
   question: string;
