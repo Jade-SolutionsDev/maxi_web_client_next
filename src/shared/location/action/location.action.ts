@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import {
+  clearMunicipalityId,
   readMunicipalityId,
   writeMunicipalityId,
 } from '../cookie/location.cookie';
@@ -45,4 +46,11 @@ export const saveLocation = async (
   } catch {
     return { error: GENERIC_ERROR };
   }
+};
+
+export const forgetLocation = async (): Promise<void> => {
+  try {
+    await clearMunicipalityId();
+    revalidatePath('/', 'layout');
+  } catch {}
 };

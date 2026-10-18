@@ -4,6 +4,7 @@ import { useAuth } from '@clerk/nextjs';
 import { LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { ConfirmDialog } from '@/app/components/form/ConfirmDialog';
+import { forgetLocation } from '@/shared/location/action/location.action';
 
 interface SignOutConfirmDialogProps {
   isOpen: boolean;
@@ -26,9 +27,14 @@ export const SignOutConfirmDialog = ({
     setIsSigningOut(false);
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setIsSigningOut(true);
-    signOut({ redirectUrl: '/' });
+
+    try {
+      await forgetLocation();
+    } catch {}
+
+    await signOut({ redirectUrl: '/' });
   };
 
   return (

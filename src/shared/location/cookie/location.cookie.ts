@@ -25,3 +25,9 @@ export const writeMunicipalityId = async (
     maxAge: LOCATION_MAX_AGE,
   });
 };
+
+export const clearMunicipalityId = async (): Promise<void> => {
+  const cookieStore = await cookies();
+
+  cookieStore.delete({ name: LOCATION_COOKIE, path: '/' });
+};
