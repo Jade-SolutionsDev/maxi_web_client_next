@@ -80,7 +80,8 @@ export function StorePopupDialog({ popup }: { popup: StorePopup }) {
           penaliza en buscadores, y el catálogo vive de esas visitas. */}
       <button
         type='button'
-        aria-label='Cerrar el aviso'
+        aria-hidden='true'
+        tabIndex={-1}
         onClick={cerrar}
         className='fixed inset-0 z-40 hidden cursor-default bg-heading/55 sm:block'
       />
