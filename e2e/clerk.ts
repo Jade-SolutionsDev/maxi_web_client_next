@@ -128,6 +128,14 @@ async function esperarACuenta(correo: string, intentos = 10): Promise<void> {
   throw new Error(`Clerk no reconoce la cuenta ${correo} tras crearla`);
 }
 
+/**
+ * Revoca una sesion: la cookie y el token de refresco que la acompañan dejan
+ * de valer en el acto. Lo usa el teardown con la sesion que abrio la suite.
+ */
+export async function revocarSesion(id: string) {
+  await pedir(`/sessions/${id}/revoke`, { method: "POST" });
+}
+
 export async function borrarCuenta(id: string) {
   await pedir(`/users/${id}`, { method: "DELETE" });
 }
