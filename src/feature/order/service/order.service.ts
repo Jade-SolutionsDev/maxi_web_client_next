@@ -1,3 +1,4 @@
+import type { AddressLocation } from '@/feature/address/type/address.interface';
 import 'server-only';
 
 import { type ApiResponse, api, apiAuth } from '@/api/http';
@@ -26,6 +27,8 @@ export interface CheckoutAddressPayload {
   reference?: string;
   municipalityId: string;
   contactPhone?: string;
+  /** El punto en el mapa, si lo marcó al pagar. */
+  location?: AddressLocation;
 }
 
 export interface CheckoutContactPayload {

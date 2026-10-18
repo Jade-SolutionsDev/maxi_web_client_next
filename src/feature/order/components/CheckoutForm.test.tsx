@@ -62,6 +62,7 @@ const addresses = [
     municipalityName: 'Plaza',
     provinceId: '66666666-6666-4666-8666-666666666666',
     provinceName: 'La Habana',
+    location: null,
     isDefault: true,
   },
 ];

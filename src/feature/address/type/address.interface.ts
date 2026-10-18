@@ -6,6 +6,20 @@
  * disagree. Both name fields come back empty if the municipality ever leaves
  * the catalog; the address stays readable instead of the list failing.
  */
+/**
+ * De dónde salió el punto en el mapa. No merecen la misma confianza: el del
+ * navegador lo da el GPS, el marcado a mano puede estar a dos cuadras, y quien
+ * entrega necesita saber cuál está mirando.
+ */
+export type LocationSource = 'device' | 'manual';
+
+/** Las tres partes van juntas: la API nunca manda media. */
+export interface AddressLocation {
+  latitude: number;
+  longitude: number;
+  source: LocationSource;
+}
+
 export interface AddressResponse {
   id: string;
   label: string | null;
@@ -19,6 +33,8 @@ export interface AddressResponse {
   recipientName: string | null;
   idCard: string | null;
   contactPhone: string | null;
+  /** `null` cuando la dirección no tiene punto en el mapa. */
+  location: AddressLocation | null;
   isDefault: boolean;
   createdAt: string;
 }
@@ -36,6 +52,12 @@ export interface Address {
   recipientName?: string;
   idCard?: string;
   contactPhone?: string;
+  /**
+   * El punto en el mapa. Se queda en `null` y no pasa a `undefined` como el
+   * resto de los opcionales: aquí «no hay punto» es un estado que se pinta
+   * —con el aviso de «sin ubicación»— y no una ausencia que se ignora.
+   */
+  location: AddressLocation | null;
   isDefault: boolean;
 }
 

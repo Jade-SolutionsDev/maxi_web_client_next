@@ -3,7 +3,10 @@ import {
   CUBAN_ID_MESSAGE,
   isCubanIdCard,
 } from '@/feature/address/lib/cuban-id';
-import { AddressFormSchema } from '@/feature/address/schema/address.schema';
+import {
+  AddressFormSchema,
+  AddressLocationSchema,
+} from '@/feature/address/schema/address.schema';
 
 export const CheckoutInputSchema = z
   .object({
@@ -35,6 +38,13 @@ export const CheckoutInputSchema = z
     reference: z.string().optional(),
     provinceId: z.string().optional(),
     municipalityId: z.string().optional(),
+    /**
+     * El punto en el mapa de la dirección nueva (MxH-0072). Hay que declararlo
+     * aquí aunque `AddressFormSchema` ya lo valide: zod descarta las claves que
+     * no están en el objeto, así que sin esta línea el punto se perdería entre
+     * el formulario y la acción sin que nada avisara.
+     */
+    location: AddressLocationSchema.nullable().optional(),
   })
   .superRefine((value, ctx) => {
     if (value.fulfillmentType === 'pickup') {
