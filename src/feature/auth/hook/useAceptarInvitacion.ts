@@ -29,7 +29,7 @@ export const useAceptarInvitacion = () => {
       return { error: { code: 'invitation_without_email' } };
     }
 
-    const conClave = await signUp.password({ emailAddress: correo, password });
+    const conClave = await signUp.update({ password });
     if (conClave.error) {
       setEnviando(false);
       return { error: conClave.error };
