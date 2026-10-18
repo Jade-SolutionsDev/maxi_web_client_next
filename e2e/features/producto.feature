@@ -24,9 +24,11 @@ Característica: La ficha de un producto
     Cuando el cliente abre la ficha de "Cola" por su identificador
     Entonces acaba en la dirección de "Cola"
 
-  # La tienda responde 200 con la pantalla de "no encontrado", en vez de un 404
-  # de verdad. Es el mismo fallo que MxH-0087, aqui en las fichas: mientras siga
-  # asi, esto comprueba lo unico que hoy es cierto — que al cliente se le dice.
+  # MxH-0087, la mitad gratis: una direccion de ficha que no acaba en
+  # identificador no puede existir, y el middleware lo resuelve sin llamar a la
+  # API. Lo que sigue respondiendo 200 es la otra mitad —direccion bien formada,
+  # producto retirado—, que cuesta una llamada por peticion y esta sin decidir.
   Escenario: Una dirección sin identificador no es una ficha
     Cuando el cliente abre "/catalog/cola-inventada"
     Entonces se le dice que la página no existe
+    Y la respuesta es un 404
