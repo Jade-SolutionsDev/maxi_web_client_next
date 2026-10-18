@@ -17,22 +17,14 @@ export const useAceptarInvitacion = () => {
   ): Promise<{ error: TranslatableClerkError }> => {
     setEnviando(true);
 
-    const canjeado = await signUp.ticket({ ticket });
-    if (canjeado.error) {
+    const creada = await signUp.create({
+      strategy: 'ticket',
+      ticket,
+      password,
+    });
+    if (creada.error) {
       setEnviando(false);
-      return { error: canjeado.error };
-    }
-
-    const correo = signUp.emailAddress;
-    if (!correo) {
-      setEnviando(false);
-      return { error: { code: 'invitation_without_email' } };
-    }
-
-    const conClave = await signUp.update({ password });
-    if (conClave.error) {
-      setEnviando(false);
-      return { error: conClave.error };
+      return { error: creada.error };
     }
 
     const listo = await signUp.finalize({ navigate: () => router.push('/') });

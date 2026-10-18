@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const signUp = vi.hoisted(() => ({
   emailAddress: 'invitado@example.com',
+  create: vi.fn(),
   ticket: vi.fn(),
   update: vi.fn(),
   password: vi.fn(),
@@ -24,6 +25,7 @@ import { useAceptarInvitacion } from '@/feature/auth/hook/useAceptarInvitacion';
 
 describe('Aceptar una invitación no vuelve a mandar el correo', () => {
   beforeEach(() => {
+    signUp.create.mockReset().mockResolvedValue({ error: null });
     signUp.ticket.mockReset().mockResolvedValue({ error: null });
     signUp.update.mockReset().mockResolvedValue({ error: null });
     signUp.password.mockReset().mockResolvedValue({ error: null });
@@ -31,37 +33,39 @@ describe('Aceptar una invitación no vuelve a mandar el correo', () => {
     push.mockReset();
   });
 
-  it('pone la contraseña sin tocar el correo', async () => {
+  it('canjea el ticket y pone la contraseña en una sola llamada', async () => {
     const { result } = renderHook(() => useAceptarInvitacion());
 
     const { error } = await result.current.aceptar('tk_1', 'MiClave2026');
 
     expect(error).toBeNull();
-    expect(signUp.ticket).toHaveBeenCalledWith({ ticket: 'tk_1' });
-    expect(signUp.update).toHaveBeenCalledWith({ password: 'MiClave2026' });
-    expect(signUp.password).not.toHaveBeenCalled();
+    expect(signUp.create).toHaveBeenCalledWith({
+      strategy: 'ticket',
+      ticket: 'tk_1',
+      password: 'MiClave2026',
+    });
     expect(signUp.finalize).toHaveBeenCalledTimes(1);
   });
 
-  it('se planta si el ticket no trae correo', async () => {
-    signUp.emailAddress = '';
+  it('nunca manda el correo, que el ticket ya trae verificado', async () => {
     const { result } = renderHook(() => useAceptarInvitacion());
 
-    const { error } = await result.current.aceptar('tk_1', 'MiClave2026');
+    await result.current.aceptar('tk_1', 'MiClave2026');
 
-    expect(error).toEqual({ code: 'invitation_without_email' });
+    expect(signUp.password).not.toHaveBeenCalled();
     expect(signUp.update).not.toHaveBeenCalled();
-    signUp.emailAddress = 'invitado@example.com';
+    for (const [params] of signUp.create.mock.calls) {
+      expect(params).not.toHaveProperty('emailAddress');
+    }
   });
 
-  it('devuelve el error del canje sin seguir adelante', async () => {
-    signUp.ticket.mockResolvedValue({ error: { code: 'ticket_invalid' } });
+  it('devuelve el error del canje sin intentar cerrar el alta', async () => {
+    signUp.create.mockResolvedValue({ error: { code: 'ticket_invalid' } });
     const { result } = renderHook(() => useAceptarInvitacion());
 
     const { error } = await result.current.aceptar('tk_1', 'MiClave2026');
 
     expect(error).toEqual({ code: 'ticket_invalid' });
-    expect(signUp.update).not.toHaveBeenCalled();
     expect(signUp.finalize).not.toHaveBeenCalled();
   });
 });
