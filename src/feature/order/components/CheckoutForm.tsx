@@ -11,6 +11,7 @@ import type { Address } from '@/feature/address/type/address.interface';
 import { useCartActions } from '@/feature/cart/hook/useCart';
 import type { LocationCatalog } from '@/shared/location/type/location.interface';
 import { checkoutAction } from '../action/order.action';
+import { claveDelIntento, olvidarElIntento } from '../lib/clave-del-intento';
 import { notifyCheckoutFailure } from '../feedback/order.notify';
 import { plazoEnPalabras } from '../lib/payment-time';
 import {
@@ -166,9 +167,20 @@ export const CheckoutForm = ({
 
   const handleSubmit = async (values: CheckoutInput) => {
     setIsSubmitting(true);
-    const result = await checkoutAction(values);
+    /**
+     * La misma clave en cada intento de esta compra (MxH-0176). Si la anterior
+     * se cortó a los 20 segundos, el pedido pudo crearse igual: mandándola, la
+     * API devuelve **ese** pedido en vez de uno nuevo.
+     */
+    const result = await checkoutAction({
+      ...values,
+      idempotencyKey: claveDelIntento(),
+    });
 
     if (result.order) {
+      // El pedido ya existe, así que este intento terminó: la compra siguiente
+      // tiene que empezar con una clave nueva o recibiría esta de vuelta.
+      olvidarElIntento();
       markCheckedOut();
       /**
        * El pedido se crea aunque la pasarela falle: el cobro se intenta después
