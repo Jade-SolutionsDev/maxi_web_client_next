@@ -17,6 +17,8 @@ const testDir = defineBddConfig({
 export default defineConfig({
   testDir,
   globalSetup: "./e2e/setup/global.ts",
+  // Revoca en Clerk la sesion que abrio el proyecto `acceso`.
+  globalTeardown: "./e2e/setup/teardown.ts",
   fullyParallel: false, // comparten base de datos: se pisarian
   workers: 1,
   retries: 0,

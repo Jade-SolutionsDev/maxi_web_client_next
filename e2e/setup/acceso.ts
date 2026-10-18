@@ -1,15 +1,16 @@
 import { chmod } from "node:fs/promises";
 import { type BrowserContext, expect, type Page } from "@playwright/test";
 import { municipioConCobertura } from "../helpers";
+import { ARCHIVO_SESION } from "./sesion";
 
 /**
  * El acceso, en un solo sitio: lo usa el proyecto `acceso` al empezar y el
  * escenario que cierra sesion, que tiene que devolver la sesion que gasta.
+ * La que deja guardada la revoca `teardown.ts` al acabar la corrida.
  *
  * El usuario debe existir en la instancia de Clerk de la tienda **y** como
  * cliente en la base. Se puede cambiar con E2E_EMAIL / E2E_PASSWORD.
  */
-export const ARCHIVO_SESION = "e2e/.auth/cliente.json";
 
 /**
  * El acceso **no lleva valores por omision**, y es a proposito.
