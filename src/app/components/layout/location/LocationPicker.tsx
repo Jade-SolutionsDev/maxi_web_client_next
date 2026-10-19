@@ -34,6 +34,12 @@ interface LocationPickerProps {
   provinces: LocationOption[];
   municipalitiesByProvince: Record<string, LocationOption[]>;
   selected: SelectedLocation | null;
+  /**
+   * La zona guardada en la cuenta del cliente (MxH-0040). **Solo rellena el
+   * formulario**: no cuenta como zona elegida, porque lo que filtra el
+   * catálogo es la cookie y esta todavía no está escrita.
+   */
+  propuesta?: SelectedLocation | null;
   onSubmit: (input: { municipalityId: string }) => Promise<SaveLocationResult>;
   className?: string;
 }
@@ -64,6 +70,7 @@ export const LocationPicker = ({
   provinces,
   municipalitiesByProvince,
   selected,
+  propuesta = null,
   onSubmit,
   className,
 }: LocationPickerProps) => {
@@ -163,7 +170,7 @@ export const LocationPicker = ({
         <LocationForm
           provinces={provinces}
           municipalitiesByProvince={municipalitiesByProvince}
-          selected={selected}
+          selected={selected ?? propuesta}
           onSubmit={handleSubmit}
         />
 
