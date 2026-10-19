@@ -286,3 +286,89 @@ describe.each([
     expect(screen.getByText('¿Dónde estás?')).toBeTruthy();
   });
 });
+
+/**
+ * La zona guardada en la cuenta (MxH-0040).
+ *
+ * **Se propone, no se impone.** Lo que filtra el catálogo es la cookie, y un
+ * componente de servidor no puede escribirla. Si la propuesta contara como
+ * zona elegida, la insignia diría «Habana Vieja» con el catálogo todavía sin
+ * filtrar y el diálogo no se abriría para arreglarlo.
+ */
+describe('LocationPicker · la zona guardada en la cuenta', () => {
+  const propuesta: SelectedLocation = {
+    provinceId: habana,
+    provinceName: 'La Habana',
+    municipalityId: habanaVieja,
+    municipalityName: 'Habana Vieja',
+  };
+
+  beforeEach(() => {
+    onSubmit.mockClear();
+    cartHasLines.mockClear().mockReturnValue(false);
+    usePathname.mockReturnValue('/catalog');
+  });
+
+  const renderConPropuesta = () =>
+    render(
+      <LocationPicker
+        provinces={provinces}
+        municipalitiesByProvince={municipalitiesByProvince}
+        selected={null}
+        propuesta={propuesta}
+        onSubmit={onSubmit}
+      />,
+    );
+
+  it('abre el diálogo con la zona de la cuenta ya elegida', async () => {
+    const user = userEvent.setup();
+    renderConPropuesta();
+
+    // El diálogo se abre igual —no hay cookie—, pero sin tener que elegir nada.
+    expect(await screen.findByText(/¿Dónde estás\?/)).toBeTruthy();
+    expect(screen.getByLabelText(/Provincia/).textContent).toContain(
+      'La Habana',
+    );
+    expect(screen.getByLabelText(/Municipio/).textContent).toContain(
+      'Habana Vieja',
+    );
+
+    await user.click(screen.getByRole('button', { name: /Confirmar/ }));
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith({ municipalityId: habanaVieja });
+    });
+  });
+
+  it('la insignia sigue diciendo «Elegir»: la cookie aún no está escrita', () => {
+    renderConPropuesta();
+
+    // `hidden: true` porque el diálogo abierto esconde el resto de la página
+    // del árbol de accesibilidad, insignia incluida.
+    expect(
+      screen.getByRole('button', {
+        name: /Elegir tu ubicación/,
+        hidden: true,
+      }),
+    ).toBeTruthy();
+    expect(
+      screen.queryByRole('button', { name: /Ubicación actual/, hidden: true }),
+    ).toBeNull();
+  });
+
+  it('sin propuesta y sin zona, el formulario sale vacío', async () => {
+    render(
+      <LocationPicker
+        provinces={provinces}
+        municipalitiesByProvince={municipalitiesByProvince}
+        selected={null}
+        onSubmit={onSubmit}
+      />,
+    );
+
+    expect(await screen.findByText(/¿Dónde estás\?/)).toBeTruthy();
+    expect(screen.getByLabelText(/Provincia/).textContent).toContain(
+      'Elige tu provincia',
+    );
+  });
+});
