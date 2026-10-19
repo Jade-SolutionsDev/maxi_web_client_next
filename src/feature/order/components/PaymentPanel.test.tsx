@@ -150,7 +150,7 @@ describe('PaymentPanel', () => {
   it('deja elegir otra forma de pago cuando una pasarela falla', async () => {
     vi.mocked(startPaymentAttempt).mockResolvedValue({
       payment: null,
-      failure: { kind: 'gateway-unavailable' },
+      failure: { kind: 'rejected', reason: 'La pasarela rechazó el cobro' },
     } as never);
 
     render(
@@ -166,7 +166,7 @@ describe('PaymentPanel', () => {
 
     // El selector sigue ahí, con las dos opciones.
     await waitFor(() =>
-      expect(screen.getByText(/no está disponible/i)).toBeTruthy(),
+      expect(screen.getByText(/no pudo iniciar el pago/i)).toBeTruthy(),
     );
     expect(
       screen.getByRole('button', { name: /continuar con el pago/i }),
@@ -184,7 +184,7 @@ describe('PaymentPanel', () => {
   it('dice cuál falló, no un mensaje genérico', async () => {
     vi.mocked(startPaymentAttempt).mockResolvedValue({
       payment: null,
-      failure: { kind: 'gateway-unavailable' },
+      failure: { kind: 'rejected', reason: 'La pasarela rechazó el cobro' },
     } as never);
 
     render(
@@ -201,6 +201,37 @@ describe('PaymentPanel', () => {
     const aviso = await screen.findByRole('alert');
     expect(aviso.textContent).toMatch(/tarjeta/i);
     expect(aviso.textContent).toMatch(/prueba con otra/i);
+  });
+
+  /**
+   * MxH-0166. Cuando la API no contesta —se agotan los 8 s de `http.ts`, o
+   * devuelve 5xx porque se está quedando sin memoria— el panel culpaba a la
+   * forma de pago y mandaba a probar con otra. Es imposible de seguir: la
+   * lista de formas de pago y el inicio del cobro salen de la misma API que
+   * no responde, así que con una activa o con cinco no funciona ninguna.
+   */
+  it('no culpa a la forma de pago cuando quien no contesta es la API', async () => {
+    vi.mocked(startPaymentAttempt).mockResolvedValue({
+      payment: null,
+      failure: { kind: 'gateway-unavailable' },
+    } as never);
+
+    render(
+      <PaymentPanel
+        order={order}
+        payment={null}
+        paymentMethods={paymentMethods}
+      />,
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: /continuar con el pago/i }),
+    );
+
+    const aviso = await screen.findByRole('alert');
+    expect(aviso.textContent).toMatch(/no pudimos conectar/i);
+    expect(aviso.textContent).toMatch(/sigue reservado/i);
+    expect(aviso.textContent).not.toMatch(/prueba con otra/i);
+    expect(aviso.textContent).not.toMatch(/tarjeta/i);
   });
 
   // Solo se promete confirmación a mano cuando el pago manual se ofrece.

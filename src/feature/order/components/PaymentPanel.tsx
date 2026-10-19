@@ -112,9 +112,14 @@ export const PaymentPanel = ({
   const [failedMethod, setFailedMethod] = useState<{
     code: string;
     reason: string;
+    delServidor: boolean;
   } | null>(
     failedAtCheckout
-      ? { code: failedAtCheckout, reason: 'no pudo iniciar el pago' }
+      ? {
+          code: failedAtCheckout,
+          reason: 'no pudo iniciar el pago',
+          delServidor: false,
+        }
       : null,
   );
   const [isStarting, setIsStarting] = useState(false);
@@ -193,10 +198,8 @@ export const PaymentPanel = ({
     }
     setFailedMethod({
       code: method,
-      reason:
-        result.failure.kind === 'gateway-unavailable'
-          ? 'no está disponible en este momento'
-          : 'no pudo iniciar el pago',
+      reason: 'no pudo iniciar el pago',
+      delServidor: result.failure.kind === 'gateway-unavailable',
     });
     notifyPaymentFailure(result.failure);
   };
@@ -426,14 +429,24 @@ export const PaymentPanel = ({
               role='alert'
               className='rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-heading'
             >
-              <strong>
-                {paymentMethods.find((o) => o.code === failedMethod.code)
-                  ?.label ?? 'La forma de pago elegida'}
-              </strong>{' '}
-              {failedMethod.reason}.{' '}
-              {paymentMethods.length > 1
-                ? 'Prueba con otra de las opciones.'
-                : 'Vuelve a intentarlo en unos minutos.'}
+              {failedMethod.delServidor ? (
+                <>
+                  <strong>No pudimos conectar con nuestro servidor.</strong> Tu
+                  pedido sigue reservado y no se te cobró nada. Espera un
+                  momento y vuelve a intentarlo.
+                </>
+              ) : (
+                <>
+                  <strong>
+                    {paymentMethods.find((o) => o.code === failedMethod.code)
+                      ?.label ?? 'La forma de pago elegida'}
+                  </strong>{' '}
+                  {failedMethod.reason}.{' '}
+                  {paymentMethods.length > 1
+                    ? 'Prueba con otra de las opciones.'
+                    : 'Vuelve a intentarlo en unos minutos.'}
+                </>
+              )}
             </p>
           )}
 
