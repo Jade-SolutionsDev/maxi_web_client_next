@@ -15,6 +15,11 @@ Característica: Carrito de quien todavía no ha iniciado sesión
     Entonces se le confirma que el producto se añadió
     Y el carrito contiene 1 artículo
 
+  Escenario: Añadir apenas carga el catálogo también se anuncia
+    Cuando el cliente abre el catálogo
+    Y añade el primer producto apenas aparece, sin esperar al carrito
+    Entonces se le confirma que el producto se añadió
+
   Escenario: El carrito muestra lo elegido con su total
     Cuando el cliente abre el catálogo
     Y añade el primer producto al carrito
@@ -33,6 +38,12 @@ Característica: Carrito de quien todavía no ha iniciado sesión
     Y añade el primer producto al carrito
     Y recarga la página
     Entonces el carrito contiene 1 artículo
+
+  Escenario: Recargar con el carrito lleno no anuncia otra adición
+    Cuando el cliente abre el catálogo
+    Y añade el primer producto al carrito
+    Y recarga la página
+    Entonces no se vuelve a anunciar que el producto se añadió
 
   Escenario: Vaciar el carrito
     Cuando el cliente abre el catálogo
