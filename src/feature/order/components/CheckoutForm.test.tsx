@@ -51,6 +51,7 @@ const offer = {
   ],
   pickupEnabled: true,
   unavailableMessage: null,
+  unavailableReason: null,
   pickupPromiseDays: null,
 };
 
@@ -453,6 +454,7 @@ describe('CheckoutForm', () => {
           pickupPoints: [],
           pickupEnabled: false,
           unavailableMessage: 'Escríbenos y coordinamos tu compra.',
+          unavailableReason: null,
           pickupPromiseDays: null,
         }}
         addresses={addresses}
@@ -465,6 +467,60 @@ describe('CheckoutForm', () => {
     expect(
       screen.queryByRole('button', { name: /Confirmar pedido/ }),
     ).toBeNull();
+  });
+
+  /**
+   * MxH-0093. El mismo «no se puede» servía para dos cosas distintas. Cuando
+   * lo que pasa es que no llegamos a su zona, el cliente puede cambiarla y
+   * seguir comprando; no decírselo pierde una venta que sí se podía hacer.
+   */
+  it('fuera de zona, dice que cambiar de zona sirve', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={{
+          deliveryOptions: [],
+          pickupPoints: [],
+          pickupEnabled: false,
+          unavailableMessage: 'Escríbenos y coordinamos tu compra.',
+          unavailableReason: 'fuera_de_zona',
+          pickupPromiseDays: null,
+        }}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(screen.getByText(/Todavía no llegamos a tu zona/)).toBeTruthy();
+    expect(screen.getByText(/botón de ubicación/)).toBeTruthy();
+    // El mensaje que escribe el administrador sigue estando.
+    expect(screen.getByText(/Escríbenos y coordinamos/)).toBeTruthy();
+  });
+
+  // Aquí no hay nada que el cliente pueda hacer: falta configurar la tienda.
+  it('sin nada configurado, no manda a cambiar de zona', () => {
+    render(
+      <CheckoutForm
+        paymentMethods={methods}
+        offer={{
+          deliveryOptions: [],
+          pickupPoints: [],
+          pickupEnabled: false,
+          unavailableMessage: 'Escríbenos y coordinamos tu compra.',
+          unavailableReason: 'sin_configurar',
+          pickupPromiseDays: null,
+        }}
+        addresses={addresses}
+        catalog={catalog}
+        zone={zone}
+      />,
+    );
+
+    expect(
+      screen.getByText(/No podemos completar tu pedido ahora/),
+    ).toBeTruthy();
+    expect(screen.queryByText(/botón de ubicación/)).toBeNull();
   });
 
   it('hides the method picker when only one way is possible', () => {

@@ -45,6 +45,7 @@ const offer = {
   pickupPoints: [],
   pickupEnabled: false,
   unavailableMessage: null,
+  unavailableReason: null,
   pickupPromiseDays: null,
 };
 
