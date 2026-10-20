@@ -11,9 +11,10 @@ import type { Address } from '@/feature/address/type/address.interface';
 import { useCartActions } from '@/feature/cart/hook/useCart';
 import type { LocationCatalog } from '@/shared/location/type/location.interface';
 import { checkoutAction } from '../action/order.action';
-import { claveDelIntento, olvidarElIntento } from '../lib/clave-del-intento';
 import { notifyCheckoutFailure } from '../feedback/order.notify';
+import { claveDelIntento, olvidarElIntento } from '../lib/clave-del-intento';
 import { plazoEnPalabras } from '../lib/payment-time';
+import { mensajeSinEntrega } from '../lib/sin-entrega';
 import {
   type CheckoutInput,
   CheckoutInputSchema,
@@ -157,10 +158,8 @@ export const CheckoutForm = ({
   if (offer.unavailableMessage || methods.length === 0) {
     return (
       <FulfillmentUnavailable
-        message={
-          offer.unavailableMessage ??
-          'Por el momento no podemos procesar tu pedido. Escríbenos y lo coordinamos.'
-        }
+        message={mensajeSinEntrega(offer.unavailableMessage)}
+        reason={offer.unavailableReason}
       />
     );
   }

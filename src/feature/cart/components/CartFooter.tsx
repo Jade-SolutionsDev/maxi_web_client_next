@@ -9,6 +9,7 @@ import { SheetClose, SheetFooter } from '@/app/components/ui/sheet';
 import { CuentasNoDisponibles } from '@/feature/auth/components/CuentasNoDisponibles';
 import { useClerkDisponible } from '@/feature/auth/hook/useClerkDisponible';
 import { fetchDisponibilidadDeLaZona } from '@/feature/order/action/order.action';
+import { textoSinEntrega } from '@/feature/order/lib/sin-entrega';
 import { formatPrice } from '@/helpers';
 import { notify } from '@/lib/notify';
 import { useCartData } from '../hook/useCart';
@@ -25,7 +26,10 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
   const mode = useCartStore((state) => state.mode);
   const adoptGuestCart = useCartStore((state) => state.actions.adoptGuestCart);
   const [isPreparing, setIsPreparing] = useState(false);
-  const [avisoDeZona, setAvisoDeZona] = useState<string | null>(null);
+  const [avisoDeZona, setAvisoDeZona] = useState<{
+    mensaje: string;
+    salida: string | null;
+  } | null>(null);
   const [isNavigating, startNavigation] = useTransition();
   const closeSheetRef = useRef(closeSheet);
   const hasLeftForCheckout = useRef(false);
@@ -52,10 +56,14 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
     let vigente = true;
     fetchDisponibilidadDeLaZona().then((respuesta) => {
       if (vigente && respuesta && !respuesta.fulfillable) {
-        setAvisoDeZona(
-          respuesta.unavailableMessage ??
+        setAvisoDeZona({
+          mensaje:
+            respuesta.unavailableMessage ??
             'Por el momento no podemos entregar en tu zona. Escríbenos y lo coordinamos.',
-        );
+          // Si lo que pasa es que no llegamos a su zona, cambiarla le resuelve
+          // la compra: callárselo es perder una venta que sí se podía hacer.
+          salida: textoSinEntrega(respuesta.unavailableReason).salida,
+        });
       }
     });
     return () => {
@@ -143,13 +151,18 @@ export const CartFooter = ({ closeSheet }: CartFooterProps) => {
       )}
 
       {avisoDeZona && (
-        <p className='flex items-start gap-2 rounded-xl bg-surface px-3 py-2 text-sm text-pretty text-heading'>
+        <div className='flex items-start gap-2 rounded-xl bg-surface px-3 py-2 text-sm text-pretty text-heading'>
           <LifeBuoy
             className='mt-0.5 size-4.5 shrink-0 text-primary'
             aria-hidden='true'
           />
-          {avisoDeZona}
-        </p>
+          <span className='flex flex-col gap-1'>
+            <span>{avisoDeZona.mensaje}</span>
+            {avisoDeZona.salida && (
+              <span className='text-muted'>{avisoDeZona.salida}</span>
+            )}
+          </span>
+        </div>
       )}
 
       {caido && (

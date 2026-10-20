@@ -31,11 +31,19 @@ export interface PickupPoint {
   hours: string | null;
 }
 
+/**
+ * Por qué la tienda no puede despachar (MxH-0093). Los dos casos piden cosas
+ * distintas del cliente: en uno no hay nada que pueda hacer, en el otro
+ * cambiar de zona le resuelve la compra.
+ */
+export type MotivoSinEntrega = 'sin_configurar' | 'fuera_de_zona';
+
 export interface FulfillmentOffer {
   deliveryOptions: DeliveryOption[];
   pickupPoints: PickupPoint[];
   pickupEnabled: boolean;
   unavailableMessage: string | null;
+  unavailableReason: MotivoSinEntrega | null;
   /**
    * El plazo de la recogida. No va por punto de recogida: sale de los ajustes
    * de entrega y vale para todos los mostradores.
@@ -50,4 +58,5 @@ export interface FulfillmentOffer {
 export interface PublicFulfillment {
   fulfillable: boolean;
   unavailableMessage: string | null;
+  unavailableReason: MotivoSinEntrega | null;
 }
